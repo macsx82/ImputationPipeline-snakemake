@@ -52,6 +52,15 @@ rule snp_check:
         -M {params.g_map} \
         --input-ref {input.rp_hap} {input.rp_legend} {input.rp_samples} \
         --output-log {params.output_prefix}
+        exitcode=$?
+        if [ $exitcode -eq 0 ]
+        then
+            echo "No error found..exiting correctly"
+            exit 0
+        else
+            echo "WARNING....The software raised some errors or warning, be careful and check the results. (EXIT CODE $\{exitcode\})"
+            exit 0
+        fi
         """
 
 rule snp_flip:
