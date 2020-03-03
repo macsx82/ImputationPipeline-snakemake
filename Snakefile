@@ -38,10 +38,12 @@ rule snp_flip:
         rp_samples=config["ref_panel_base_folder"]+ "/" + config["ref_panel"]+ "/" + config["chr"]+ "/" + config["chr"] + "." + config["ref_panel"] + ".samples"
     params:
         g_map="/netapp/nfs/resources/1000GP_phase3/impute/genetic_map_chr"+config["chr"]+"_combined_b37.txt",
+        output_prefix=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_shapeit_refpanel.alignments"
     output:
-        config["input_folder"] + config["pop"]
+        # expand(config["output_folder"] + "/" + config["pop"] + "/" + config["chr"]+ "/chr"+config["chr"]+"_relate_pos_sel{ext}", ext=[".freq",".lin",".sele"])
+        expand(config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_shapeit_refpanel.alignments" , ext=[".strand",".strand.exclude"])
     shell:
-        "{config[shapeit_path]} --check --input-bed {input.ug_bed} {input.ug_bim} {input.ug_fam} -M {params.g_map} --input-ref {input.rp_hap} {input.rp_legend} {input.rp_samples} --output-log {output[0]}.alignments"
+        "{config[shapeit_path]} --check --input-bed {input.ug_bed} {input.ug_bim} {input.ug_fam} -M {params.g_map} --input-ref {input.rp_hap} {input.rp_legend} {input.rp_samples} --output-log {params.output_prefix}"
 
 # rule phase:
 #     input:
@@ -70,7 +72,13 @@ rule snp_flip:
 #         "{config[shapeit_path]} -V {input} -M {params.g_map} -O {output[0]} {output[1]} -T {threads}"
 #         # "touch {output.chr_phased} {output.samples}"
 
-
+rule pipe_finish:
+    input:
+        expand(config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_shapeit_refpanel.alignments" , ext=[".strand",".strand.exclude"])
+    output:
+        config["output_folder"]+"/"+config["pop"]+"/"+config["chr"] +".pipe.done"
+    shell:
+        "touch {output}"
 
 onsuccess:
     print("The workflow finished without errors!")
