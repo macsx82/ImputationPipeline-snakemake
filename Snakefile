@@ -91,6 +91,7 @@ rule phase:
         expand(config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_flipped" , ext=[".bim",".bed",".fam"]),
     params:
         g_map="/netapp/nfs/resources/1000GP_phase3/impute/genetic_map_chr"+config["chr"]+"_combined_b37.txt",
+        input_prefix=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_flipped"
     output:
         # generate_shapeit_out_files("{input.chr}")
         touch(config["output_folder"]+"/"+config["pop"]+"/"+config["chr"] +".pipe.done"),
@@ -100,7 +101,7 @@ rule phase:
         # shapeit --input-bed gwas.bed gwas.bim gwas.fam \
         # -M genetic_map.txt \
         # -O gwas.phased
-        "{config[shapeit_path]} -B {input} -M {params.g_map} -O {output[0]} {output[1]} -T {threads}"
+        "{config[shapeit_path]} -B {params.input_prefix} -M {params.g_map} -O {output[0]} {output[1]} -T {threads}"
 
 # rule pipe_finish:
 #     input:
