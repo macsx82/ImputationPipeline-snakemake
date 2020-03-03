@@ -99,7 +99,7 @@ rule phase:
         # generate_shapeit_out_files("{input.chr}")
         touch(config["output_folder"]+"/"+config["pop"]+"/"+config["chr"] +".pipe.done"),
         generate_shapeit_out_files(config["chr"])
-    threads: 8
+    threads: 16
     benchmark:
         config["output_folder"]+"/"+config["pop"]+"/"+config["chr"] +".phase_rule.tsv"
     shell:
