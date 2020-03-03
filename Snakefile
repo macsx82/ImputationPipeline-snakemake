@@ -9,8 +9,9 @@ print (config['chr_to_phase'].keys())
 
 
 def generate_shapeit_out_files(key):
-    chr_phased= "%s/%s/%s/chr%s.haps.gz" % (config["output_folder"],config["pop"],key,key)
-    samples= "%s/%s/%s/chr%s.samples" % (config["output_folder"],config["pop"],key,key)
+    # config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/"
+    chr_phased= "%s/%s/%s/%s/chr%s.haps.gz" % (config["output_folder"],config["pop"],config["ref_panel"],key,key)
+    samples= "%s/%s/%s/%s/chr%s.samples" % (config["output_folder"],config["pop"],config["ref_panel"],key,key)
 
     return chr_phased,samples
 
@@ -72,8 +73,6 @@ rule snp_flip:
         ug_bim=config["input_folder"] + "/" + config["chr"]+ ".bim",
         ug_fam=config["input_folder"] + "/" + config["chr"]+ ".fam"
     output:
-        # expand(config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_flipped" , ext=[".bim",".bed",".fam"]),
-        touch(config["output_folder"]+"/"+config["pop"]+"/"+config["chr"] +".pipe.done"),
         config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_flipped.bim",
         config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_flipped.bed",
         config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_flipped.fam",
@@ -87,32 +86,21 @@ rule snp_flip:
         fgrep -w "Strand" {input[0]} | cut -f 4 > {output.strand_rsid}
         plink --bfile {params.bfiles_prefix} --flip {output.strand_rsid} --make-bed --out {params.bfiles_flipped_prefix}
         """
-# rule phase:
-#     input:
-#         # g_map=config["genetic_map_chr"],
-#         # lambda wildcards: config["chr_to_phase"][wildcards.chr]
-#         # chr_to_phase="{input_folder}/{chr}.vcf.gz"
-#         # "{params.input_f}/{chr}.vcf.gz"
-#         # config["input_folder"] + "/{chr}.vcf.gz"
-#         config["input_folder"] + "/" + config["chr"]+ ".vcf.gz"
-#     params:
-#         input_f=config["input_folder"],
-#         g_map="/netapp/nfs/resources/1000GP_phase3/impute/genetic_map_chr"+config["chr"]+"_combined_b37.txt",
-#         # base_out=config["output_folder"] + "/" + config["pop"] + "/" + config["chr"]
-#     output:
-#         # generate_shapeit_out_files("{input.chr}")
-#         generate_shapeit_out_files(config["chr"])
-#         # chr_phased=config["output_folder"] + "/" + config["pop"] + "/" + config["chr"] + "/chr"+config["chr"]+".haps.gz",
-#         # samples= params[base_out] + "/chr"+config["chr"]+".samples"
-#     threads: 4
-#     shell:
-#         # "shapeit -V {input_f}/{input} -M {g_map} -O {output.chr_phased} {output.samples} -T {threads}"
-#         # "{config[shapeit_path]} -V {input} -M {params.g_map} -O {output.chr_phased} {output.samples} -T {threads}"
-#         # shapeit --input-bed gwas.bed gwas.bim gwas.fam \
-#         # -M genetic_map.txt \
-#         # -O gwas.phased
-#         "{config[shapeit_path]} -V {input} -M {params.g_map} -O {output[0]} {output[1]} -T {threads}"
-#         # "touch {output.chr_phased} {output.samples}"
+rule phase:
+    input:
+        expand(config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_flipped" , ext=[".bim",".bed",".fam"]),
+    params:
+        g_map="/netapp/nfs/resources/1000GP_phase3/impute/genetic_map_chr"+config["chr"]+"_combined_b37.txt",
+    output:
+        # generate_shapeit_out_files("{input.chr}")
+        touch(config["output_folder"]+"/"+config["pop"]+"/"+config["chr"] +".pipe.done"),
+        generate_shapeit_out_files(config["chr"])
+    threads: 4
+    shell:
+        # shapeit --input-bed gwas.bed gwas.bim gwas.fam \
+        # -M genetic_map.txt \
+        # -O gwas.phased
+        "{config[shapeit_path]} -B {input} -M {params.g_map} -O {output[0]} {output[1]} -T {threads}"
 
 # rule pipe_finish:
 #     input:
