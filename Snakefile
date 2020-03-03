@@ -48,7 +48,7 @@ rule snp_check:
         # {config[shapeit_path]} -check --input-bed {input.ug_bed} {input.ug_bim} {input.ug_fam} \
         """
         set +e
-        {config[shapeit_path]} --input-bed {input.ug_bed} {input.ug_bim} {input.ug_fam} \
+        {config[shapeit_path]} -check --input-bed {input.ug_bed} {input.ug_bim} {input.ug_fam} \
         -M {params.g_map} \
         --input-ref {input.rp_hap} {input.rp_legend} {input.rp_samples} \
         --output-log {params.output_prefix}
