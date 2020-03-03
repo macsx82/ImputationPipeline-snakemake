@@ -43,12 +43,32 @@ rule snp_check:
         # expand(config["output_folder"] + "/" + config["pop"] + "/" + config["chr"]+ "/chr"+config["chr"]+"_relate_pos_sel{ext}", ext=[".freq",".lin",".sele"])
         expand(config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_shapeit_refpanel.alignments" , ext=[".strand",".strand.exclude"])
     shell:
+        # {config[shapeit_path]} -check --input-bed {input.ug_bed} {input.ug_bim} {input.ug_fam} \
         """
         set +e
-        {config[shapeit_path]} -check --input-bed {input.ug_bed} {input.ug_bim} {input.ug_fam} \
+        {config[shapeit_path]} --input-bed {input.ug_bed} {input.ug_bim} {input.ug_fam} \
         -M {params.g_map} \
         --input-ref {input.rp_hap} {input.rp_legend} {input.rp_samples} \
         --output-log {params.output_prefix}
+        """
+
+rule snp_flip:
+    input:
+        config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_shapeit_refpanel.alignments.strand",
+        ug_bed=config["input_folder"] + "/" + config["chr"]+ ".bed",
+        ug_bim=config["input_folder"] + "/" + config["chr"]+ ".bim",
+        ug_fam=config["input_folder"] + "/" + config["chr"]+ ".fam"
+    output:
+        strand_rsid=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_rsids.to_flip"
+        expand(config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_flipped" , ext=[".bim",".bed",".fam"])
+    params:
+        bfiles_prefix=config["input_folder"] + "/" + config["chr"]
+        bfiles_flipped_prefix=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_flipped"
+    shell:
+        """
+        set +e
+        fgrep -w "Strand" {input} | cut -f 4 > {output.strand_rsid}
+        plink --bfiles {params.bfiles_prefix} --flip {output.strand_rsid} --make-bed --out {params.bfiles_flipped_prefix}
         """
 # rule phase:
 #     input:
@@ -79,7 +99,8 @@ rule snp_check:
 
 rule pipe_finish:
     input:
-        expand(config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_shapeit_refpanel.alignments" , ext=[".strand",".strand.exclude"])
+        expand(config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_flipped" , ext=[".bim",".bed",".fam"])
+        # expand(config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_shapeit_refpanel.alignments" , ext=[".strand",".strand.exclude"])
     output:
         config["output_folder"]+"/"+config["pop"]+"/"+config["chr"] +".pipe.done"
     shell:
