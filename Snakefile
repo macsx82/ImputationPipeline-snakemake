@@ -74,9 +74,9 @@ rule snp_flip:
     input:
         rules.snp_check.output[0],
         lambda wildcards: config["chr"][wildcards.chrom],
-        ug_bed=expand(config["input_folder"] + "/{chrom}.bed",chrom=config["chr"]),
-        ug_bim=expand(config["input_folder"] + "/{chrom}.bim",chrom=config["chr"]),
-        ug_fam=expand(config["input_folder"] + "/{chrom}.fam",chrom=config["chr"]),
+        ug_bed=expand(config["input_folder"] + "{chrom}/{chrom}.bed",chrom=config["chr"]),
+        ug_bim=expand(config["input_folder"] + "{chrom}/{chrom}.bim",chrom=config["chr"]),
+        ug_fam=expand(config["input_folder"] + "{chrom}/{chrom}.fam",chrom=config["chr"]),
     output:
         config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/{chrom}/" + config["pop"] + "_flipped.bim",
         config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/{chrom}/" + config["pop"] + "_flipped.bed",
