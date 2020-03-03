@@ -6,7 +6,10 @@ pop:
 pop_group:
   "EUR"
 #we need to start with the vcf files input for the phasing step
-chr: "22"
+chr:
+  "21" : "21"
+  "22" : "22" 
+
 chr_to_phase:
   1: 1.vcf.gz
   2: 2.vcf.gz

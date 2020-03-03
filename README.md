@@ -11,6 +11,7 @@ Inizialization of the snakemake imputation pipeline!
 test command for rules 1-3:
 ```bash
 snakemake --configfile config_chr_18.yaml --cores 8 
+snakemake --configfile config_chr_21_22.yaml --cores 8 
 ```
 
 We need to submit to the cluster:
