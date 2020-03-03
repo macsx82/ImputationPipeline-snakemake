@@ -81,7 +81,7 @@ rule snp_flip:
         """
         set +e
         fgrep -w "Strand" {input[0]} | cut -f 4 > {output.strand_rsid}
-        plink --bfiles {params.bfiles_prefix} --flip {output.strand_rsid} --make-bed --out {params.bfiles_flipped_prefix}
+        plink --bfile {params.bfiles_prefix} --flip {output.strand_rsid} --make-bed --out {params.bfiles_flipped_prefix}
         """
 # rule phase:
 #     input:
