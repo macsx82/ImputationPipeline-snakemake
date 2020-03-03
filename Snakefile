@@ -99,7 +99,7 @@ rule phase:
         # generate_shapeit_out_files("{input.chr}")
         touch(config["output_folder"]+"/"+config["pop"]+"/"+config["chr"] +".pipe.done"),
         generate_shapeit_out_files(config["chr"])
-    threads: 4
+    threads: 8
     shell:
         # shapeit --input-bed gwas.bed gwas.bim gwas.fam \
         # -M genetic_map.txt \
