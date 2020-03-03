@@ -65,7 +65,8 @@ rule snp_check:
 
 rule snp_flip:
     input:
-        config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_shapeit_refpanel.alignments.snp.strand",
+        # config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_shapeit_refpanel.alignments.snp.strand",
+        rules.snp_check.output[0],
         ug_bed=config["input_folder"] + "/" + config["chr"]+ ".bed",
         ug_bim=config["input_folder"] + "/" + config["chr"]+ ".bim",
         ug_fam=config["input_folder"] + "/" + config["chr"]+ ".fam"
