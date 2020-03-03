@@ -1,12 +1,9 @@
-#Snakefile for the Integrated Prioritization Workflow pipeline
+#Snakefile for the Internal Imputation pipeline
 #
 #Author: Massimiliano Cocca
 #
 #
 # configfile: "config.yaml"
-
-print (config['chr_to_phase'].keys())
-
 
 def generate_shapeit_out_files(key):
     # config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/"
@@ -31,9 +28,9 @@ rule all:
 # Input files will be the plink genotypes. We will get them from a config file
 rule snp_check:
     input:
-        ug_bed=config["input_folder"] + "/" + config["chr"]+ ".bed",
-        ug_bim=config["input_folder"] + "/" + config["chr"]+ ".bim",
-        ug_fam=config["input_folder"] + "/" + config["chr"]+ ".fam",
+        ug_bed=config["input_folder"] + "/" + config["chr"] + "/" + config["chr"]+ ".bed",
+        ug_bim=config["input_folder"] + "/" + config["chr"] + "/" + config["chr"]+ ".bim",
+        ug_fam=config["input_folder"] + "/" + config["chr"] + "/" + config["chr"]+ ".fam",
         rp_hap=config["ref_panel_base_folder"]+ "/" + config["ref_panel"]+ "/" + config["chr"]+ "/" + config["chr"] + "." + config["ref_panel"] + ".hap.gz",
         rp_legend=config["ref_panel_base_folder"]+ "/" + config["ref_panel"]+ "/" + config["chr"]+ "/" + config["chr"] + "." + config["ref_panel"] + ".legend.gz",
         rp_samples=config["ref_panel_base_folder"]+ "/" + config["ref_panel"]+ "/" + config["chr"]+ "/" + config["chr"] + "." + config["ref_panel"] + ".samples"
