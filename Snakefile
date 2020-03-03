@@ -106,7 +106,7 @@ rule phase:
         # shapeit --input-bed gwas.bed gwas.bim gwas.fam \
         # -M genetic_map.txt \
         # -O gwas.phased
-        "{config[shapeit_path]} -B {params.input_prefix} -M {params.g_map} -O {output[0]} {output[1]} -T {threads}"
+        "{config[shapeit_path]} -B {params.input_prefix} -M {params.g_map} -O {output[1]} {output[2]} -T {threads}"
 
 # rule pipe_finish:
 #     input:
