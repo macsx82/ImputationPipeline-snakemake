@@ -28,7 +28,7 @@ rule all:
 #We assume all our data has been already strand oriented with plink
 #We will orient the data to match the reference panel orientation, using shapeit
 # Input files will be the plink genotypes. We will get them from a config file
-rule snp_flip:
+rule snp_check:
     input:
         ug_bed=config["input_folder"] + "/" + config["chr"]+ ".bed",
         ug_bim=config["input_folder"] + "/" + config["chr"]+ ".bim",
@@ -43,7 +43,7 @@ rule snp_flip:
         # expand(config["output_folder"] + "/" + config["pop"] + "/" + config["chr"]+ "/chr"+config["chr"]+"_relate_pos_sel{ext}", ext=[".freq",".lin",".sele"])
         expand(config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_shapeit_refpanel.alignments" , ext=[".strand",".strand.exclude"])
     shell:
-        "{config[shapeit_path]} --check --input-bed {input.ug_bed} {input.ug_bim} {input.ug_fam} -M {params.g_map} --input-ref {input.rp_hap} {input.rp_legend} {input.rp_samples} --output-log {params.output_prefix}"
+        "{config[shapeit_path]} -check --input-bed {input.ug_bed} {input.ug_bim} {input.ug_fam} -M {params.g_map} --input-ref {input.rp_hap} {input.rp_legend} {input.rp_samples} --output-log {params.output_prefix}"
 
 # rule phase:
 #     input:
