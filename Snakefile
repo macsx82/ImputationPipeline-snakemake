@@ -73,7 +73,8 @@ rule snp_flip:
         ug_fam=config["input_folder"] + "/" + config["chr"]+ ".fam"
     output:
         expand(config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_flipped" , ext=[".bim",".bed",".fam"]),
-        strand_rsid=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_rsids.to_flip"
+        strand_rsid=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_rsids.to_flip",
+        touch(config["output_folder"]+"/"+config["pop"]+"/"+config["chr"] +".pipe.done")
     params:
         bfiles_prefix=config["input_folder"] + "/" + config["chr"],
         bfiles_flipped_prefix=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_flipped"
@@ -110,16 +111,16 @@ rule snp_flip:
 #         "{config[shapeit_path]} -V {input} -M {params.g_map} -O {output[0]} {output[1]} -T {threads}"
 #         # "touch {output.chr_phased} {output.samples}"
 
-rule pipe_finish:
-    input:
-        expand(config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_flipped" , ext=[".bim",".bed",".fam"]),
-        rules.snp_flip.output.strand_rsid
-        # expand(config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_flipped" , ext=[".bim",".bed",".fam"])
-        # expand(config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_shapeit_refpanel.alignments" , ext=[".strand",".strand.exclude"])
-    output:
-        config["output_folder"]+"/"+config["pop"]+"/"+config["chr"] +".pipe.done"
-    shell:
-        "touch {output}"
+# rule pipe_finish:
+#     input:
+#         expand(config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_flipped" , ext=[".bim",".bed",".fam"]),
+#         rules.snp_flip.output.strand_rsid
+#         # expand(config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_flipped" , ext=[".bim",".bed",".fam"])
+#         # expand(config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_shapeit_refpanel.alignments" , ext=[".strand",".strand.exclude"])
+#     output:
+#         config["output_folder"]+"/"+config["pop"]+"/"+config["chr"] +".pipe.done"
+#     shell:
+#         "touch {output}"
 
 onsuccess:
     print("The workflow finished without errors!")
