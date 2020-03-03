@@ -58,7 +58,7 @@ rule snp_check:
             echo "No error found..exiting correctly"
             exit 0
         else
-            echo "WARNING....The software raised some errors or warning, be careful and check the results. (EXIT CODE $\{exitcode\})"
+            echo "WARNING....The software raised some errors or warning, be careful and check the results. (EXIT CODE ${{exitcode}})"
             exit 0
         fi
         """
