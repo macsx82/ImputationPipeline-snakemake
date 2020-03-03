@@ -35,6 +35,7 @@ rule snp_check:
         # rp_hap=config["ref_panel_base_folder"]+ "/" + config["ref_panel"]+ "/" + config["chr"]+ "/" + config["chr"] + "." + config["ref_panel"] + ".hap.gz",
         # rp_legend=config["ref_panel_base_folder"]+ "/" + config["ref_panel"]+ "/" + config["chr"]+ "/" + config["chr"] + "." + config["ref_panel"] + ".legend.gz",
         # rp_samples=config["ref_panel_base_folder"]+ "/" + config["ref_panel"]+ "/" + config["chr"]+ "/" + config["chr"] + "." + config["ref_panel"] + ".samples"
+        # lambda wildcards: config["chr"][wildcards.chrom],
         ug_bed=expand(config["input_folder"] + "/{chrom}/{chrom}.bed",chrom=config["chr"]),
         ug_bim=expand(config["input_folder"] + "/{chrom}/{chrom}.bim",chrom=config["chr"]),
         ug_fam=expand(config["input_folder"] + "/{chrom}/{chrom}.fam",chrom=config["chr"]),
@@ -72,11 +73,11 @@ rule snp_check:
         """
 rule snp_flip:
     input:
-        rules.snp_check.output[0],
         lambda wildcards: config["chr"][wildcards.chrom],
-        ug_bed=expand(config["input_folder"] + "/{chrom}/{chrom}.bed",chrom=config["chr"]),
-        ug_bim=expand(config["input_folder"] + "/{chrom}/{chrom}.bim",chrom=config["chr"]),
-        ug_fam=expand(config["input_folder"] + "/{chrom}/{chrom}.fam",chrom=config["chr"]),
+        rules.snp_check.output[0],
+        ug_bed=config["input_folder"] + "/{chrom}/{chrom}.bed",
+        ug_bim=config["input_folder"] + "/{chrom}/{chrom}.bim",
+        ug_fam=config["input_folder"] + "/{chrom}/{chrom}.fam",
     output:
         config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/{chrom}/" + config["pop"] + "_flipped.bim",
         config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/{chrom}/" + config["pop"] + "_flipped.bed",
