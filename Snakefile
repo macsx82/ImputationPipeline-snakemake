@@ -73,8 +73,8 @@ rule snp_flip:
         ug_fam=config["input_folder"] + "/" + config["chr"]+ ".fam"
     output:
         expand(config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_flipped" , ext=[".bim",".bed",".fam"]),
-        strand_rsid=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_rsids.to_flip",
-        touch(config["output_folder"]+"/"+config["pop"]+"/"+config["chr"] +".pipe.done")
+        touch(config["output_folder"]+"/"+config["pop"]+"/"+config["chr"] +".pipe.done"),
+        strand_rsid=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_rsids.to_flip"
     params:
         bfiles_prefix=config["input_folder"] + "/" + config["chr"],
         bfiles_flipped_prefix=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_flipped"
