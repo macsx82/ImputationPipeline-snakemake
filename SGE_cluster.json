@@ -1,0 +1,13 @@
+{
+    "__default__":
+    {
+        "mem": "3G",
+        "queue" : "fast",
+        "parall_env": "smp",
+        "user_mail": "massimiliano.cocca@burlo.trieste.it"
+    },
+    "phase":
+    {
+        "mem": "8G"
+    }
+}
