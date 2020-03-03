@@ -3,7 +3,7 @@
 #Author: Massimiliano Cocca
 #
 #
-configfile: "config.yaml"
+# configfile: "config.yaml"
 
 print (config['chr_to_phase'].keys())
 
