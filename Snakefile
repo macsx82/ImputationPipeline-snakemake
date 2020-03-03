@@ -100,6 +100,8 @@ rule phase:
         touch(config["output_folder"]+"/"+config["pop"]+"/"+config["chr"] +".pipe.done"),
         generate_shapeit_out_files(config["chr"])
     threads: 8
+    benchmark:
+        config["output_folder"]+"/"+config["pop"]+"/"+config["chr"] +".phase_rule.tsv"
     shell:
         # shapeit --input-bed gwas.bed gwas.bim gwas.fam \
         # -M genetic_map.txt \
