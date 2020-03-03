@@ -36,7 +36,7 @@ input_folder:
 genetic_map_chr:
   "/netapp/nfs/resources/1000GP_phase3/impute/genetic_map_chr{chr_to_phase}_combined_b37.txt"
 output_folder:
-  "/home/cocca/analyses/IPF_pj"
+  "/home/cocca/imputation/03032020"
 ref_panel:
   "IGRPv1"
 ref_panel_base_folder:
