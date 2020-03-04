@@ -87,8 +87,8 @@ rule snp_flip:
         config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_flipped.fam",
         strand_rsid=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_rsids.to_flip"
     params:
-        bfiles_prefix=config["input_folder"] + "/" + config["chr"],
-        bfiles_flipped_prefix=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_flipped"
+        bfiles_prefix=config["input_folder"] + "/" + config["chr"] + "/" + config["chr"],
+        bfiles_flipped_prefix=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_" + config["chr"] +  "_flipped"
     shell:
         """
         set +e
@@ -104,7 +104,7 @@ rule phase:
         rules.snp_flip.output[2]
     params:
         g_map="/netapp/nfs/resources/1000GP_phase3/impute/genetic_map_chr"+config["chr"]+"_combined_b37.txt",
-        input_prefix=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_flipped"
+        input_prefix=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_" + config["chr"] + "_flipped"
     output:
         # generate_shapeit_out_files("{input.chr}")
         touch(config["output_folder"]+"/"+config["pop"]+"/"+config["chr"] +".pipe.done"),
