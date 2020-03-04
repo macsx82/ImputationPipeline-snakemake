@@ -5,12 +5,23 @@
 #
 # configfile: "config.yaml"
 
+def get_plink_input_files(key):
+    ug_bed="%s/%s/%s.bed" % (config["input_folder"],key,key)
+    ug_bim="%s/%s/%s.bim" % (config["input_folder"],key,key)
+    ug_fam="%s/%s/%s.fam" % (config["input_folder"],key,key)
+    return ug_bed,ug_bim,ug_fam
+
+def get_shapeit_input_files(key):
+    rp_hap="%s/%s/%s/%s.%s.hap.gz" % (config["ref_panel_base_folder"],config["ref_panel"],key ,key ,config["ref_panel"]),
+    rp_legend="%s/%s/%s/%s.%s.legend.gz" % (config["ref_panel_base_folder"],config["ref_panel"],key ,key ,config["ref_panel"]),
+    rp_samples="%s/%s/%s/%s.%s.samples" % (config["ref_panel_base_folder"],config["ref_panel"],key ,key ,config["ref_panel"])
+    return rp_hap,rp_legend,rp_samples
+
 def generate_shapeit_out_files(key):
     # config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/"
     chr_phased= "%s/%s/%s/%s/chr%s.haps.gz" % (config["output_folder"],config["pop"],config["ref_panel"],key,key)
     samples= "%s/%s/%s/%s/chr%s.samples" % (config["output_folder"],config["pop"],config["ref_panel"],key,key)
 
-    return chr_phased,samples
 
 def generate_end_of_pipeline_files(key):
     return "%s/%s/chr%s.pipe.done" % (config["output_folder"],config["pop"],key)
@@ -38,24 +49,31 @@ rule snp_check:
         # rp_hap=config["ref_panel_base_folder"]+ "/" + config["ref_panel"]+ "/" + config["chr"]+ "/" + config["chr"] + "." + config["ref_panel"] + ".hap.gz",
         # rp_legend=config["ref_panel_base_folder"]+ "/" + config["ref_panel"]+ "/" + config["chr"]+ "/" + config["chr"] + "." + config["ref_panel"] + ".legend.gz",
         # rp_samples=config["ref_panel_base_folder"]+ "/" + config["ref_panel"]+ "/" + config["chr"]+ "/" + config["chr"] + "." + config["ref_panel"] + ".samples"
-        # lambda wildcards: config["chr"][wildcards.chrom],
-        ug_bed=expand(config["input_folder"] + "/{chrom}/{chrom}.bed", chrom=config["chr"]),
-        ug_bim=expand(config["input_folder"] + "/{chrom}/{chrom}.bim", chrom=config["chr"]),
-        ug_fam=expand(config["input_folder"] + "/{chrom}/{chrom}.fam", chrom=config["chr"]),
-        rp_hap=expand(config["ref_panel_base_folder"]+ "/" + config["ref_panel"]+ "/{chrom}/{chrom}." + config["ref_panel"] + ".hap.gz", chrom=config["chr"]),
-        rp_legend=expand(config["ref_panel_base_folder"]+ "/" + config["ref_panel"]+ "/{chrom}/{chrom}." + config["ref_panel"] + ".legend.gz", chrom=config["chr"]),
-        rp_samples=expand(config["ref_panel_base_folder"]+ "/" + config["ref_panel"]+ "/{chrom}/{chrom}." + config["ref_panel"] + ".samples", chrom=config["chr"])
+        lambda wildcards: config["chr"][wildcards.chrom],
+        get_plink_input_files("{chrom}"),
+        get_shapeit_input_files("{chrom}")
+        # ug_bed=expand(config["input_folder"] + "/{chrom}/{chrom}.bed", chrom=config["chr"]),
+        # ug_bim=expand(config["input_folder"] + "/{chrom}/{chrom}.bim", chrom=config["chr"]),
+        # ug_fam=expand(config["input_folder"] + "/{chrom}/{chrom}.fam", chrom=config["chr"]),
+        # rp_hap=expand(config["ref_panel_base_folder"]+ "/" + config["ref_panel"]+ "/{chrom}/{chrom}." + config["ref_panel"] + ".hap.gz", chrom=config["chr"]),
+        # rp_legend=expand(config["ref_panel_base_folder"]+ "/" + config["ref_panel"]+ "/{chrom}/{chrom}." + config["ref_panel"] + ".legend.gz", chrom=config["chr"]),
+        # rp_samples=expand(config["ref_panel_base_folder"]+ "/" + config["ref_panel"]+ "/{chrom}/{chrom}." + config["ref_panel"] + ".samples", chrom=config["chr"])
     params:
         # g_map="/netapp/nfs/resources/1000GP_phase3/impute/genetic_map_chr"+config["chr"]+"_combined_b37.txt",
         # output_prefix=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_shapeit_refpanel.alignments"
-        g_map=expand("/netapp/nfs/resources/1000GP_phase3/impute/genetic_map_chr{chrom}_combined_b37.txt", chrom=config["chr"]),
-        output_prefix=expand(config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/{chrom}/" + config["pop"] + "_shapeit_refpanel.alignments", chrom=config["chr"])
+        # g_map=expand("/netapp/nfs/resources/1000GP_phase3/impute/genetic_map_chr{chrom}_combined_b37.txt", chrom=config["chr"]),
+        # output_prefix=expand(config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/{chrom}/" + config["pop"] + "_shapeit_refpanel.alignments", chrom=config["chr"])
+        g_map="/netapp/nfs/resources/1000GP_phase3/impute/genetic_map_chr{chrom}_combined_b37.txt",
+        output_prefix=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/{chrom}/" + config["pop"] + "_shapeit_refpanel.alignments"
     output:
         # config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_shapeit_refpanel.alignments.snp.strand",
         # config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_shapeit_refpanel.alignments.snp.strand.exclude"
-        expand(config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/{chrom}/" + config["pop"] + "_shapeit_refpanel.alignments.snp.strand", chrom=config["chr"]),
-        expand(config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/{chrom}/" + config["pop"] + "_shapeit_refpanel.alignments.snp.strand.exclude", chrom=config["chr"]),
-        touch(expand(config["output_folder"]+"/"+config["pop"]+"/{chrom}.pipe.done", chrom=config["chr"]))
+        # expand(config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/{chrom}/" + config["pop"] + "_shapeit_refpanel.alignments.snp.strand", chrom=config["chr"]),
+        # expand(config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/{chrom}/" + config["pop"] + "_shapeit_refpanel.alignments.snp.strand.exclude", chrom=config["chr"]),
+        # touch(expand(config["output_folder"]+"/"+config["pop"]+"/{chrom}.pipe.done", chrom=config["chr"]))
+        config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/{chrom}/" + config["pop"] + "_shapeit_refpanel.alignments.snp.strand",
+        config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/{chrom}/" + config["pop"] + "_shapeit_refpanel.alignments.snp.strand.exclude",
+        touch(config["output_folder"]+"/"+config["pop"]+"/{chrom}.pipe.done")
     shell:
         # {config[shapeit_path]} -check --input-bed {input.ug_bed} {input.ug_bim} {input.ug_fam} \
         """
@@ -130,6 +148,7 @@ rule snp_check:
 rule pipe_finish:
     input:
         # lambda wildcards: config["chr"][wildcards.chrom],
+        # config["output_folder"]+"/"+config["pop"]+"/{chrom}.pipe.done"
         expand(config["output_folder"]+"/"+config["pop"]+"/{chrom}.pipe.done", chrom=config["chr"])
     output:
         config["output_folder"]+"/"+config["pop"]+"/" + config["pop"] + ".pipe.done"
