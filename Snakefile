@@ -92,7 +92,7 @@ rule snp_flip:
     shell:
         """
         set +e
-        fgrep -w "Strand" {input[0]} | awk 'length($9)==length($10) && $5!="D" && $5!="I"' | cut -f 4 > {output.strand_rsid}
+        set +o pipefail;fgrep -w "Strand" {input[0]} | awk 'length($9)==length($10) && $5!="D" && $5!="I"' | cut -f 4 > {output.strand_rsid}
         plink --bfile {params.bfiles_prefix} --flip {output.strand_rsid} --make-bed --out {params.bfiles_flipped_prefix}
         exitcode=$?
         if [ $exitcode -eq 0 ]
