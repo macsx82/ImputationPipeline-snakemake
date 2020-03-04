@@ -3,7 +3,8 @@
 #
 #we need to start with the vcf files input for the phasing step
 chr:
-  "21"  
+  "21" : "21"
+  "22" : "22"
 
 pop:
   "CARL"
