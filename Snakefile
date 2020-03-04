@@ -94,6 +94,15 @@ rule snp_flip:
         set +e
         fgrep -w "Strand" {input[0]} | awk 'length($9)==length($10)' | cut -f 4 > {output.strand_rsid}
         plink --bfile {params.bfiles_prefix} --flip {output.strand_rsid} --make-bed --out {params.bfiles_flipped_prefix}
+        exitcode=$?
+        if [ $exitcode -eq 0 ]
+        then
+            echo "No error found..exiting correctly"
+            exit 0
+        else
+            echo "WARNING....The software raised some errors or warning, be careful and check the results. (EXIT CODE ${{exitcode}})"
+            exit 0
+        fi
         """
 
 rule phase:
