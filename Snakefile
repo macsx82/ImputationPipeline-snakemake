@@ -14,13 +14,13 @@ def get_plink_input_files(key):
 def get_shapeit_input_files(key):
     rp_hap="%s/%s/%s/%s.%s.hap.gz" % (config["ref_panel_base_folder"],config["ref_panel"],key ,key ,config["ref_panel"]),
     rp_legend="%s/%s/%s/%s.%s.legend.gz" % (config["ref_panel_base_folder"],config["ref_panel"],key ,key ,config["ref_panel"]),
-    rp_samples="%s/%s/%s/%s.%s.samples" % (config["ref_panel_base_folder"],config["ref_panel"],key ,key ,config["ref_panel"])
+    rp_samples="%s/%s/%s/%s.%s.sample" % (config["ref_panel_base_folder"],config["ref_panel"],key ,key ,config["ref_panel"])
     return rp_hap,rp_legend,rp_samples
 
 def generate_shapeit_out_files(key):
     # config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/"
     chr_phased= "%s/%s/%s/%s/chr%s.haps.gz" % (config["output_folder"],config["pop"],config["ref_panel"],key,key)
-    samples= "%s/%s/%s/%s/chr%s.samples" % (config["output_folder"],config["pop"],config["ref_panel"],key,key)
+    samples= "%s/%s/%s/%s/chr%s.sample" % (config["output_folder"],config["pop"],config["ref_panel"],key,key)
     return chr_phased,samples
 
 
