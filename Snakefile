@@ -92,7 +92,7 @@ rule snp_flip:
     shell:
         """
         set +e
-        fgrep -w "Strand" {input[0]} | cut -f 4 > {output.strand_rsid}
+        fgrep -w "Strand" {input[0]} | awk \"length($9)==length($10)\" | cut -f 4 > {output.strand_rsid}
         plink --bfile {params.bfiles_prefix} --flip {output.strand_rsid} --make-bed --out {params.bfiles_flipped_prefix}
         """
 
