@@ -27,6 +27,9 @@ def generate_shapeit_out_files(key):
 def generate_end_of_pipeline_files(key):
     return "%s/%s/chr%s.pipe.done" % (config["output_folder"],config["pop"],key)
 
+
+input_f=config["input_folder"]
+
 #define parameter useful to cluster job submission
 localrules: all
 
@@ -92,7 +95,7 @@ rule snp_flip:
     shell:
         """
         set +e
-        fgrep -w "Strand" {input[0]} | awk 'length($9)==length($10) && $5!="D" && $5!="I"' | cut -f 4 > {output.strand_rsid}
+        fgrep -w "Strand" {input[0]} | awk 'length($9)==length($10) && $5!="D" && $5!="I"' | cut -f 4 | sort|uniq -u > {output.strand_rsid}
         plink --bfile {params.bfiles_prefix} --flip {output.strand_rsid} --make-bed --out {params.bfiles_flipped_prefix}
         exitcode=$?
         if [ $exitcode -eq 0 ]
