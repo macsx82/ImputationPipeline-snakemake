@@ -134,6 +134,8 @@ while getopts ":i:t:o:c:p:g:r:f:h" opt ${@}; do
   esac
 
 done
+#Create folders
+mkdir -p ${template_dir} ${out_dir}
 
 #generate the template
 build_template ${pop} ${pop_group} ${chr} ${input_file_folder} ${out_dir} ${ref_panel} ${ref_panel_base_folder} > ${template_dir}/config_file_${pop}_${pop_group}_${chr}.yml
