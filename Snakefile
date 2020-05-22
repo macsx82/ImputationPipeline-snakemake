@@ -128,7 +128,8 @@ rule snp_flip:
     shell:
         """
         set +e
-        
+        #we need this file and it could be empty, so we will touch it!
+        touch {input[0]}
         plink --bfile {params.bfiles_prefix} --flip {input[0]} --make-bed --out {params.bfiles_flipped_prefix}
         exitcode=$?
         if [ $exitcode -eq 0 ]
