@@ -45,6 +45,8 @@ def get_flippable(infile,outfile):
                     #need to check if there are multiallelic sites
                     if (complement.get(c_to_flip[4]) == c_to_flip[8] or complement.get(c_to_flip[4]) == c_to_flip[9]) and (complement.get(c_to_flip[5]) == c_to_flip[8] or complement.get(c_to_flip[5]) == c_to_flip[9]):
                         print(c_to_flip[3], file=open(outfile,"a"))
+                else:
+                    open(outfile, 'a').close()
 
 
     
@@ -129,7 +131,7 @@ rule snp_flip:
         """
         set +e
         #we need this file and it could be empty, so we will touch it!
-        touch {input[0]}
+        # touch {input[0]}
         plink --bfile {params.bfiles_prefix} --flip {input[0]} --make-bed --out {params.bfiles_flipped_prefix}
         exitcode=$?
         if [ $exitcode -eq 0 ]
