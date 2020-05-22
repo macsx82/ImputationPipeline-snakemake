@@ -95,7 +95,7 @@ rule snp_flip:
     shell:
         """
         set +e
-        fgrep -w "Strand" {input[0]} | awk 'length($9)==length($10) && $5!="D" && $5!="I"' | cut -f 4 | sort|uniq -u > {output.strand_rsid}
+        fgrep -w "Strand" {input[0]} | awk 'length($9)==length($10) && $5!="D" && $5!="I"' | awk '{if($5==$6 && ($5!=$9 && $5!=$10)) print $0;else if ($5!=$6) print $0}' | cut -f 4 | sort|uniq -u > {output.strand_rsid}
         plink --bfile {params.bfiles_prefix} --flip {output.strand_rsid} --make-bed --out {params.bfiles_flipped_prefix}
         exitcode=$?
         if [ $exitcode -eq 0 ]
