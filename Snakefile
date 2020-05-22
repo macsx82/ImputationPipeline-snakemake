@@ -113,7 +113,7 @@ rule snp_flip_file:
     
 rule snp_flip:
     input:
-        rules.snp_flip_file.output,
+        rules.snp_flip_file.output[0],
         ug_bed=config["input_folder"] + "/" + config["chr"] + "/" + config["chr"]+ ".bed",
         ug_bim=config["input_folder"] + "/" + config["chr"] + "/" + config["chr"]+ ".bim",
         ug_fam=config["input_folder"] + "/" + config["chr"] + "/" + config["chr"]+ ".fam"
@@ -129,7 +129,7 @@ rule snp_flip:
         """
         set +e
         
-        plink --bfile {params.bfiles_prefix} --flip {output.strand_rsid} --make-bed --out {params.bfiles_flipped_prefix}
+        plink --bfile {params.bfiles_prefix} --flip {input[0]} --make-bed --out {params.bfiles_flipped_prefix}
         exitcode=$?
         if [ $exitcode -eq 0 ]
         then
