@@ -113,7 +113,7 @@ rule snp_flip_file:
     
 rule snp_flip:
     input:
-        rules.snp_flip_file.output[0],
+        rules.snp_flip_file.output,
         ug_bed=config["input_folder"] + "/" + config["chr"] + "/" + config["chr"]+ ".bed",
         ug_bim=config["input_folder"] + "/" + config["chr"] + "/" + config["chr"]+ ".bim",
         ug_fam=config["input_folder"] + "/" + config["chr"] + "/" + config["chr"]+ ".fam"
