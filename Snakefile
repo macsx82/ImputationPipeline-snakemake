@@ -99,9 +99,21 @@ rule snp_check:
             exit 0
         fi
         """
-rule snp_flip:
+
+rule snp_flip_file:
     input:
         rules.snp_check.output[0],
+    output:
+        strand_rsid=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_rsids.to_flip"
+    params:
+        bfiles_prefix=config["input_folder"] + "/" + config["chr"] + "/" + config["chr"],
+        bfiles_flipped_prefix=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_" + config["chr"] +  "_flipped"
+    run:
+        get_flippable(input[0],output.strand_rsid)
+    
+rule snp_flip:
+    input:
+        rules.snp_flip_file.output[0],
         ug_bed=config["input_folder"] + "/" + config["chr"] + "/" + config["chr"]+ ".bed",
         ug_bim=config["input_folder"] + "/" + config["chr"] + "/" + config["chr"]+ ".bim",
         ug_fam=config["input_folder"] + "/" + config["chr"] + "/" + config["chr"]+ ".fam"
@@ -109,12 +121,10 @@ rule snp_flip:
         config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_" + config["chr"]+ "_flipped.bim",
         config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_" + config["chr"]+ "_flipped.bed",
         config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_" + config["chr"]+ "_flipped.fam",
-        strand_rsid=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_rsids.to_flip"
+        # strand_rsid=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_rsids.to_flip"
     params:
         bfiles_prefix=config["input_folder"] + "/" + config["chr"] + "/" + config["chr"],
         bfiles_flipped_prefix=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_" + config["chr"] +  "_flipped"
-    run:
-        get_flippable(input[0],output.strand_rsid)
     shell:
         """
         set +e
