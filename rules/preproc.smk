@@ -20,15 +20,17 @@ rule plinkSplit:
     params:
         # scatter_chr= lambda w, output : re.search('(\d+-of-\d+)',output[0]).group(1).split('-of-')[0] ,
         output_prefix=output_folder+"/00.splitted_input/"+cohort_name,
-        i_prefix=input_prefix
+        i_prefix=input_prefix,
+        plink=config['tools']['plink']
     # log:
     #     stdout=log_folder+"/plinkSplit_{scatteritem}.stdout",
     #     stderr=log_folder+"/plinkSplit_{scatteritem}.stderr"
-    shell:
-        """
-        touch {params.output_prefix}.txt
-        """
-        # plink --file {params.i_prefix} --chr {params.scatter_chr} --make-bed --out {params.output_prefix}
+    run:
+        for chr in chrs:
+            cmd="{params.plink} --file {params.i_prefix} --chr "+chr+" --make-bed --out {params.output_prefix}"
+            shell(cmd)
+        
+
 
 # rule snp_check:
 #     input:
