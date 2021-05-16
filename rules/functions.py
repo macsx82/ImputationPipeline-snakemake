@@ -30,10 +30,10 @@ def get_flippable(infile,outfile):
     for line in strand_file:
         if re.match("Strand", line.strip().split("\t")[0]):
             rs_ids.append(line.strip().split("\t")[3])
-    unique_rs=set(rs_ids)
-    duplicates=set([rs_id for rs_id in unique_rs if rs_ids.count(rs_id)>1])
+    unique_rs=list(set(rs_ids))
+    duplicates=list(set([rs_id for rs_id in unique_rs if rs_ids.count(rs_id)>1]))
     #now we have the duplciates we can remove from the flippable list 
-    
+    strand_file.seek(0)
     flippable=[]
     for line in strand_file:
         if re.match("Strand", line.strip().split("\t")[0]):
@@ -50,5 +50,6 @@ def get_flippable(infile,outfile):
                 # else:
     # remove duplicates from flippable
     unique_flippable=[rs_id for rs_id in flippable if rs_id not in duplicates]
-    print(unique_flippable, file=open(outfile,"a"))
+    open(outfile,"w").write("\n".join(unique_flippable))
+    # print(unique_flippable, file=open(outfile,"w"))
     open(outfile, 'a').close()
