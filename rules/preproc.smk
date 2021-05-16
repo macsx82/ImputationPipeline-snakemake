@@ -69,16 +69,13 @@ rule snpCheck:
         fi
         """
 
-# rule snp_flip_file:
-#     input:
-#         rules.snp_check.output[0],
-#     output:
-#         strand_rsid=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_rsids.to_flip"
-#     params:
-#         bfiles_prefix=config["input_folder"] + "/" + config["chr"] + "/" + config["chr"],
-#         bfiles_flipped_prefix=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_" + config["chr"] +  "_flipped"
-#     run:
-#         get_flippable(input[0],output.strand_rsid)
+rule snp_flip_file:
+    output:
+        strand_rsid=output_folder+"/01.refAlign/"+ref_panel+"/{chr}_shapeit_rsids.to_flip"
+    input:
+        rules.snp_check.output[0]
+    run:
+        get_flippable(input[0],output.strand_rsid)
     
 # rule snp_flip:
 #     input:
