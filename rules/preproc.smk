@@ -88,9 +88,6 @@ rule snpFlip:
         rules.plinkSplit.output[0],
         rules.plinkSplit.output[1],
         rules.plinkSplit.output[2]
-        # ug_bed=config["input_folder"] + "/" + config["chr"] + "/" + config["chr"]+ ".bed",
-        # ug_bim=config["input_folder"] + "/" + config["chr"] + "/" + config["chr"]+ ".bim",
-        # ug_fam=config["input_folder"] + "/" + config["chr"] + "/" + config["chr"]+ ".fam"
     params:
         bfiles_prefix=output_folder+"/00.splitted_input/" + cohort_name+"_{chr}",
         bfiles_flipped_prefix=output_folder+"/02.flipped_input/"+ ref_panel + "/" + cohort_name+"_{chr}_flipped",
