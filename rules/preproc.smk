@@ -11,22 +11,22 @@
 # Split plink formatted input files by chromosome
 rule plinkSplit:
     output:
-        expand("{{output_folder}}/00.splitted_input/{chr}_{{cohort_name}}.{ext}", ext=[bed,bim,fam],chr=chrs)
+        expand("{{output_folder}}/00.splitted_input/{chr}_{{cohort_name}}.{ext}", ext=['bed','bim','fam'],chr=chrs)
         # o_bed=scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".bed"),
         # o_bim=scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".bim"),
         # o_fam=scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".fam")
     input:
         expand(input_prefix+".{ext}", ext=['map','ped'])
     params:
-        # output_prefix=output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name,
-        scatter_chr= lambda w, output : re.search('(\d+-of-\d+)',output[0]).group(1).split('-of-')[0] ,
+        # scatter_chr= lambda w, output : re.search('(\d+-of-\d+)',output[0]).group(1).split('-of-')[0] ,
+        output_prefix=output_folder+"/00.splitted_input/{chr}_"+cohort_name,
         i_prefix=input_prefix
     # log:
     #     stdout=log_folder+"/plinkSplit_{scatteritem}.stdout",
     #     stderr=log_folder+"/plinkSplit_{scatteritem}.stderr"
     shell:
         """
-        touch {params.scatter_chr}.txt
+        touch {params.output_prefix}.txt
         """
         # plink --file {params.i_prefix} --chr {params.scatter_chr} --make-bed --out {params.output_prefix}
 

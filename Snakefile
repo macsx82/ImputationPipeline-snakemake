@@ -27,9 +27,10 @@ rule all:
         # lambda wildcards: config["chr"][wildcards.chrom],
         # expand(config["output_folder"]+"/"+config["pop"]+"/{chrom}.pipe.done", chrom=config["chr"])
         # config["output_folder"]+"/"+config["pop"]+"/" + config["chr"] + ".pipe.done"
-        scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".bed"),
-        scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".bim"),
-        scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".fam")
+        expand("{{output_folder}}/00.splitted_input/{chr}_{{cohort_name}}.{ext}", ext=['bed','bim','fam'],chr=chrs)
+        # scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".bed"),
+        # scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".bim"),
+        # scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".fam")
 
 # MODULES
 include_prefix="rules"
