@@ -24,7 +24,7 @@ rule plinkSplit:
         stderr="{{log_folder}}/plinkSplit_{scatteritem}.stderr"
     shell:
         """
-        plink --bfile {{input_prefix}} --chr {scatteritem} --make-bed --out {params.output_prefix}
+        plink --file {{input_prefix}} --chr {scatteritem} --make-bed --out {params.output_prefix}
         """
 
 rule snp_check:

@@ -36,10 +36,10 @@ include:
     include_prefix + "/functions.py"
 include:
     include_prefix + "/preproc.smk"
-include:
-    include_prefix + "/phasing.smk"
-include:
-    include_prefix + "/impute.smk"
+# include:
+#     include_prefix + "/phasing.smk"
+# include:
+#     include_prefix + "/impute.smk"
 
 
 onsuccess:
