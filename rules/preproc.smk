@@ -27,8 +27,8 @@ rule plinkSplit:
     shell:
         """
         echo {params.scatter_chr}
-        # plink --file {params.i_prefix} --chr {params.scatter_chr} --make-bed --out {params.output_prefix}
         """
+        # plink --file {params.i_prefix} --chr {params.scatter_chr} --make-bed --out {params.output_prefix}
 
 # rule snp_check:
 #     input:
