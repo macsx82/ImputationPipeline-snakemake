@@ -7,7 +7,8 @@ rule phase:
     output:
         # generate_shapeit_out_files("{input.chr}")
         touch(output_folder+"/03.phased_data/" + ref_panel +"/{chr}.pipe.done"),
-        expand(output_folder+ "/03.phased_data/" + ref_panel + "/chr{chr}.{ext}" , ext=["haps.gz","sample"])
+        output_folder+ "/03.phased_data/" + ref_panel + "/chr{chr}.haps.gz",
+        output_folder+ "/03.phased_data/" + ref_panel + "/chr{chr}.sample"
         # generate_shapeit_out_files("{chr}")
     input:
         rules.snpFlip.output[0],
