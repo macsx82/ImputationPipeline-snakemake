@@ -11,7 +11,7 @@
 # Split plink formatted input files by chromosome
 rule plinkSplit:
     output:
-        expand("{{output_folder}}/00.splitted_input/{chr}_{{cohort_name}}.{ext}", ext=['bed','bim','fam'],chr=chrs)
+        expand("{output_folder}/00.splitted_input/{cohort_name}_{chr}.{ext}", ext=['bed','bim','fam'],chr=chrs)
         # o_bed=scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".bed"),
         # o_bim=scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".bim"),
         # o_fam=scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".fam")
@@ -19,7 +19,7 @@ rule plinkSplit:
         expand(input_prefix+".{ext}", ext=['map','ped'])
     params:
         # scatter_chr= lambda w, output : re.search('(\d+-of-\d+)',output[0]).group(1).split('-of-')[0] ,
-        output_prefix=output_folder+"/00.splitted_input/{chr}_"+cohort_name,
+        output_prefix=output_folder+"/00.splitted_input/"+cohort_name,
         i_prefix=input_prefix
     # log:
     #     stdout=log_folder+"/plinkSplit_{scatteritem}.stdout",
