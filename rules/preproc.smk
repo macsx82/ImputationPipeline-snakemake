@@ -34,20 +34,20 @@ rule plinkSplit:
 rule snpCheck:
     output:
         # expand("{{output_folder}}/01.refAlign/{{ref_panel}}/{chr}_shapeit_refpanel.alignments.snp.{ext}", ext=['strand','strand.exclude'])
-        "{{output_folder}}/01.refAlign/{{ref_panel}}/{chr}_shapeit_refpanel.alignments.snp.strand",
-        "{{output_folder}}/01.refAlign/{{ref_panel}}/{chr}_shapeit_refpanel.alignments.snp.strand.exclude"
+        output_folder+"/01.refAlign/"+ref_panel+"/{chr}_shapeit_refpanel.alignments.snp.strand",
+        output_folder+"/01.refAlign/"+ref_panel+"/{chr}_shapeit_refpanel.alignments.snp.strand.exclude"
         # config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_shapeit_refpanel.alignments.snp.strand",
         # config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_shapeit_refpanel.alignments.snp.strand.exclude"
     input:
         ug_bed=output_folder + "/00.splitted_input/{{cohort_name}}_{chr}.bed",
         ug_bim=output_folder + "/00.splitted_input/{{cohort_name}}_{chr}.bim",
         ug_fam=output_folder + "/00.splitted_input/{{cohort_name}}_{chr}.fam",
-        rp_hap=config["paths"]["ref_panel_base_folder"]+ "/{{ref_panel}}/{chr}/{chr}.{{ref_panel}}.hap.gz",
-        rp_legend=config["paths"]["ref_panel_base_folder"]+ "/{{ref_panel}}/{chr}/{chr}.{{ref_panel}}.legend.gz",
-        rp_samples=config["paths"]["ref_panel_base_folder"]+ "/{{ref_panel}}/{chr}/{chr}.{{ref_panel}}.samples",
+        rp_hap=config["paths"]["ref_panel_base_folder"]+ ref_panel+"/{chr}/{chr}."+ ref_panel+".hap.gz",
+        rp_legend=config["paths"]["ref_panel_base_folder"]+ ref_panel+"/{chr}/{chr}."+ ref_panel+".legend.gz",
+        rp_samples=config["paths"]["ref_panel_base_folder"]+ ref_panel+"/{chr}/{chr}."+ ref_panel+".samples",
         g_map="/netapp/nfs/resources/1000GP_phase3/impute/genetic_map_chr{chr}_combined_b37.txt",
     params:
-        output_prefix="{{output_folder}}/01.refAlign/{{ref_panel}}/{chr}_shapeit_refpanel.alignments.snp"
+        output_prefix=output_folder+"/01.refAlign/"+ref_panel+"/{chr}_shapeit_refpanel.alignments.snp"
         # output_prefix=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_shapeit_refpanel.alignments"
     shell:
         # {config[shapeit_path]} -check --input-bed {input.ug_bed} {input.ug_bim} {input.ug_fam} \
