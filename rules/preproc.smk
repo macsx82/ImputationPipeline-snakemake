@@ -18,7 +18,7 @@ rule plinkSplit:
     input:
         expand(input_prefix+".{ext}", ext=['map','ped'])
     params:
-        output_prefix=output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name,
+        # output_prefix=output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name,
         scatter_chr= lambda w : '{scatteritem}' ,
         i_prefix=input_prefix
     # log:
