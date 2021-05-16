@@ -26,7 +26,7 @@ rule plinkSplit:
     #     stderr=log_folder+"/plinkSplit_{scatteritem}.stderr"
     shell:
         """
-        echo {params.scatter_chr}
+        echo "{params.scatter_chr}"
         """
         # plink --file {params.i_prefix} --chr {params.scatter_chr} --make-bed --out {params.output_prefix}
 
