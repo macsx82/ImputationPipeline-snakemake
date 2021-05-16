@@ -19,13 +19,15 @@ rule plinkSplit:
         expand(input_prefix+".{ext}", ext=['map','ped'])
     params:
         output_prefix=output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name,
+        scatter_chr= (lambda w : w.scatteritem)
         i_prefix=input_prefix
     # log:
     #     stdout=log_folder+"/plinkSplit_{scatteritem}.stdout",
     #     stderr=log_folder+"/plinkSplit_{scatteritem}.stderr"
     shell:
         """
-        plink --file {params.i_prefix} --chr {scatteritem} --make-bed --out {params.output_prefix}
+        echo {params.scatter_chr}
+        # plink --file {params.i_prefix} --chr {params.scatter_chr} --make-bed --out {params.output_prefix}
         """
 
 # rule snp_check:
