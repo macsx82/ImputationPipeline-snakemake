@@ -2,85 +2,24 @@
 #
 #
 #we need to start with the vcf files input for the phasing step
-chr:
-  "21"  
+#config file in yaml format for the IPF pipeline
+#
+#
+cohort_name: "Sample_POP" #study population name
+pop_group: "Pop_group" #population ancestry [can be one of EUR, AFR, ASN, EAS, SAS]
 
-pop:
-  "CARL"
-pop_group:
-  "EUR"
+chr: "sample_chrom" #cromosome to work with
 
-chr_to_phase:
-  1: 1.vcf.gz
-  2: 2.vcf.gz
-  3: 3.vcf.gz
-  4: 4.vcf.gz
-  5: 5.vcf.gz
-  6: 6.vcf.gz
-  7: 7.vcf.gz
-  8: 8.vcf.gz
-  9: 9.vcf.gz
-  10: 10.vcf.gz
-  11: 11.vcf.gz
-  12: 12.vcf.gz
-  13: 13.vcf.gz
-  14: 14.vcf.gz
-  15: 15.vcf.gz
-  16: 16.vcf.gz
-  17: 17.vcf.gz
-  18: 18.vcf.gz
-  19: 19.vcf.gz
-  20: 20.vcf.gz
-  21: 21.vcf.gz
-  22: 22.vcf.gz
-input_folder:
-  # "/netapp/dati/INGI_WGS/18112015/CARL/12112015_FILTERED_REL/30092016_CONV_ID/07022018_VEP90_CSQ"
-  "/netapp/dati/INGI_WGS/18112015/CARL/12112015_FILTERED_REL/30092016_CONV_ID/07022018_VEP90_CSQ/NO_MULTI_05022020"
-genetic_map_chr:
-  "/netapp/nfs/resources/1000GP_phase3/impute/genetic_map_chr{chr_to_phase}_combined_b37.txt"
-output_folder:
-  "/home/cocca/imputation/03032020"
-ref_panel:
-  "IGRPv1"
-ref_panel_base_folder:
-  "/netapp/dati/WGS_REF_PANEL/REFERENCES"
+genetic_map_path: "/netapp/nfs/resources/1000GP_phase3/impute/" #path containing genetic maps
+# genetic_map_chr: "/netapp/nfs/resources/1000GP_phase3/impute/"
+input_folder: "input_folder" #base folder containing input data
+input_file_prefix: "input file prefix" #this is the prefix with the complete path of the PLINK file to be used.
 
-shapeit_path:
-  "/share/apps/bio/bin/shapeit"
+output_folder: "output_folder" #base folder for output
+ref_panel: "ref_pane_name" #name of the reference panel. Can be one of [IGRP, TGP3, ....]
+ref_panel_base_folder: "ref_panel_base_dir" #folder path containing reference panel files
 
-mask_ref:
-  ""
-# config_text = """
-# pop:
-#   CARL
-# #we need to start with the vcf files input for the phasing step
-# chr_to_phase:
-#   1: 1.vcf.gz
-#   2: 2.vcf.gz
-#   3: 3.vcf.gz
-#   4: 4.vcf.gz
-#   5: 5.vcf.gz
-#   6: 6.vcf.gz
-#   7: 7.vcf.gz
-#   8: 8.vcf.gz
-#   9: 9.vcf.gz
-#   10: 10.vcf.gz
-#   11: 11.vcf.gz
-#   12: 12.vcf.gz
-#   13: 13.vcf.gz
-#   14: 14.vcf.gz
-#   15: 15.vcf.gz
-#   16: 16.vcf.gz
-#   17: 17.vcf.gz
-#   18: 18.vcf.gz
-#   19: 19.vcf.gz
-#   20: 20.vcf.gz
-#   21: 21.vcf.gz
-#   22: 22.vcf.gz
-# input_folder:
-#   /netapp/dati/INGI_WGS/18112015/CARL/12112015_FILTERED_REL/30092016_CONV_ID/07022018_VEP90_CSQ
-# genetic_map_chr:
-#   /netapp/nfs/resources/1000GP_phase3/impute/genetic_map_chr{chr_to_phase}_combined_b37.txt
-# output_folder:
-#   /home/cocca/analyses/IPF_pj
-# """
+tools:
+  shapeit: "/share/apps/bio/bin/shapeit"
+  impute: "impute_path"
+  plink: "plink_path"
