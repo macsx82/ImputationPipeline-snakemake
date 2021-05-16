@@ -27,7 +27,7 @@ rule plinkSplit:
     #     stderr=log_folder+"/plinkSplit_{scatteritem}.stderr"
     run:
         for chr in chrs:
-            cmd="{params.plink} --file {params.i_prefix} --chr %s --make-bed --out {params.output_prefix}" % (chr)
+            cmd="%s --file %s --chr %s --make-bed --out %s_%s" % (params.plink,params.i_prefix,chr,params.output_prefix,chr)
             shell(cmd)
         
 
