@@ -7,17 +7,19 @@
 #
 cohort_name: "Sample_POP" #study population name
 pop_group: "Pop_group" #population ancestry [can be one of EUR, AFR, ASN, EAS, SAS]
+ref_panel: "ref_pane_name" #name of the reference panel. Can be one of [IGRP, TGP3, ....]
 
 chr: "sample_chrom" #cromosome to work with
 
-genetic_map_path: "/netapp/nfs/resources/1000GP_phase3/impute/" #path containing genetic maps
 # genetic_map_chr: "/netapp/nfs/resources/1000GP_phase3/impute/"
-input_folder: "input_folder" #base folder containing input data
-input_file_prefix: "input file prefix" #this is the prefix with the complete path of the PLINK file to be used.
+paths:
+  input_folder: "input_folder" #base folder containing input data
+  input_file_prefix: "input file prefix" #this is the prefix with the complete path of the PLINK file to be used.
+  output_folder: "output_folder" #base folder for output
+  log_folder: "log_folder" #base folder for output
+  genetic_map_path: "/netapp/nfs/resources/1000GP_phase3/impute/" #path containing genetic maps
+  ref_panel_base_folder: "ref_panel_base_dir" #folder path containing reference panel files
 
-output_folder: "output_folder" #base folder for output
-ref_panel: "ref_pane_name" #name of the reference panel. Can be one of [IGRP, TGP3, ....]
-ref_panel_base_folder: "ref_panel_base_dir" #folder path containing reference panel files
 
 tools:
   shapeit: "/share/apps/bio/bin/shapeit"

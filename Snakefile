@@ -4,11 +4,12 @@
 #
 #
 # configfile: "config.yaml"
-   
 
-input_prefix=config['input_file_prefix']
-output_folder=config['output_folder']
-cohort_name=config['cohort_name']
+# recover some fixed variables from config file
+output_folder = config['paths']["output_folder"]
+log_folder = config['paths']["log_folder"]
+cohort_name = config["cohort_name"]
+input_prefix = config['paths']["input_file_prefix"]
 
 # define a scatter gather rule to work by chromosome
 CHR_COUNT=23
@@ -26,9 +27,9 @@ rule all:
         # lambda wildcards: config["chr"][wildcards.chrom],
         # expand(config["output_folder"]+"/"+config["pop"]+"/{chrom}.pipe.done", chrom=config["chr"])
         # config["output_folder"]+"/"+config["pop"]+"/" + config["chr"] + ".pipe.done"
-        scatter.split("{{output_folder}}/00.splitted_input/{scatteritem}_{{cohort_name}}.bed"),
-        scatter.split("{{output_folder}}/00.splitted_input/{scatteritem}_{{cohort_name}}.bim"),
-        scatter.split("{{output_folder}}/00.splitted_input/{scatteritem}_{{cohort_name}}.fam")
+        scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".bed"),
+        scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".bim"),
+        scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".fam")
 
 # MODULES
 include_prefix="rules"
