@@ -16,7 +16,7 @@ rule plinkSplit:
         o_bim=scatter.split("{{output_folder}}/00.splitted_input/{scatteritem}_{{cohort_name}}.bim"),
         o_fam=scatter.split("{{output_folder}}/00.splitted_input/{scatteritem}_{{cohort_name}}.fam")
     input:
-        expand("{{input_prefix}}.{ext}", ext=[bed,bim,fam])
+        expand("{{input_prefix}}.{ext}", ext=['map','ped'])
     params:
         output_prefix="{{output_folder}}/00.splitted_input/{scatteritem}_{{cohort_name}}"
     log:
