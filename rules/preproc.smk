@@ -69,11 +69,11 @@ rule snpCheck:
         fi
         """
 
-rule snp_flip_file:
+rule snpFlipFile:
     output:
         strand_rsid=output_folder+"/01.refAlign/"+ref_panel+"/{chr}_shapeit_rsids.to_flip"
     input:
-        rules.snp_check.output[0]
+        rules.snpCheck.output[0]
     run:
         get_flippable(input[0],output.strand_rsid)
     
