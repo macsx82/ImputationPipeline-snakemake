@@ -48,7 +48,7 @@ rule snpCheck:
         g_map="/netapp/nfs/resources/1000GP_phase3/impute/genetic_map_chr{chr}_combined_b37.txt",
     params:
         output_prefix=output_folder+"/01.refAlign/"+ref_panel+"/{chr}_shapeit_refpanel.alignments.snp",
-        shapeit=config['tools']['shapeit_path']
+        shapeit=config['tools']['shapeit']
         # output_prefix=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_shapeit_refpanel.alignments"
     shell:
         # {config[shapeit_path]} -check --input-bed {input.ug_bed} {input.ug_bim} {input.ug_fam} \
