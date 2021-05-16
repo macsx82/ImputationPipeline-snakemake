@@ -15,7 +15,7 @@ rule phase:
         rules.snpFlip.output[2]
     params:
         g_map="/netapp/nfs/resources/1000GP_phase3/impute/genetic_map_chr{chr}_combined_b37.txt",
-        input_prefix=output_folder + "/02.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_flipped"
+        input_prefix=output_folder + "/02.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_flipped",
         shapeit=config['tools']['shapeit']
     threads: 16
     benchmark:
