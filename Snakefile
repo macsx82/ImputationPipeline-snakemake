@@ -10,7 +10,7 @@ output_folder = config['paths']["output_folder"]
 log_folder = config['paths']["log_folder"]
 cohort_name = config["cohort_name"]
 input_prefix = config['paths']["input_file_prefix"]
-
+chrs = config['chromosomes']
 # define a scatter gather rule to work by chromosome
 CHR_COUNT=23
 

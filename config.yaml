@@ -9,7 +9,7 @@ cohort_name: "Sample_POP" #study population name
 pop_group: "Pop_group" #population ancestry [can be one of EUR, AFR, ASN, EAS, SAS]
 ref_panel: "ref_pane_name" #name of the reference panel. Can be one of [IGRP, TGP3, ....]
 
-chr: "sample_chrom" #cromosome to work with
+chromosomes: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23] #cromosomes to work with
 
 # genetic_map_chr: "/netapp/nfs/resources/1000GP_phase3/impute/"
 paths:
