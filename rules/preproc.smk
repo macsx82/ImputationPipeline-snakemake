@@ -39,9 +39,9 @@ rule snpCheck:
         # config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_shapeit_refpanel.alignments.snp.strand",
         # config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_shapeit_refpanel.alignments.snp.strand.exclude"
     input:
-        ug_bed=output_folder + "/00.splitted_input/{{cohort_name}}_{chr}.bed",
-        ug_bim=output_folder + "/00.splitted_input/{{cohort_name}}_{chr}.bim",
-        ug_fam=output_folder + "/00.splitted_input/{{cohort_name}}_{chr}.fam",
+        ug_bed=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.bed",
+        ug_bim=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.bim",
+        ug_fam=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.fam",
         rp_hap=config["paths"]["ref_panel_base_folder"]+ ref_panel+"/{chr}/{chr}."+ ref_panel+".hap.gz",
         rp_legend=config["paths"]["ref_panel_base_folder"]+ ref_panel+"/{chr}/{chr}."+ ref_panel+".legend.gz",
         rp_samples=config["paths"]["ref_panel_base_folder"]+ ref_panel+"/{chr}/{chr}."+ ref_panel+".samples",
