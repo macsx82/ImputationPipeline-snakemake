@@ -11,6 +11,7 @@ log_folder = config['paths']["log_folder"]
 cohort_name = config["cohort_name"]
 input_prefix = config['paths']["input_file_prefix"]
 chrs = config['chromosomes']
+ref_panel=config['ref_panel']
 # define a scatter gather rule to work by chromosome
 CHR_COUNT=23
 
@@ -27,10 +28,8 @@ rule all:
         # lambda wildcards: config["chr"][wildcards.chrom],
         # expand(config["output_folder"]+"/"+config["pop"]+"/{chrom}.pipe.done", chrom=config["chr"])
         # config["output_folder"]+"/"+config["pop"]+"/" + config["chr"] + ".pipe.done"
-        expand(output_folder+"/00.splitted_input/"+cohort_name+"_{chr}.{ext}", ext=['bed','bim','fam'],chr=chrs)
-        # scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".bed"),
-        # scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".bim"),
-        # scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".fam")
+        # expand(output_folder+"/00.splitted_input/"+cohort_name+"_{chr}.{ext}", ext=['bed','bim','fam'],chr=chrs)
+        expand("{{output_folder}}/01.refAlign/{{ref_panel}}/{chr}_shapeit_refpanel.alignments.snp.{ext}", ext=['strand','strand.exclude'],chr=chrs)
 
 # MODULES
 include_prefix="rules"

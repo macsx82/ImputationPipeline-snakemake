@@ -31,39 +31,40 @@ rule plinkSplit:
             shell(cmd)
         
 
-
-# rule snp_check:
-#     input:
-#         ug_bed=config["input_folder"] + "/" + config["chr"] + "/" + config["chr"]+ ".bed",
-#         ug_bim=config["input_folder"] + "/" + config["chr"] + "/" + config["chr"]+ ".bim",
-#         ug_fam=config["input_folder"] + "/" + config["chr"] + "/" + config["chr"]+ ".fam",
-#         rp_hap=config["ref_panel_base_folder"]+ "/" + config["ref_panel"]+ "/" + config["chr"]+ "/" + config["chr"] + "." + config["ref_panel"] + ".hap.gz",
-#         rp_legend=config["ref_panel_base_folder"]+ "/" + config["ref_panel"]+ "/" + config["chr"]+ "/" + config["chr"] + "." + config["ref_panel"] + ".legend.gz",
-#         rp_samples=config["ref_panel_base_folder"]+ "/" + config["ref_panel"]+ "/" + config["chr"]+ "/" + config["chr"] + "." + config["ref_panel"] + ".samples"
-#     params:
-#         g_map="/netapp/nfs/resources/1000GP_phase3/impute/genetic_map_chr"+config["chr"]+"_combined_b37.txt",
-#         output_prefix=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_shapeit_refpanel.alignments"
-#     output:
-#         config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_shapeit_refpanel.alignments.snp.strand",
-#         config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_shapeit_refpanel.alignments.snp.strand.exclude"
-#     shell:
-#         # {config[shapeit_path]} -check --input-bed {input.ug_bed} {input.ug_bim} {input.ug_fam} \
-#         """
-#         set +e
-#         {config[shapeit_path]} -check --input-bed {input.ug_bed} {input.ug_bim} {input.ug_fam} \
-#         -M {params.g_map} \
-#         --input-ref {input.rp_hap} {input.rp_legend} {input.rp_samples} \
-#         --output-log {params.output_prefix}
-#         exitcode=$?
-#         if [ $exitcode -eq 0 ]
-#         then
-#             echo "No error found..exiting correctly"
-#             exit 0
-#         else
-#             echo "WARNING....The software raised some errors or warning, be careful and check the results. (EXIT CODE ${{exitcode}})"
-#             exit 0
-#         fi
-#         """
+rule snpCheck:
+    output:
+        expand("{{output_folder}}/01.refAlign/{{ref_panel}}/{chr}_shapeit_refpanel.alignments.snp.{ext}", ext=['strand','strand.exclude'])
+        # config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_shapeit_refpanel.alignments.snp.strand",
+        # config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_shapeit_refpanel.alignments.snp.strand.exclude"
+    input:
+        ug_bed=output_folder + "/00.splitted_input/{{cohort_name}}_{chr}.bed",
+        ug_bim=output_folder + "/00.splitted_input/{{cohort_name}}_{chr}.bim",
+        ug_fam=output_folder + "/00.splitted_input/{{cohort_name}}_{chr}.fam",
+        rp_hap=config["ref_panel_base_folder"]+ "/{{ref_panel}}/{chr}/{chr}.{{ref_panel}}.hap.gz",
+        rp_legend=config["ref_panel_base_folder"]+ "/{{ref_panel}}/{chr}/{chr}.{{ref_panel}}.legend.gz",
+        rp_samples=config["ref_panel_base_folder"]+ "/{{ref_panel}}/{chr}/{chr}.{{ref_panel}}.samples",
+        g_map="/netapp/nfs/resources/1000GP_phase3/impute/genetic_map_chr{chr}_combined_b37.txt",
+    params:
+        output_prefix="{{output_folder}}/01.refAlign/{{ref_panel}}/{chr}_shapeit_refpanel.alignments.snp"
+        # output_prefix=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_shapeit_refpanel.alignments"
+    shell:
+        # {config[shapeit_path]} -check --input-bed {input.ug_bed} {input.ug_bim} {input.ug_fam} \
+        """
+        set +e
+        {config[shapeit_path]} -check --input-bed {input.ug_bed} {input.ug_bim} {input.ug_fam} \
+        -M {input.g_map} \
+        --input-ref {input.rp_hap} {input.rp_legend} {input.rp_samples} \
+        --output-log {params.output_prefix}
+        exitcode=$?
+        if [ $exitcode -eq 0 ]
+        then
+            echo "No error found..exiting correctly"
+            exit 0
+        else
+            echo "WARNING....The software raised some errors or warning, be careful and check the results. (EXIT CODE ${{exitcode}})"
+            exit 0
+        fi
+        """
 
 # rule snp_flip_file:
 #     input:
