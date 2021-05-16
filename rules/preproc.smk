@@ -77,33 +77,37 @@ rule snpFlipFile:
     run:
         get_flippable(input[0],output.strand_rsid)
     
-# rule snp_flip:
-#     input:
-#         rules.snp_flip_file.output[0],
-#         ug_bed=config["input_folder"] + "/" + config["chr"] + "/" + config["chr"]+ ".bed",
-#         ug_bim=config["input_folder"] + "/" + config["chr"] + "/" + config["chr"]+ ".bim",
-#         ug_fam=config["input_folder"] + "/" + config["chr"] + "/" + config["chr"]+ ".fam"
-#     output:
-#         config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_" + config["chr"]+ "_flipped.bim",
-#         config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_" + config["chr"]+ "_flipped.bed",
-#         config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_" + config["chr"]+ "_flipped.fam",
-#         # strand_rsid=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_rsids.to_flip"
-#     params:
-#         bfiles_prefix=config["input_folder"] + "/" + config["chr"] + "/" + config["chr"],
-#         bfiles_flipped_prefix=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_" + config["chr"] +  "_flipped"
-#     shell:
-#         """
-#         set +e
-#         #we need this file and it could be empty, so we will touch it!
-#         # touch {input[0]}
-#         plink --bfile {params.bfiles_prefix} --flip {input[0]} --make-bed --out {params.bfiles_flipped_prefix}
-#         exitcode=$?
-#         if [ $exitcode -eq 0 ]
-#         then
-#             echo "No error found..exiting correctly"
-#             exit 0
-#         else
-#             echo "WARNING....The software raised some errors or warning, be careful and check the results. (EXIT CODE ${{exitcode}})"
-#             exit 0
-#         fi
-#         """
+rule snpFlip:
+    output:
+        output_folder + "/02.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_flipped.bim",
+        output_folder + "/02.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_flipped.bed",
+        output_folder + "/02.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_flipped.fam"
+        # strand_rsid=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_rsids.to_flip"
+    input:
+        rules.snpFlipFile.output[0],
+        rules.plinkSplit.output[0],
+        rules.plinkSplit.output[1],
+        rules.plinkSplit.output[2]
+        # ug_bed=config["input_folder"] + "/" + config["chr"] + "/" + config["chr"]+ ".bed",
+        # ug_bim=config["input_folder"] + "/" + config["chr"] + "/" + config["chr"]+ ".bim",
+        # ug_fam=config["input_folder"] + "/" + config["chr"] + "/" + config["chr"]+ ".fam"
+    params:
+        bfiles_prefix=output_folder+"/00.splitted_input/" + cohort_name+"_{chr}",
+        bfiles_flipped_prefix=output_folder+"/02.flipped_input/"+ ref_panel + "/" + cohort_name+"_{chr}_flipped",
+        plink=config['tools']['plink']
+    shell:
+        """
+        set +e
+        #we need this file and it could be empty, so we will touch it!
+        # touch {input[0]}
+        {params.plink} --bfile {params.bfiles_prefix} --flip {input[0]} --make-bed --out {params.bfiles_flipped_prefix}
+        exitcode=$?
+        if [ $exitcode -eq 0 ]
+        then
+            echo "No error found..exiting correctly"
+            exit 0
+        else
+            echo "WARNING....The software raised some errors or warning, be careful and check the results. (EXIT CODE ${{exitcode}})"
+            exit 0
+        fi
+        """
