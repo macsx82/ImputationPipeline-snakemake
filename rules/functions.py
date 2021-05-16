@@ -16,10 +16,7 @@ def generate_shapeit_out_files(key):
 def generate_end_of_pipeline_files(key):
     return "%s/%s/chr%s.pipe.done" % (config["output_folder"],config["pop"],key)
 
-# function to split plink input files by chromosome
-# def splitPlinkFiles(prefix,cohort_name,chr):
-    
-
+# extract snps to flip after strand check vs reference panel
 def get_flippable(infile,outfile):
     import re 
     # fgrep -w "Strand" {input[0]} | awk 'length($9)==length($10) && $5!="D" && $5!="I"' | awk '{{if($5==$6 && ($5!=$9 && $5!=$10)) print $0;else if($5!=$6){if() print $0} }}' |  | cut -f 4 | sort|uniq -u > {output.strand_rsid}
@@ -27,15 +24,31 @@ def get_flippable(infile,outfile):
     # outfile="ERBO_toflip"
     complement={'A':'T','T':'A','C':'G','G':'C'}
     strand_file=open('%s' %(infile),'r')
+
+    # get all duplicates ids, since we need to exclude them form the flipping, if we find them only once in the flippable list
+    rs_ids=[]
+    for line in strand_file:
+        if re.match("Strand", line.strip().split("\t")[0]):
+            rs.ids.append(line.strip().split("\t")[3])
+    unique_rs=set(rs_ids)
+    duplicates=set([rs_id for rs_id in unique_rs if rs_ids.count(rs_id)>1])
+    #now we have the duplciates we can remove from the flippable list 
+    
+    flippable=[]
     for line in strand_file:
         if re.match("Strand", line.strip().split("\t")[0]):
             c_to_flip=line.strip().split("\t")
+            # check that we are working with snps and not indels
             if len(c_to_flip[8]) == len(c_to_flip[9]) and c_to_flip[4] != "D" and c_to_flip[4] != "I" :
                 if c_to_flip[4] == c_to_flip[5] and (c_to_flip[4] != c_to_flip[8] and c_to_flip[4] != c_to_flip[9]):
-                    print(c_to_flip[3], file=open(outfile,"a"))
+                    flippable.append(c_to_flip[3])
+                    # print(c_to_flip[3], file=open(outfile,"a"))
                 elif (c_to_flip[4] != c_to_flip[5]):
                     #need to check if there are multiallelic sites
                     if (complement.get(c_to_flip[4]) == c_to_flip[8] or complement.get(c_to_flip[4]) == c_to_flip[9]) and (complement.get(c_to_flip[5]) == c_to_flip[8] or complement.get(c_to_flip[5]) == c_to_flip[9]):
-                        print(c_to_flip[3], file=open(outfile,"a"))
-                else:
-                    open(outfile, 'a').close()
+                        flippable.append(c_to_flip[3])
+                # else:
+    # remove duplicates from flippable
+    unique_flippable=[rs_id for rs_id in flippable if rs_id not in duplicates]
+    print(unique_flippable, file=open(outfile,"a"))
+    open(outfile, 'a').close()
