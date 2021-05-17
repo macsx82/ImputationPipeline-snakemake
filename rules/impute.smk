@@ -6,19 +6,19 @@ rule chunkGenerator:
 	wildcard_constraints:
 		g_chunk='\d+'
 	output:
-		output_folder+"/04.impute_intervals/{chr}.{g_chunk}.int",
+		output_folder+"/04.impute_intervals/{chr}.{g_chunk}.int"
 	input:
 		ref_hap=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".hap.gz",
 		ref_legend=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".legend.gz",
 		chunk_size=config['rules']['impute']['chunk_size']
 	run:
 		# here we will generate the interval string
-		# for chr in chrs:
 		# get chr start and end and how many chunks we need for the current chr
 		start,end,chunk_num= get_chunk_num(params.ref_legend,params.chunk_size)
 		for chunk in list(range(1,chunk_num+1)):
 			out_file="%s/04.impute_intervals/{chr}.%s.int" % (output_folder,"{:02d}".format(chunk))
-			open(out_file,"w").write(create_chunks(params.ref_legend,params.chunk_size,chunk))
+			interval=create_chunks(params.ref_legend,params.chunk_size,chunk)
+			open(out_file,"w").write(interval)
 			# open(out_file, 'a').close()
 			# create_chunks(params.ref_legend,params.chunk_size,chunk) > output_folder+"/04.impute_intervals/{chr}..int"
 
