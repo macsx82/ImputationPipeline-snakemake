@@ -12,6 +12,7 @@ cohort_name = config["cohort_name"]
 input_prefix = config['paths']["input_file_prefix"]
 chrs = config['chromosomes']
 ref_panel=config['ref_panel']
+ref_panel_base_folder
 # define a scatter gather rule to work by chromosome
 CHR_COUNT=23
 

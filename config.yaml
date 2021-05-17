@@ -20,6 +20,14 @@ paths:
   genetic_map_path: "/netapp/nfs/resources/1000GP_phase3/impute/" #path containing genetic maps
   ref_panel_base_folder: "ref_panel_base_dir" #folder path containing reference panel files
 
+rules:
+  impute:
+    k_hap: 10000
+    ne : 20000
+    iter: 60
+    burnin: 20
+    buffer_size: 250
+    chunk_size: 3000000
 
 tools:
   shapeit: "/share/apps/bio/bin/shapeit"

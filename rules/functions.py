@@ -1,18 +1,5 @@
 # functions for the imputation pieline
 
-def get_shapeit_input_files(key):
-    rp_hap="%s/%s/%s/%s.%s.hap.gz" % (config["ref_panel_base_folder"],config["ref_panel"],key ,key ,config["ref_panel"]),
-    rp_legend="%s/%s/%s/%s.%s.legend.gz" % (config["ref_panel_base_folder"],config["ref_panel"],key ,key ,config["ref_panel"]),
-    rp_samples="%s/%s/%s/%s.%s.sample" % (config["ref_panel_base_folder"],config["ref_panel"],key ,key ,config["ref_panel"])
-    return rp_hap,rp_legend,rp_samples
-
-def generate_shapeit_out_files(key):
-    # config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/"
-    chr_phased= "%s/%s/%s/%s/chr%s.haps.gz" % (config["output_folder"],config["pop"],config["ref_panel"],key,key)
-    samples= "%s/%s/%s/%s/chr%s.sample" % (config["output_folder"],config["pop"],config["ref_panel"],key,key)
-    return chr_phased,samples
-
-
 def generate_end_of_pipeline_files(key):
     return "%s/%s/chr%s.pipe.done" % (config["output_folder"],config["pop"],key)
 
@@ -53,3 +40,38 @@ def get_flippable(infile,outfile):
     open(outfile,"w").write("\n".join(unique_flippable))
     # print(unique_flippable, file=open(outfile,"w"))
     open(outfile, 'a').close()
+
+def get_chunk_num(legend,chunk_size):
+    import gzip
+    # get start and end of the chromosome
+    legend_file=gzip.open(legend) if legend.endswith('.gz') else open(legend)
+    all_pos=legend_file.read().splitlines()
+    start=int(all_pos[1].decode().split(" ")[1])
+    end=int(all_pos[-1].decode().split(" ")[1])
+    chunk_num=round((end-start+1)/chunk_size)
+    return start, end, chunk_num 
+
+def create_chunks(legend,chunk_size,chunk):
+    # import gzip
+    # get start and end of the chromosome
+    start,end,chunk_num=get_chunk_num(legend,chunk_size)
+
+    # legend_file=gzip.open(legend) if legend.endswith('.gz') else open(legend)
+    # all_pos=legend_file.read().splitlines()
+    # start=int(all_pos[1].decode().split(" ")[1])
+    # end=int(all_pos[-1].decode().split(" ")[1])
+    # chunk_num=round((end-start+1)/chunk_size)
+
+    # for chunk in list(range(1,chunk_num+1)):
+        # "{:02d}".format(chunk)
+    if chunk > 1 :
+        chunk_begin=start+(chunk-1)*chunk_size+1
+    else:
+        chunk_begin=start
+    if chunk == chunk_num:
+        chunk_end=end
+    else:
+        chunk_end=start+(chunk*chunk_size)
+    print("%s %s" % (chunk_begin, chunk_end)
+
+
