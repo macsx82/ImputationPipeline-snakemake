@@ -12,7 +12,6 @@ cohort_name = config["cohort_name"]
 input_prefix = config['paths']["input_file_prefix"]
 chrs = config['chromosomes']
 ref_panel=config['ref_panel']
-ref_panel_base_folder
 # define a scatter gather rule to work by chromosome
 CHR_COUNT=23
 
@@ -33,7 +32,9 @@ rule all:
         # expand(output_folder+"/01.refAlign/"+ref_panel+"/{chr}_shapeit_"+ref_panel+".alignments.snp.{ext}", ext=['strand','strand.exclude'],chr=chrs)
         # expand(output_folder+"/01.refAlign/"+ref_panel+"/{chr}_shapeit_rsids.to_flip",chr=chrs)
         # expand(output_folder + "/02.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_flipped.{ext}",ext=['bed','bim','fam'],chr=chrs)
-        expand(output_folder+ "/03.phased_data/" + ref_panel + "/chr{chr}.{ext}" , ext=["haps.gz","sample"], chr=chrs)
+        # expand(output_folder+ "/03.phased_data/" + ref_panel + "/chr{chr}.{ext}" , ext=["haps.gz","sample"], chr=chrs)
+        expand(output_folder+"/04.impute_intervals/{chr}.{chunk}.int", chr=chrs)
+
 # MODULES
 include_prefix="rules"
 include:
@@ -42,8 +43,8 @@ include:
     include_prefix + "/preproc.smk"
 include:
     include_prefix + "/phasing.smk"
-# include:
-#     include_prefix + "/impute.smk"
+include:
+    include_prefix + "/impute.smk"
 
 
 onsuccess:
