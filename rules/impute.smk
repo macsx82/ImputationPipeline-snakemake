@@ -4,7 +4,7 @@
 # of snakemake, since we want to be able to run multiple chunks togethter in the next rules
 rule chunkGenerator:
 	wildcard_constraints:
-    	g_chunk='\d+'
+		g_chunk='\d+'
 	output:
 		output_folder+"/04.impute_intervals/{chr}.{g_chunk}.int",
 	input:
