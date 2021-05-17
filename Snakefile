@@ -33,7 +33,7 @@ rule all:
         # expand(output_folder+"/01.refAlign/"+ref_panel+"/{chr}_shapeit_rsids.to_flip",chr=chrs)
         # expand(output_folder + "/02.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_flipped.{ext}",ext=['bed','bim','fam'],chr=chrs)
         # expand(output_folder+ "/03.phased_data/" + ref_panel + "/chr{chr}.{ext}" , ext=["haps.gz","sample"], chr=chrs)
-        expand(output_folder+"/04.impute_intervals/{chr}.{{chunk}}.int", chr=chrs,allow_missing=True)
+        expand(output_folder+"/04.impute_intervals/{chr}.{{chunk}}.int",chr=chrs,allow_missing=True)
 
 # MODULES
 include_prefix="rules"

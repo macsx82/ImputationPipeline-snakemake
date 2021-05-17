@@ -72,6 +72,6 @@ def create_chunks(legend,chunk_size,chunk):
         chunk_end=end
     else:
         chunk_end=start+(chunk*chunk_size)
-    print("%s %s" % (chunk_begin, chunk_end)
+    print("%s %s" % (chunk_begin, chunk_end))
 
 
