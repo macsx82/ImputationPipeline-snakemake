@@ -23,8 +23,6 @@ localrules: all
 
 #define rules
 rule all:
-    wildcard_constraints:
-        chunk='\d+'
     input:
         # config["output_folder"]+"/"+config["pop"]+"/" + config["pop"] + ".pipe.done"
         # lambda wildcards: config["chr"][wildcards.chrom],
