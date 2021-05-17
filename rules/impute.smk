@@ -4,9 +4,9 @@
 # of snakemake, since we want to be able to run multiple chunks togethter in the next rules
 rule chunkGenerator:
 	wildcard_constraints:
-    	chunk='\d+'
+    	g_chunk='\d+'
 	output:
-		output_folder+"/04.impute_intervals/{chr}.{chunk}.int",
+		output_folder+"/04.impute_intervals/{chr}.{g_chunk}.int",
 	input:
 		ref_hap=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".hap.gz",
 		ref_legend=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".legend.gz",
