@@ -18,7 +18,9 @@ rule chunkGenerator:
 		for chunk in list(range(1,chunk_num+1)):
 			out_file="%s/04.impute_intervals/{chr}.%s.int" % (output_folder,"{:02d}".format(chunk))
 			interval=create_chunks(params.ref_legend,params.chunk_size,chunk)
-			open(out_file,"w").write(interval)
+			print(interval)
+			print(out_file)
+			# open(out_file,"w").write(interval)
 			# open(out_file, 'a').close()
 			# create_chunks(params.ref_legend,params.chunk_size,chunk) > output_folder+"/04.impute_intervals/{chr}..int"
 
