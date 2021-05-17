@@ -16,7 +16,7 @@ rule chunkGenerator:
 		# get chr start and end and how many chunks we need for the current chr
 		start,end,chunk_num= get_chunk_num(params.ref_legend,params.chunk_size)
 		for chunk in list(range(1,chunk_num+1)):
-			out_file="%s/04.impute_intervals/{chr}.%s.int" % (output_folder,"{:02d}".format(chunk))
+			out_file=output_folder+"/04.impute_intervals/{chr}."+"{:02d}".format(chunk) +".int"
 			interval=create_chunks(params.ref_legend,params.chunk_size,chunk)
 			print(interval)
 			print(out_file)
