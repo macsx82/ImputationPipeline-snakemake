@@ -9,7 +9,8 @@ rule chunkGenerator:
 		output_folder+"/04.impute_intervals/{chr}.{g_chunk}.int"
 	input:
 		ref_hap=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".hap.gz",
-		ref_legend=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".legend.gz",
+		ref_legend=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".legend.gz"
+	params:
 		chunk_size=config['rules']['impute']['chunk_size']
 	run:
 		# here we will generate the interval string
