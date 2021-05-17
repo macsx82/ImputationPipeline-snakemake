@@ -6,7 +6,6 @@
 rule phase:
     output:
         # generate_shapeit_out_files("{input.chr}")
-        touch(output_folder+"/03.phased_data/" + ref_panel +"/{chr}.pipe.done"),
         output_folder+ "/03.phased_data/" + ref_panel + "/chr{chr}.haps.gz",
         output_folder+ "/03.phased_data/" + ref_panel + "/chr{chr}.sample"
         # generate_shapeit_out_files("{chr}")
@@ -22,5 +21,5 @@ rule phase:
     benchmark:
         output_folder+"/benchmarks/{chr}.phase_rule.tsv"
     shell:
-        "{params.shapeit} -B {params.input_prefix} -M {params.g_map} -O {output[1]} {output[2]} -T {threads}"
+        "{params.shapeit} -B {params.input_prefix} -M {params.g_map} -O {output[0]} {output[1]} -T {threads}"
 

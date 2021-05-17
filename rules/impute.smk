@@ -6,7 +6,7 @@ rule chunkGenerator:
 	wildcard_constraints:
     	chunk='\d+'
 	output:
-		output_folder+"/04.impute_intervals/{chr}.{chunk}.int"
+		output_folder+"/04.impute_intervals/{chr}.{chunk}.int",
 	input:
 		ref_hap=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".hap.gz",
 		ref_legend=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".legend.gz",
