@@ -20,24 +20,24 @@ scattergather:
     split=CHR_COUNT
 
 #define parameter useful to cluster job submission
-# localrules: all
+localrules: all
 
-# #define rules
-# rule all:
-#     # wildcard_constraints:
-#     #     g_chunk='\d+'
-#     input:
-#         # config["output_folder"]+"/"+config["pop"]+"/" + config["pop"] + ".pipe.done"
-#         # lambda wildcards: config["chr"][wildcards.chrom],
-#         # expand(config["output_folder"]+"/"+config["pop"]+"/{chrom}.pipe.done", chrom=config["chr"])
-#         # config["output_folder"]+"/"+config["pop"]+"/" + config["chr"] + ".pipe.done"
-#         # expand(output_folder+"/00.splitted_input/"+cohort_name+"_{chr}.{ext}", ext=['bed','bim','fam'],chr=chrs)
-#         # expand(output_folder+"/01.refAlign/"+ref_panel+"/{chr}_shapeit_"+ref_panel+".alignments.snp.{ext}", ext=['strand','strand.exclude'],chr=chrs)
-#         # expand(output_folder+"/01.refAlign/"+ref_panel+"/{chr}_shapeit_rsids.to_flip",chr=chrs)
-#         # expand(output_folder + "/02.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_flipped.{ext}",ext=['bed','bim','fam'],chr=chrs)
-#         # expand(output_folder+ "/03.phased_data/" + ref_panel + "/chr{chr}.{ext}" , ext=["haps.gz","sample"], chr=chrs)
-#         # expand(output_folder+"/04.impute_intervals/{chr}/{chr}.{g_chunk}.int",chr=chrs,g_chunk=list(range(1,11)))
-#         expand(output_folder+"/04.impute_intervals/{chr}/{chr}.{{g_chunk}}.pippo",chr=chrs)
+#define rules
+rule all:
+    # wildcard_constraints:
+    #     g_chunk='\d+'
+    input:
+        # config["output_folder"]+"/"+config["pop"]+"/" + config["pop"] + ".pipe.done"
+        # lambda wildcards: config["chr"][wildcards.chrom],
+        # expand(config["output_folder"]+"/"+config["pop"]+"/{chrom}.pipe.done", chrom=config["chr"])
+        # config["output_folder"]+"/"+config["pop"]+"/" + config["chr"] + ".pipe.done"
+        # expand(output_folder+"/00.splitted_input/"+cohort_name+"_{chr}.{ext}", ext=['bed','bim','fam'],chr=chrs)
+        # expand(output_folder+"/01.refAlign/"+ref_panel+"/{chr}_shapeit_"+ref_panel+".alignments.snp.{ext}", ext=['strand','strand.exclude'],chr=chrs)
+        # expand(output_folder+"/01.refAlign/"+ref_panel+"/{chr}_shapeit_rsids.to_flip",chr=chrs)
+        # expand(output_folder + "/02.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_flipped.{ext}",ext=['bed','bim','fam'],chr=chrs)
+        # expand(output_folder+ "/03.phased_data/" + ref_panel + "/chr{chr}.{ext}" , ext=["haps.gz","sample"], chr=chrs)
+        # expand(output_folder+"/04.impute_intervals/{chr}/{chr}.{g_chunk}.int",chr=chrs,g_chunk=list(range(1,11)))
+        expand(output_folder+"/04.impute_intervals/{chr}/{chr}.{{g_chunk}}.pippo",chr=chrs)
         # directory(expand(output_folder+"/04.impute_intervals/{chr}/",chr=chrs))
         # expand(output_folder+"/04.impute_intervals/{chr}/{chr}.{{g_chunk}}.pippo",chr=chrs)
 
