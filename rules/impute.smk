@@ -2,7 +2,8 @@
 # first thing we need is to generate chunks for each chromosome
 # this rule will generate a file that will contain the interval string to be used in the imputation. we are using a method similar to the scattergather implementation
 # of snakemake, since we want to be able to run multiple chunks togethter in the next rules
-checkpoint chunkGenerator:
+# checkpoint chunkGenerator:
+rule chunkGenerator:
 	wildcard_constraints:
 		g_chunk='\d+',
 		chr='\d+'
