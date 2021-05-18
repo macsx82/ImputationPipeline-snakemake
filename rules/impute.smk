@@ -3,8 +3,9 @@
 # this rule will generate a file that will contain the interval string to be used in the imputation. we are using a method similar to the scattergather implementation
 # of snakemake, since we want to be able to run multiple chunks togethter in the next rules
 rule chunkGenerator:
-	# wildcard_constraints:
-		# g_chunk='\d+'
+	wildcard_constraints:
+		g_chunk='\d+',
+		chr='\d+'
 	output:
 		output_folder+"/04.impute_intervals/{chr}.{g_chunk}.int"
 	input:
