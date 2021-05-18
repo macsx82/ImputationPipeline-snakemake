@@ -7,8 +7,8 @@ checkpoint chunkGenerator:
 		g_chunk='\d+',
 		chr='\d+'
 	output:
-		output_folder+"/04.impute_intervals/{chr}/{chr}.{g_chunk}.int"
-		# directory(output_folder+"/04.impute_intervals/{chr}")
+		# output_folder+"/04.impute_intervals/{chr}/{chr}.{g_chunk}.int"
+		directory(output_folder+"/04.impute_intervals/{chr}")
 	input:
 		ref_hap=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".hap.gz",
 		ref_legend=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".legend.gz"
@@ -27,15 +27,17 @@ checkpoint chunkGenerator:
 			# open(out_file, 'a').close()
 			# create_chunks(params.ref_legend,params.chunk_size,chunk) > output_folder+"/04.impute_intervals/{chr}..int"
 
-# rule impute:
-# 	output:
-# 		pippo=output_folder+"/04.impute_intervals/{chr}/{chr}.{g_chunk}.pippo"
-# 	input:
-# 		output_folder+"/04.impute_intervals/{chr}/{chr}.{g_chunk}.int"
-# 	run:
-# 		pippo = pathlib.Path(output.pippo)
-# 		pippo.parent.mkdir(exist_ok=True)
-# 		pippo.touch()
+rule impute:
+	output:
+		pippo=output_folder+"/04.impute_intervals/{chr}/{chr}.{g_chunk}.pippo"
+	input:
+		output_folder+"/04.impute_intervals/{chr}/{chr}.{g_chunk}.int"
+	run:
+		pippo = pathlib.Path(output.pippo)
+		pippo.parent.mkdir(exist_ok=True)
+		pippo.touch()
+
+
 # let "chunk_num=($chr_end - $chr_begin)/$chunk_size" # bash rounds automatically
 # if [[ $chunk_num <1 ]]; then
 # 	chunk_num=1
