@@ -4,6 +4,7 @@
 #
 #
 # configfile: "config.yaml"
+import pathlib
 
 # recover some fixed variables from config file
 output_folder = config['paths']["output_folder"]
@@ -35,7 +36,8 @@ rule all:
         # expand(output_folder+"/01.refAlign/"+ref_panel+"/{chr}_shapeit_rsids.to_flip",chr=chrs)
         # expand(output_folder + "/02.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_flipped.{ext}",ext=['bed','bim','fam'],chr=chrs)
         # expand(output_folder+ "/03.phased_data/" + ref_panel + "/chr{chr}.{ext}" , ext=["haps.gz","sample"], chr=chrs)
-        expand(output_folder+"/04.impute_intervals/{chr}/{chr}.{{g_chunk}}.int",chr=chrs)
+        # expand(output_folder+"/04.impute_intervals/{chr}/{chr}.{{g_chunk}}.int",chr=chrs)
+        expand(output_folder+"/04.impute_intervals/{chr}/{chr}.{{g_chunk}}.pippo",chr=chrs)
 
 # MODULES
 include_prefix="rules"

@@ -2,9 +2,9 @@
 # first thing we need is to generate chunks for each chromosome
 # this rule will generate a file that will contain the interval string to be used in the imputation. we are using a method similar to the scattergather implementation
 # of snakemake, since we want to be able to run multiple chunks togethter in the next rules
-rule chunkGenerator:
-	wildcard_constraints:
-		g_chunk='\d+'
+checkpoint chunkGenerator:
+	# wildcard_constraints:
+		# g_chunk='\d+'
 	output:
 		# output_folder+"/04.impute_intervals/{chr}/{chr}.{g_chunk}.int"
 		directory(output_folder+"/04.impute_intervals/{chr}")
@@ -26,6 +26,15 @@ rule chunkGenerator:
 			# open(out_file, 'a').close()
 			# create_chunks(params.ref_legend,params.chunk_size,chunk) > output_folder+"/04.impute_intervals/{chr}..int"
 
+rule impute:
+	output:
+		pippo=output_folder+"/04.impute_intervals/{chr}/{chr}.{g_chunk}.pippo"
+	input:
+		output_folder+"/04.impute_intervals/{chr}/{chr}.{g_chunk}.int"
+	run:
+		pippo = pathlib.Path(output.pippo)
+		pippo.parent.mkdir(exist_ok=True)
+		pippo.touch()
 # let "chunk_num=($chr_end - $chr_begin)/$chunk_size" # bash rounds automatically
 # if [[ $chunk_num <1 ]]; then
 # 	chunk_num=1
