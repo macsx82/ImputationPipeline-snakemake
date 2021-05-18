@@ -18,11 +18,7 @@ rule chunkGenerator:
 	run:
 		# here we will generate the interval string
 		# get chr start and end and how many chunks we need for the current chr
-		chunk_info= get_chunk_num(input.ref_legend,params.chunk_size)
-		chrom=chunk_info[0]
-		start=chunk_info[1]
-		end=chunk_info[2]
-		chunk_num=chunk_info[3]
+		chrom,start,end,chunk_num= get_chunk_num(input.ref_legend,params.chunk_size)
 		for chunk in list(range(1,chunk_num+1)):
 			out_file=output_folder+"/04.impute_intervals/"+chrom+"/"+chrom+"."+"{:02d}".format(chunk) +".int"
 			interval=create_chunks(input.ref_legend,params.chunk_size,chunk)

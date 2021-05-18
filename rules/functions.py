@@ -51,12 +51,12 @@ def get_chunk_num(legend,chunk_size):
     start=int(all_pos[1].decode().split(" ")[1])
     end=int(all_pos[-1].decode().split(" ")[1])
     chunk_num=round((end-start+1)/chunk_size)
-    return (chrom,start,end,chunk_num)
+    return chrom,start,end,chunk_num
 
 def create_chunks(legend,chunk_size,chunk):
     # import gzip
     # get start and end of the chromosome
-    start,end,chunk_num=get_chunk_num(legend,chunk_size)
+    chrom,start,end,chunk_num=get_chunk_num(legend,chunk_size)
 
     # legend_file=gzip.open(legend) if legend.endswith('.gz') else open(legend)
     # all_pos=legend_file.read().splitlines()
