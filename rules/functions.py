@@ -53,6 +53,15 @@ def get_chunk_num(legend,chunk_size):
     chunk_num=round((end-start+1)/chunk_size)
     return chrom,start,end,chunk_num
 
+# create a dictionary with chroms and the relative chunk number extracted from the selected legend file for the imputation
+def get_chunk_by_chr(chr,legend,chunk_size):
+    legend_file=gzip.open(legend) if legend.endswith('.gz') else open(legend)
+    all_pos=legend_file.read().splitlines()
+    start=int(all_pos[1].decode().split(" ")[1])
+    end=int(all_pos[-1].decode().split(" ")[1])
+    chunk_num=round((end-start+1)/chunk_size)
+    return chunk_num
+
 def create_chunks(legend,chunk_size,chunk):
     # import gzip
     # get start and end of the chromosome
