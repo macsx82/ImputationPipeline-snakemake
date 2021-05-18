@@ -3,11 +3,12 @@
 # this rule will generate a file that will contain the interval string to be used in the imputation. we are using a method similar to the scattergather implementation
 # of snakemake, since we want to be able to run multiple chunks togethter in the next rules
 checkpoint chunkGenerator:
-	# wildcard_constraints:
-		# g_chunk='\d+'
+	wildcard_constraints:
+		g_chunk='\d+',
+		chr='\d+'
 	output:
-		# output_folder+"/04.impute_intervals/{chr}/{chr}.{g_chunk}.int"
-		directory(output_folder+"/04.impute_intervals/{chr}")
+		output_folder+"/04.impute_intervals/{chr}/{chr}.{g_chunk}.int"
+		# directory(output_folder+"/04.impute_intervals/{chr}")
 	input:
 		ref_hap=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".hap.gz",
 		ref_legend=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".legend.gz"
@@ -18,7 +19,7 @@ checkpoint chunkGenerator:
 		# get chr start and end and how many chunks we need for the current chr
 		start,end,chunk_num= get_chunk_num(params.ref_legend,params.chunk_size)
 		for chunk in list(range(1,chunk_num+1)):
-			out_file=output_folder+"/04.impute_intervals/{chr}/{chr}."+"{:02d}".format(chunk) +".int"
+			out_file=output_folder+"/04.impute_intervals/{wildcards.chr}/{wildcards.chr}."+"{:02d}".format(chunk) +".int"
 			interval=create_chunks(params.ref_legend,params.chunk_size,chunk)
 			open(out_file,"w").write(interval)
 			# print(interval)
@@ -26,15 +27,15 @@ checkpoint chunkGenerator:
 			# open(out_file, 'a').close()
 			# create_chunks(params.ref_legend,params.chunk_size,chunk) > output_folder+"/04.impute_intervals/{chr}..int"
 
-rule impute:
-	output:
-		pippo=output_folder+"/04.impute_intervals/{chr}/{chr}.{g_chunk}.pippo"
-	input:
-		output_folder+"/04.impute_intervals/{chr}/{chr}.{g_chunk}.int"
-	run:
-		pippo = pathlib.Path(output.pippo)
-		pippo.parent.mkdir(exist_ok=True)
-		pippo.touch()
+# rule impute:
+# 	output:
+# 		pippo=output_folder+"/04.impute_intervals/{chr}/{chr}.{g_chunk}.pippo"
+# 	input:
+# 		output_folder+"/04.impute_intervals/{chr}/{chr}.{g_chunk}.int"
+# 	run:
+# 		pippo = pathlib.Path(output.pippo)
+# 		pippo.parent.mkdir(exist_ok=True)
+# 		pippo.touch()
 # let "chunk_num=($chr_end - $chr_begin)/$chunk_size" # bash rounds automatically
 # if [[ $chunk_num <1 ]]; then
 # 	chunk_num=1
