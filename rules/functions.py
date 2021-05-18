@@ -43,10 +43,11 @@ def get_flippable(infile,outfile):
 
 def get_chunk_num(legend,chunk_size):
     import gzip
+    import os
     # get start and end of the chromosome
     legend_file=gzip.open(legend) if legend.endswith('.gz') else open(legend)
     all_pos=legend_file.read().splitlines()
-    chrom=int(all_pos[1].decode().split(" ")[0])
+    chrom=os.path.basename(legend_file).split('.')[0]
     start=int(all_pos[1].decode().split(" ")[1])
     end=int(all_pos[-1].decode().split(" ")[1])
     chunk_num=round((end-start+1)/chunk_size)
