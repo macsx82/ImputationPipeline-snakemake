@@ -20,7 +20,7 @@ scattergather:
     split=CHR_COUNT
 
 #define parameter useful to cluster job submission
-localrules: all
+# localrules: all
 
 # #define rules
 # rule all:
