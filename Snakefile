@@ -21,10 +21,11 @@ ref_panel_base_folder=config["paths"]["ref_panel_base_folder"]
 #     split=CHR_COUNT
 
 # define a dictionary containing chromosomes and relative chuk size
-# chunked={}
-# for chrom in chrs:
-#     legend_file="%s/%s/%s/%s.%s.legend.gz" % (ref_panel_base_folder,ref_panel,chrom,chrom,ref_panel)
-#     get_chunk_by_chr(chr,legend,chunk_size):
+chunked={}
+for chrom in chrs:
+    legend_file="%s/%s/%s/%s.%s.legend.gz" % (ref_panel_base_folder,ref_panel,chrom,chrom,ref_panel)
+    chunked[chrom]=get_chunk_by_chr(chrom,legend,chunk_size)
+
 #define parameter useful to cluster job submission
 localrules: all
 
@@ -43,7 +44,8 @@ rule all:
         # expand(output_folder + "/02.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_flipped.{ext}",ext=['bed','bim','fam'],chr=chrs)
         # expand(output_folder+ "/03.phased_data/" + ref_panel + "/chr{chr}.{ext}" , ext=["haps.gz","sample"], chr=chrs)
         # expand(output_folder+"/04.impute_intervals/{chr}/{chr}.{g_chunk}.int",chr=chrs,g_chunk=list(range(1,11)))
-        expand(output_folder+"/04.impute_intervals/{chrom}/{chrom}.{{g_chunk}}.pippo",chrom=chrs)
+        # expand(output_folder+"/04.impute_intervals/{chrom}/{chrom}.{{g_chunk}}.pippo",chrom=chrs)
+        [ output_folder+"/04.impute_intervals/{chrom}/{chrom}.{g_chunk}.int" for key, value in chunked]
         # directory(expand(output_folder+"/04.impute_intervals/{chr}/",chr=chrs))
         # expand(output_folder+"/04.impute_intervals/{chr}/{chr}.{{g_chunk}}.pippo",chr=chrs)
 
