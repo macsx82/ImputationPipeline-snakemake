@@ -14,6 +14,7 @@ input_prefix = config['paths']["input_file_prefix"]
 chrs = config['chromosomes']
 ref_panel=config['ref_panel']
 ref_panel_base_folder=config["paths"]["ref_panel_base_folder"]
+chunk_size=config['rules']['impute']['chunk_size']
 # define a scatter gather rule to work by chromosome
 # CHR_COUNT=23
 
@@ -28,7 +29,7 @@ include:
 chunked={}
 for chrom in chrs:
     legend_file="%s/%s/%s/%s.%s.legend.gz" % (ref_panel_base_folder,ref_panel,chrom,chrom,ref_panel)
-    chunked[chrom]=get_chunk_by_chr(chrom,legend,chunk_size)
+    chunked[chrom]=get_chunk_by_chr(chrom,legend_file,chunk_size)
 
 #define parameter useful to cluster job submission
 localrules: all
