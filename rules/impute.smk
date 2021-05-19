@@ -25,8 +25,11 @@ rule chunkGenerator:
 
 # rule to run imputation for each chunk
 rule impute:
+	wildcard_constraints:
+		g_chunk='\d+',
+		chr='\d+'
 	output:
-		expand(output_folder+"/05.imputed/{chr}/{chr}.{g_chunk}.{ext}", ext=["gen.gz","gen_info","gen_info_by_sample","gen_samples","gen_summary","gen_warnings"])
+		expand(output_folder+"/05.imputed/{{chr}}/{{chr}}.{{g_chunk}}.{ext}", ext=["gen.gz","gen_info","gen_info_by_sample","gen_samples","gen_summary","gen_warnings"])
 	input:
 		ref_hap=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".hap.gz",
 		ref_legend=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".legend.gz",
