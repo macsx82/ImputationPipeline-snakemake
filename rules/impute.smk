@@ -35,7 +35,8 @@ rule impute:
 		ref_legend=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".legend.gz",
 		study_geno=rules.phase.output[0],
 		study_samples=rules.phase.output[1],
-		interval_file=rules.chunkGenerator.output
+		# interval_file=rules.chunkGenerator.output
+		interval=get_imputation_interval(rules.chunkGenerator.output)
 	threads:
 		config["rules"]["impute"]["threads"]
 	resources:
@@ -47,13 +48,13 @@ rule impute:
 		burnin=config['rules']['impute']['burnin'],
 		k_hap=config['rules']['impute']['k_hap'],
 		buffer_size=config['rules']['impute']['buffer_size'],
-		interval=get_imputation_interval('{input.interval_file}'),
+		# interval=get_imputation_interval('{input.interval_file}'),
 		impute_options=config['rules']['impute']['options'],
 		gen_map=config['paths']['genetic_map_path']+"/genetic_map_chr{chr}_combined_b37.txt",
 		chrx_str=''
 	shell:
 		"""
-		{params.impute} {params.impute_options} -m {params.gen_map} -h {input.ref_hap} -l {input.ref_legend} -known_haps_g {input.study_geno} -sample_g {input.study_samples} $extra_str -iter {params.iterations} -burnin {params.burnin} -k_hap {params.k_hap} -int {params.interval} -Ne {params.ne} -buffer {params.buffer_size} -o {output[0]} {params.chrx_str}
+		{params.impute} {params.impute_options} -m {params.gen_map} -h {input.ref_hap} -l {input.ref_legend} -known_haps_g {input.study_geno} -sample_g {input.study_samples} $extra_str -iter {params.iterations} -burnin {params.burnin} -k_hap {params.k_hap} -int {input.interval} -Ne {params.ne} -buffer {params.buffer_size} -o {output[0]} {params.chrx_str}
 		"""
 
 # this rule is used to gzip the resulting gen files. we decided to not include this step in the previous rule to maximize parallelisation
