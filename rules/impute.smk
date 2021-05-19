@@ -47,7 +47,7 @@ rule impute:
 		burnin=config['rules']['impute']['burnin'],
 		k_hap=config['rules']['impute']['k_hap'],
 		buffer_size=config['rules']['impute']['buffer_size'],
-		interval=get_imputation_interval(input.interval_file),
+		interval=get_imputation_interval('{input.interval_file}'),
 		impute_options=config['rules']['impute']['options'],
 		gen_map=config['paths']['genetic_map_path']+"/genetic_map_chr{chr}_combined_b37.txt",
 		chrx_str=''
