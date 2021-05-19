@@ -55,6 +55,7 @@ def get_chunk_num(legend,chunk_size):
 
 # create a dictionary with chroms and the relative chunk number extracted from the selected legend file for the imputation
 def get_chunk_by_chr(chr,legend,chunk_size):
+    import gzip
     legend_file=gzip.open(legend) if legend.endswith('.gz') else open(legend)
     all_pos=legend_file.read().splitlines()
     start=int(all_pos[1].decode().split(" ")[1])
