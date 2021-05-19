@@ -36,7 +36,7 @@ rule impute:
 		study_geno=rules.phase.output[0],
 		study_samples=rules.phase.output[1],
 		# interval_file=rules.chunkGenerator.output
-		interval=get_imputation_interval(rules.chunkGenerator.output)
+		interval=get_imputation_interval(rules.chunkGenerator.output[0])
 	threads:
 		config["rules"]["impute"]["threads"]
 	resources:
