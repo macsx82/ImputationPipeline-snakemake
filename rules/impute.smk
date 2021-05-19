@@ -2,7 +2,6 @@
 # first thing we need is to generate chunks for each chromosome
 # this rule will generate a file that will contain the interval string to be used in the imputation. we are using a method similar to the scattergather implementation
 # of snakemake, since we want to be able to run multiple chunks togethter in the next rules
-# checkpoint chunkGenerator:
 rule chunkGenerator:
 	wildcard_constraints:
 		g_chunk='\d+',
@@ -23,21 +22,44 @@ rule chunkGenerator:
 			out_file=output_folder+"/04.impute_intervals/"+chrom+"/"+chrom+"."+"{:02d}".format(chunk) +".int"
 			interval=create_chunks(input.ref_legend,params.chunk_size,chunk)
 			open(out_file,"w").write(interval)
-			# print(interval)
-			# print(out_file)
-			# open(out_file, 'a').close()
-			# create_chunks(params.ref_legend,params.chunk_size,chunk) > output_folder+"/04.impute_intervals/{chr}..int"
 
-# rule impute:
+# rule to run imputation for each chunk
+rule impute:
+	output:
+		expand(output_folder+"/05.imputed/{chr}/{chr}.{g_chunk}.{ext}", ext=["gen.gz","gen_info","gen_info_by_sample","gen_samples","gen_summary","gen_warnings"])
+	input:
+		ref_hap=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".hap.gz",
+		ref_legend=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".legend.gz",
+		study_geno=rules.phase.output[0],
+		study_samples=rules.phase.output[1],
+		interval_file=rules.chunkGenerator.output
+	threads:
+		config["rules"]["impute"]["threads"]
+	resources:
+		mem_mb=config["rules"]["mark_dup"]["mem"]
+	params:
+		impute=config['tools']['impute'],
+		ne=config['rules']['impute']['ne'],
+		iterations=config['rules']['impute']['iter'],
+		burnin=config['rules']['impute']['burnin'],
+		k_hap=config['rules']['impute']['k_hap'],
+		buffer_size=config['rules']['impute']['buffer_size'],
+		interval=get_imputation_interval(input.interval_file),
+		impute_options=config['rules']['impute']['options'],
+		gen_map=config['paths']['genetic_map_path']+"/genetic_map_chr{chr}_combined_b37.txt",
+		chrx_str=''
+	shell:
+	"""
+	{params.impute} {params.impute_options} -m {params.gen_map} -h {input.ref_hap} -l {input.ref_legend} -known_haps_g {input.study_geno} -sample_g {input.study_samples} $extra_str -iter {params.iterations} -burnin {params.burnin} -k_hap {params.k_hap} -int {params.interval} -Ne {params.ne} -buffer {params.buffer_size} -o {output[0]} {params.chrx_str}
+	"""
+
+# this rule is used to gzip the resulting gen files. we decided to not include this step in the previous rule to maximize parallelisation
+# but we need to be sure we will have enough disk space
+# rule genGzip:
 # 	output:
-# 		pippo=output_folder+"/04.impute_intervals/{chr}/{chr}.{g_chunk}.pippo"
 # 	input:
-# 		output_folder+"/04.impute_intervals/{chr}/{chr}.{g_chunk}.int"
-# 	run:
-# 		pippo = pathlib.Path(output.pippo)
-# 		pippo.parent.mkdir(exist_ok=True)
-# 		pippo.touch()
-
+# 	params:
+# 	shell:
 
 # let "chunk_num=($chr_end - $chr_begin)/$chunk_size" # bash rounds automatically
 # if [[ $chunk_num <1 ]]; then

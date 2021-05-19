@@ -28,6 +28,7 @@ rules:
     burnin: 20
     buffer_size: 250
     chunk_size: 3000000
+    options: '-allow_large_regions -use_prephased_g -o_gz '
 
 tools:
   shapeit: "/share/apps/bio/bin/shapeit"

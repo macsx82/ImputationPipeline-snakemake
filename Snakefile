@@ -30,7 +30,7 @@ chunked={}
 for chrom in chrs:
     legend_file="%s/%s/%s/%s.%s.legend.gz" % (ref_panel_base_folder,ref_panel,chrom,chrom,ref_panel)
     chunked[chrom]=get_chunk_by_chr(chrom,legend_file,chunk_size)
-print(chunked)
+# print(chunked)
 #define parameter useful to cluster job submission
 localrules: all
 
@@ -50,7 +50,8 @@ rule all:
         # expand(output_folder+ "/03.phased_data/" + ref_panel + "/chr{chr}.{ext}" , ext=["haps.gz","sample"], chr=chrs)
         # expand(output_folder+"/04.impute_intervals/{chr}/{chr}.{g_chunk}.int",chr=chrs,g_chunk=list(range(1,11)))
         # expand(output_folder+"/04.impute_intervals/{chrom}/{chrom}.{{g_chunk}}.pippo",chrom=chrs)
-        [ "%s/04.impute_intervals/%s/%s.%s.int" % (output_folder,key,key,value) for key, value in chunked.items()]
+        # [ "%s/04.impute_intervals/%s/%s.%s.int" % (output_folder,key,key,value) for key, value in chunked.items()]
+        [ expand(output_folder+"/05.imputed/{chr}/{chr}.{g_chunk}.{ext}", ext=["gen.gz","gen_info","gen_info_by_sample","gen_samples","gen_summary","gen_warnings"], chr=key, g_chunk=value) for key, value in chunked.items()] 
         # [ output_folder+"/04.impute_intervals/{key}/{key}.{value}.int" for key, value in chunked.items()]
         # directory(expand(output_folder+"/04.impute_intervals/{chr}/",chr=chrs))
         # expand(output_folder+"/04.impute_intervals/{chr}/{chr}.{{g_chunk}}.pippo",chr=chrs)

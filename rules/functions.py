@@ -63,6 +63,12 @@ def get_chunk_by_chr(chr,legend,chunk_size):
     chunk_num=round((end-start+1)/chunk_size)
     return chunk_num
 
+def get_imputation_interval(interval_file):
+    import gzip
+    interval=gzip.open(interval_file) if interval_file.endswith('.gz') else open(interval_file)
+    interval_coord=interval.readlines()[0]
+    return interval_coord
+
 def create_chunks(legend,chunk_size,chunk):
     # import gzip
     # get start and end of the chromosome
