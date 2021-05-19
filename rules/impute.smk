@@ -39,7 +39,7 @@ rule impute:
 	threads:
 		config["rules"]["impute"]["threads"]
 	resources:
-		mem_mb=config["rules"]["mark_dup"]["mem"]
+		mem_mb=config["rules"]["impute"]["mem"]
 	params:
 		impute=config['tools']['impute'],
 		ne=config['rules']['impute']['ne'],

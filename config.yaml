@@ -29,6 +29,8 @@ rules:
     buffer_size: 250
     chunk_size: 3000000
     options: '-allow_large_regions -use_prephased_g -o_gz '
+    mem: 15000 #default to 15Gb
+    threads: 1 #in impute2 his parameter is not used, maybe in following versions
 
 tools:
   shapeit: "/share/apps/bio/bin/shapeit"
