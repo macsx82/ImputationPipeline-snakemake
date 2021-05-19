@@ -53,10 +53,11 @@ rule impute:
 		# interval=get_imputation_interval('{input.interval_file}'),
 		impute_options=config['rules']['impute']['options'],
 		gen_map=config['paths']['genetic_map_path']+"/genetic_map_chr{chr}_combined_b37.txt",
+		out_prefix=output_folder+"/05.imputed/{chr}/{chr}.{g_chunk}.gen",
 		chrx_str=''
 	shell:
 		"""
-		{params.impute} {params.impute_options} -m {params.gen_map} -h {input.ref_hap} -l {input.ref_legend} -known_haps_g {input.study_geno} -sample_g {input.study_samples} -iter {params.iterations} -burnin {params.burnin} -k_hap {params.k_hap} -int {params.interval} -Ne {params.ne} -buffer {params.buffer_size} -o {output[0]} {params.chrx_str}
+		{params.impute} {params.impute_options} -m {params.gen_map} -h {input.ref_hap} -l {input.ref_legend} -known_haps_g {input.study_geno} -sample_g {input.study_samples} -iter {params.iterations} -burnin {params.burnin} -k_hap {params.k_hap} -int {params.interval} -Ne {params.ne} -buffer {params.buffer_size} -o {params.out_prefix} {params.chrx_str}
 		"""
 
 # this rule is used to gzip the resulting gen files. we decided to not include this step in the previous rule to maximize parallelisation
