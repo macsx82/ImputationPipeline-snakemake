@@ -9,5 +9,10 @@
     "phase":
     {
         "mem": "8G"
+    },
+    "impute":
+    {
+        "mem": "15G"
     }
+       
 }
