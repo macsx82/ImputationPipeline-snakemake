@@ -40,6 +40,8 @@ rule impute:
 		config["rules"]["impute"]["threads"]
 	resources:
 		mem_mb=config["rules"]["impute"]["mem"]
+	benchmark:
+		output_folder+"/benchmarks/{chr}.{g_chunk}.impute_rule.tsv"
 	params:
 		impute=config['tools']['impute'],
 		ne=config['rules']['impute']['ne'],
