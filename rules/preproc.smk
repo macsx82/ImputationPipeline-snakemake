@@ -108,3 +108,32 @@ rule snpFlip:
             exit 0
         fi
         """
+# convert to vcf file format to use SHAPEIT4
+rule plink2vcf:
+    output:
+        output_folder + "/02.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_flipped.vcf.gz",
+        output_folder + "/02.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_flipped.vcf.tbi"
+        # strand_rsid=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_rsids.to_flip"
+    input:
+        rules.snpFlip.output[0],
+        rules.snpFlip.output[1],
+        rules.snpFlip.output[2]
+    params:
+        bfiles_flipped_prefix=output_folder+"/02.flipped_input/"+ ref_panel + "/" + cohort_name+"_{chr}_flipped",
+        plink=config['tools']['plink']
+    shell:
+        """
+        set +e
+        #we need this file and it could be empty, so we will touch it!
+        {params.plink} --bfile {params.bfiles_flipped_prefix} --recode vcf-iid bgz --out {output[0]}
+        tabix -p vcf {output[0]}
+        exitcode=$?
+        if [ $exitcode -eq 0 ]
+        then
+            echo "No error found..exiting correctly"
+            exit 0
+        else
+            echo "WARNING....The software raised some errors or warning, be careful and check the results. (EXIT CODE ${{exitcode}})"
+            exit 0
+        fi
+        """
