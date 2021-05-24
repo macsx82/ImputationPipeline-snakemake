@@ -112,7 +112,7 @@ rule snpFlip:
 rule plink2vcf:
     output:
         output_folder + "/02.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_flipped.vcf.gz",
-        output_folder + "/02.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_flipped.vcf.tbi"
+        output_folder + "/02.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_flipped.vcf.gz.tbi"
         # strand_rsid=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_rsids.to_flip"
     input:
         rules.snpFlip.output[0],
