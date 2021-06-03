@@ -75,7 +75,7 @@ rule allFix:
     shell:
         """
         {params.plink} --bfile {params.bfiles_prefix} --a2-allele {params.update_a2_str} --make-bed --out {params.bfiles_prefix_a1}
-        {params.plink} --bfile {params.params.bfiles_prefix_a1} --keep-allele-order --a1-allele {params.update_a1_str} --make-bed --out {params.bfiles_allFix_prefix}
+        {params.plink} --bfile {params.bfiles_prefix_a1} --keep-allele-order --a1-allele {params.update_a1_str} --make-bed --out {params.bfiles_allFix_prefix}
         """
 
 rule snpCheck:
