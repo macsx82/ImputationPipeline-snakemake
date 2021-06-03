@@ -49,6 +49,29 @@ rule plinkSplit:
             cmd="%s --file %s --chr %s --make-bed --out %s_%s" % (params.plink,params.i_prefix,chr,params.output_prefix,chr)
             shell(cmd)
 
+# Update allele positions and chromosomes using 1000G data
+rule mapUpdateTGP:
+    output:
+        output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_mapUpdateTGP.bim",
+        output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_mapUpdateTGP.bed",
+        output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_mapUpdateTGP.fam",
+    input:
+        # rules.snpFlip.output[0],
+        # rules.snpFlip.output[1],
+        # rules.snpFlip.output[2]
+        ug_bed=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.bed",
+        ug_bim=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.bim",
+        ug_fam=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.fam"
+    params:
+        bfiles_prefix=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}",
+        bfiles_out_prefix=output_folder+"/00.splitted_input/"+ ref_panel + "/" + cohort_name+"_{chr}_mapUpdateTGP",
+        plink=config['tools']['plink'],
+        update_chr_str=config['paths']['allele_recode_file']+" 1 3 '#'",
+        update_map_str=config['paths']['allele_recode_file']+" 2 3 '#'"
+    shell:
+        """
+        {params.plink} --bfile {params.bfiles_prefix} --update-chr {params.update_chr_str} --update-map {params.update_map_str} --make-bed --out {params.bfiles_out_prefix}
+        """
 
 # align aleles to 1000G data and retrieve alleles names removed because monomorphic
 rule allFix:
@@ -60,14 +83,15 @@ rule allFix:
         temp(output_folder + "/00.splitted_input/"+cohort_name+"_{chr}_a1.bed"),
         temp(output_folder + "/00.splitted_input/"+cohort_name+"_{chr}_a1.fam")
     input:
-        # rules.snpFlip.output[0],
-        # rules.snpFlip.output[1],
-        # rules.snpFlip.output[2]
-        ug_bed=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.bed",
-        ug_bim=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.bim",
-        ug_fam=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.fam"
+        rules.mapUpdateTGP.output[0],
+        rules.mapUpdateTGP.output[1],
+        rules.mapUpdateTGP.output[2]
+        # ug_bed=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.bed",
+        # ug_bim=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.bim",
+        # ug_fam=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.fam"
     params:
-        bfiles_prefix=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}",
+        # bfiles_prefix=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}",
+        bfiles_prefix=output_folder+"/00.splitted_input/"+ ref_panel + "/" + cohort_name+"_{chr}_mapUpdateTGP",
         bfiles_prefix_a1=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}_a1",
         bfiles_allFix_prefix=output_folder+"/00.splitted_input/"+ ref_panel + "/" + cohort_name+"_{chr}_allFix",
         plink=config['tools']['plink'],

@@ -46,3 +46,24 @@ snakemake -s ~/scripts/pipelines/ImputationPipeline-snakemake/Snakefile -p -r --
 # echo "snakemake -s ~/scripts/pipelines/ImputationPipeline-snakemake/Snakefile -p -r --configfile /home/cocca/analyses/test_imputation/config_test_2.yaml --cores 32 " | qsub -N test_imputation -o ./
 ```
 
+---
+#3/6/2021
+
+We needed to create a resource for allele check and alignment.
+We used version 154 of dbSNP.
+
+```bash
+for chr in {1..22} X Y MT
+do
+echo "bcftools view -m2 -M2 /netapp/nfs/resources/dbSNP/human_9606_b154_GRCh37p13/VCF/GCF_000001405.25.chr${chr}.vcf.gz |bcftools query -f'%CHROM\t%POS\t%ID\t%REF\t%ALT\n' > /netapp/nfs/resources/dbSNP/human_9606_b154_GRCh37p13/VCF/GCF_000001405.25.chr${chr}.dbSNP154.tab" | qsub -N get_${chr}_data -V -cwd -l h_vmem=15G -q fast
+done
+```
+
+Merge in a single table
+
+```bash
+(for chr in {1..22} X Y MT
+do
+cat /netapp/nfs/resources/dbSNP/human_9606_b154_GRCh37p13/VCF/GCF_000001405.25.chr${chr}.dbSNP154.tab
+done) > /netapp/nfs/resources/dbSNP/human_9606_b154_GRCh37p13/GCF_000001405.25.dbSNP154.tab
+```
