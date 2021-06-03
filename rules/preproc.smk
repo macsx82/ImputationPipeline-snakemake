@@ -22,7 +22,7 @@ rule indelsRemove:
         i_prefix=input_prefix,
         plink=config['tools']['plink']
     run:
-        cmd="%s --file %s --snps-only 'just-acgt' --make-bed --out %s" % (params.plink,params.i_prefix,params.output_prefix)
+        cmd="%s --file %s --snps-only 'just-acgt' --recode --out %s" % (params.plink,params.i_prefix,params.output_prefix)
         shell(cmd)
 
 rule plinkSplit:
