@@ -11,8 +11,8 @@
 # We want to remove indels from plink files, since we cannot update alleles in a consistent way, at the mment (will be a feature for next release)
 rule indelsRemove:
     output:
-        temp(o_ped=output_folder+"/00.splitted_input/"+cohort_name+"_snps_only.ped"),
-        temp(o_map=output_folder+"/00.splitted_input/"+cohort_name+"_snps_only.map")
+        o_ped=temp(output_folder+"/00.splitted_input/"+cohort_name+"_snps_only.ped"),
+        o_map=temp(output_folder+"/00.splitted_input/"+cohort_name+"_snps_only.map")
         # o_fam=scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".fam")
     input:
         expand(input_prefix+".{ext}", ext=['map','ped'])
