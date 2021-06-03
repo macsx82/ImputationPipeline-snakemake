@@ -32,8 +32,8 @@ rule plinkSplit:
         # o_bim=scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".bim"),
         # o_fam=scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".fam")
     input:
-        rules.indelsRemove.o_ped,
-        rules.indelsRemove.o_map
+        rules.indelsRemove.output[0],
+        rules.indelsRemove.output[1]
         # expand(input_prefix+".{ext}", ext=['map','ped'])
     params:
         # scatter_chr= lambda w, output : re.search('(\d+-of-\d+)',output[0]).group(1).split('-of-')[0] ,
