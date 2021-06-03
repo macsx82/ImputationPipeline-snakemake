@@ -49,15 +49,16 @@ rule plinkSplit:
             cmd="%s --file %s --chr %s --make-bed --out %s_%s" % (params.plink,params.i_prefix,chr,params.output_prefix,chr)
             shell(cmd)
 
+
 # align aleles to 1000G data and retrieve alleles names removed because monomorphic
 rule allFix:
     output:
         output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix.bim",
         output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix.bed",
         output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix.fam",
-        temp(output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix_a1.bim"),
-        temp(output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix_a1.bed"),
-        temp(output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix_a1.fam")
+        temp(output_folder + "/00.splitted_input/"+cohort_name+"_{chr}_a1.bim"),
+        temp(output_folder + "/00.splitted_input/"+cohort_name+"_{chr}_a1.bed"),
+        temp(output_folder + "/00.splitted_input/"+cohort_name+"_{chr}_a1.fam")
     input:
         # rules.snpFlip.output[0],
         # rules.snpFlip.output[1],
