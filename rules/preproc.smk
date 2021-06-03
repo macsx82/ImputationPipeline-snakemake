@@ -25,6 +25,34 @@ rule indelsRemove:
         cmd="%s --file %s --snps-only 'just-acgt' --recode --out %s" % (params.plink,params.i_prefix,params.output_prefix)
         shell(cmd)
 
+# Update allele positions and chromosomes using 1000G data. We need to apply this one BEFORE splitting the data by chr, since we will have chr and positions moving around
+rule mapUpdateExt:
+    output:
+        o_ped=temp(output_folder+"/00.splitted_input/"+cohort_name+"_snps_only_mapUpdateExt.ped"),
+        o_map=temp(output_folder+"/00.splitted_input/"+cohort_name+"_snps_only_mapUpdateExt.map")
+        # output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_mapUpdateTGP.bim",
+        # output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_mapUpdateTGP.bed",
+        # output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_mapUpdateTGP.fam",
+    input:
+        rules.indelsRemove.output[0],
+        rules.indelsRemove.output[1]
+        # rules.snpFlip.output[2]
+        # ug_bed=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.bed",
+        # ug_bim=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.bim",
+        # ug_fam=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.fam"
+    params:
+        i_prefix=output_folder+"/00.splitted_input/"+cohort_name+"_snps_only",
+        # bfiles_prefix=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}",
+        # bfiles_out_prefix=output_folder+"/00.splitted_input/"+ ref_panel + "/" + cohort_name+"_{chr}_mapUpdateTGP",
+        bfiles_out_prefix=output_folder+"/00.splitted_input/"+cohort_name+"_snps_only_mapUpdateExt",
+        plink=config['tools']['plink'],
+        update_chr_str=config['paths']['allele_recode_file']+" 1 3 '#'",
+        update_map_str=config['paths']['allele_recode_file']+" 2 3 '#'"
+    shell:
+        """
+        {params.plink} --file {params.i_prefix} --update-chr {params.update_chr_str} --update-map {params.update_map_str} --make-bed --out {params.bfiles_out_prefix}
+        """
+
 rule plinkSplit:
     output:
         expand(output_folder+"/00.splitted_input/"+cohort_name+"_{chr}.{ext}", ext=['bed','bim','fam'],chr=chrs)
@@ -32,14 +60,15 @@ rule plinkSplit:
         # o_bim=scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".bim"),
         # o_fam=scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".fam")
     input:
-        rules.indelsRemove.output[0],
-        rules.indelsRemove.output[1]
+        rules.mapUpdateExt.output[0],
+        rules.mapUpdateExt.output[1]
         # expand(input_prefix+".{ext}", ext=['map','ped'])
     params:
         # scatter_chr= lambda w, output : re.search('(\d+-of-\d+)',output[0]).group(1).split('-of-')[0] ,
         # i_prefix=input_prefix,
         output_prefix=output_folder+"/00.splitted_input/"+cohort_name,
-        i_prefix=output_folder+"/00.splitted_input/"+cohort_name+"_snps_only",
+        # i_prefix=output_folder+"/00.splitted_input/"+cohort_name+"_snps_only",
+        i_prefix=output_folder+"/00.splitted_input/"+cohort_name+"_snps_only_mapUpdateExt",
         plink=config['tools']['plink']
     # log:
     #     stdout=log_folder+"/plinkSplit_{scatteritem}.stdout",
@@ -49,29 +78,6 @@ rule plinkSplit:
             cmd="%s --file %s --chr %s --make-bed --out %s_%s" % (params.plink,params.i_prefix,chr,params.output_prefix,chr)
             shell(cmd)
 
-# Update allele positions and chromosomes using 1000G data
-rule mapUpdateTGP:
-    output:
-        output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_mapUpdateTGP.bim",
-        output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_mapUpdateTGP.bed",
-        output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_mapUpdateTGP.fam",
-    input:
-        # rules.snpFlip.output[0],
-        # rules.snpFlip.output[1],
-        # rules.snpFlip.output[2]
-        ug_bed=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.bed",
-        ug_bim=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.bim",
-        ug_fam=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.fam"
-    params:
-        bfiles_prefix=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}",
-        bfiles_out_prefix=output_folder+"/00.splitted_input/"+ ref_panel + "/" + cohort_name+"_{chr}_mapUpdateTGP",
-        plink=config['tools']['plink'],
-        update_chr_str=config['paths']['allele_recode_file']+" 1 3 '#'",
-        update_map_str=config['paths']['allele_recode_file']+" 2 3 '#'"
-    shell:
-        """
-        {params.plink} --bfile {params.bfiles_prefix} --update-chr {params.update_chr_str} --update-map {params.update_map_str} --make-bed --out {params.bfiles_out_prefix}
-        """
 
 # align aleles to 1000G data and retrieve alleles names removed because monomorphic
 rule allFix:
@@ -83,15 +89,15 @@ rule allFix:
         temp(output_folder + "/00.splitted_input/"+cohort_name+"_{chr}_a1.bed"),
         temp(output_folder + "/00.splitted_input/"+cohort_name+"_{chr}_a1.fam")
     input:
-        rules.mapUpdateTGP.output[0],
-        rules.mapUpdateTGP.output[1],
-        rules.mapUpdateTGP.output[2]
+        rules.plinkSplit.output[0],
+        rules.plinkSplit.output[1],
+        rules.plinkSplit.output[2]
         # ug_bed=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.bed",
         # ug_bim=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.bim",
         # ug_fam=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.fam"
     params:
-        # bfiles_prefix=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}",
-        bfiles_prefix=output_folder+"/00.splitted_input/"+ ref_panel + "/" + cohort_name+"_{chr}_mapUpdateTGP",
+        # bfiles_prefix=output_folder+"/00.splitted_input/"+ ref_panel + "/" + cohort_name+"_{chr}_mapUpdateTGP",
+        bfiles_prefix=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}",
         bfiles_prefix_a1=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}_a1",
         bfiles_allFix_prefix=output_folder+"/00.splitted_input/"+ ref_panel + "/" + cohort_name+"_{chr}_allFix",
         plink=config['tools']['plink'],
