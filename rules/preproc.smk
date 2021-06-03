@@ -54,7 +54,10 @@ rule allFix:
     output:
         output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix.bim",
         output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix.bed",
-        output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix.fam"
+        output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix.fam",
+        temp(output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix_a1.bim"),
+        temp(output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix_a1.bed"),
+        temp(output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix_a1.fam")
     input:
         # rules.snpFlip.output[0],
         # rules.snpFlip.output[1],
@@ -64,13 +67,15 @@ rule allFix:
         ug_fam=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.fam"
     params:
         bfiles_prefix=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}",
+        bfiles_prefix_a1=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}_a1",
         bfiles_allFix_prefix=output_folder+"/00.splitted_input/"+ ref_panel + "/" + cohort_name+"_{chr}_allFix",
         plink=config['tools']['plink'],
         update_a1_str=config['paths']['allele_recode_file']+" 5 3 '#'",
         update_a2_str=config['paths']['allele_recode_file']+" 4 3 '#'"
     shell:
         """
-        {params.plink} --bfile {params.bfiles_prefix} --a1-allele {params.update_a1_str} --a2-allele {params.update_a2_str} --make-bed --out {params.bfiles_allFix_prefix}
+        {params.plink} --bfile {params.bfiles_prefix} --a2-allele {params.update_a2_str} --make-bed --out {params.bfiles_allFix_prefix_a1}
+        {params.plink} --bfile {params.params.bfiles_allFix_prefix_a1} --keep-allele-order --a1-allele {params.update_a1_str} --make-bed --out {params.bfiles_allFix_prefix}
         """
 
 rule snpCheck:
