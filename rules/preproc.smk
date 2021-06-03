@@ -50,7 +50,7 @@ rule mapUpdateExt:
         update_map_str=config['paths']['allele_recode_file']+" 2 3 '#'"
     shell:
         """
-        {params.plink} --file {params.i_prefix} --update-chr {params.update_chr_str} --update-map {params.update_map_str} --make-bed --out {params.bfiles_out_prefix}
+        {params.plink} --file {params.i_prefix} --update-chr {params.update_chr_str} --update-map {params.update_map_str} --recode --out {params.bfiles_out_prefix}
         """
 
 rule plinkSplit:
@@ -209,7 +209,7 @@ rule plink2vcf:
         """
         set +e
         #we need this file and it could be empty, so we will touch it!
-        {params.plink} --bfile {params.bfiles_allFix_prefix} --recode vcf-iid bgz --out {params.vcf_flipped_prefix}
+        {params.plink} --bfile {params.bfiles_allFix_prefix} --keep-allele-order --recode vcf-iid bgz --out {params.vcf_flipped_prefix}
         tabix -p vcf {output[0]}
         exitcode=$?
         if [ $exitcode -eq 0 ]
