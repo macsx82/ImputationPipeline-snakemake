@@ -66,8 +66,8 @@ rule allFix:
         bfiles_prefix=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}",
         bfiles_allFix_prefix=output_folder+"/00.splitted_input/"+ ref_panel + "/" + cohort_name+"_{chr}_allFix",
         plink=config['tools']['plink'],
-        update_a1_str=config['path']['allele_recode_file']+" 5 3 '#'",
-        update_a2_str=config['path']['allele_recode_file']+" 4 3 '#'"
+        update_a1_str=config['paths']['allele_recode_file']+" 5 3 '#'",
+        update_a2_str=config['paths']['allele_recode_file']+" 4 3 '#'"
     shell:
         """
         {params.plink} --bfile {params.bfiles_prefix} --a1-allele {params.update_a1_str} --a2-allele {params.update_a2_str} --make-bed --out {params.bfiles_allFix_prefix}
