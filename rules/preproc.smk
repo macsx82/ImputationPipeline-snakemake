@@ -141,7 +141,7 @@ rule allFix:
         bfiles_flipped_prefix=output_folder+"/02.flipped_input/"+ ref_panel + "/" + cohort_name+"_{chr}_flipped",
         bfiles_allFix_prefix=output_folder+"/02.flipped_input/"+ ref_panel + "/" + cohort_name+"_{chr}_flipped_allFix",
         plink=config['tools']['plink'],
-        update_a1_str=config['path']['allele_recode_file']+" 5 3 '#'"
+        update_a1_str=config['path']['allele_recode_file']+" 5 3 '#'",
         update_a2_str=config['path']['allele_recode_file']+" 4 3 '#'"
     shell:
         """
