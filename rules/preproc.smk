@@ -160,14 +160,14 @@ rule plink2vcf:
         rules.allFix.output[1],
         rules.allFix.output[2]
     params:
-        bfiles_flipped_prefix=output_folder+"/02.flipped_input/"+ ref_panel + "/" + cohort_name+"_{chr}_flipped",
-        vcf_flipped_prefix=
+        bfiles_allFix_prefix=output_folder+"/02.flipped_input/"+ ref_panel + "/" + cohort_name+"_{chr}_flipped_allFix",
+        vcf_flipped_prefix=output_folder + "/02.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_flipped_allFix",
         plink=config['tools']['plink']
     shell:
         """
         set +e
         #we need this file and it could be empty, so we will touch it!
-        {params.plink} --bfile {params.bfiles_flipped_prefix} --recode vcf-iid bgz --out {output[0]}
+        {params.plink} --bfile {params.bfiles_allFix_prefix} --recode vcf-iid bgz --out {params.vcf_flipped_prefix}
         tabix -p vcf {output[0]}
         exitcode=$?
         if [ $exitcode -eq 0 ]
