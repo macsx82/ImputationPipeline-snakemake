@@ -32,6 +32,13 @@ rules:
     options: '-allow_large_regions -use_prephased_g -o_gz'
     mem: 15000 #default to 15Gb
     threads: 1 #in impute2 his parameter is not used, maybe in following versions
+  indelsRemove:
+  plinkSplit:
+  snpCheck:
+  snpFlipFile:
+  snpFlip:
+  allFix:
+  plink2vcf:
 
 tools:
   shapeit: "/share/apps/bio/bin/shapeit"
