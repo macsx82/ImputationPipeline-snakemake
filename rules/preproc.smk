@@ -28,8 +28,9 @@ rule indelsRemove:
 # Update allele positions and chromosomes using 1000G data. We need to apply this one BEFORE splitting the data by chr, since we will have chr and positions moving around
 rule mapUpdateExt:
     output:
-        o_ped=temp(output_folder+"/00.splitted_input/"+cohort_name+"_snps_only_mapUpdateExt.ped"),
-        o_map=temp(output_folder+"/00.splitted_input/"+cohort_name+"_snps_only_mapUpdateExt.map")
+        o_bim=temp(output_folder+"/00.splitted_input/"+cohort_name+"_snps_only_mapUpdateExt.bim"),
+        o_bed=temp(output_folder+"/00.splitted_input/"+cohort_name+"_snps_only_mapUpdateExt.bed"),
+        o_fam=temp(output_folder+"/00.splitted_input/"+cohort_name+"_snps_only_mapUpdateExt.fam"),
         # output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_mapUpdateTGP.bim",
         # output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_mapUpdateTGP.bed",
         # output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_mapUpdateTGP.fam",
@@ -50,7 +51,7 @@ rule mapUpdateExt:
         update_map_str=config['paths']['allele_recode_file']+" 2 3 '#'"
     shell:
         """
-        {params.plink} --file {params.i_prefix} --update-chr {params.update_chr_str} --update-map {params.update_map_str} --recode --out {params.bfiles_out_prefix}
+        {params.plink} --file {params.i_prefix} --update-chr {params.update_chr_str} --update-map {params.update_map_str} --make-bed --out {params.bfiles_out_prefix}
         """
 
 rule plinkSplit:
@@ -61,7 +62,8 @@ rule plinkSplit:
         # o_fam=scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".fam")
     input:
         rules.mapUpdateExt.output[0],
-        rules.mapUpdateExt.output[1]
+        rules.mapUpdateExt.output[1],
+        rules.mapUpdateExt.output[2],
         # expand(input_prefix+".{ext}", ext=['map','ped'])
     params:
         # scatter_chr= lambda w, output : re.search('(\d+-of-\d+)',output[0]).group(1).split('-of-')[0] ,
@@ -75,7 +77,7 @@ rule plinkSplit:
     #     stderr=log_folder+"/plinkSplit_{scatteritem}.stderr"
     run:
         for chr in chrs:
-            cmd="%s --file %s --chr %s --make-bed --out %s_%s" % (params.plink,params.i_prefix,chr,params.output_prefix,chr)
+            cmd="%s --bfile %s --chr %s --make-bed --out %s_%s" % (params.plink,params.i_prefix,chr,params.output_prefix,chr)
             shell(cmd)
 
 
