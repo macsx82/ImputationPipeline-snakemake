@@ -8,7 +8,23 @@
 # Input files will be the plink genotypes. We will get them from a config file
 ###############################################################################################
 
-# Split plink formatted input files by chromosome
+# We want to remove indels from plink files, since we cannot update alleles in a consistent way, at the mment (will be a feature for next release)
+rule indelsRemove:
+    output:
+        temp(o_ped=output_folder+"/00.splitted_input/"+cohort_name+"_snps_only.ped"),
+        temp(o_map=output_folder+"/00.splitted_input/"+cohort_name+"_snps_only.map")
+        # o_fam=scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".fam")
+    input:
+        expand(input_prefix+".{ext}", ext=['map','ped'])
+    params:
+        # scatter_chr= lambda w, output : re.search('(\d+-of-\d+)',output[0]).group(1).split('-of-')[0] ,
+        output_prefix=output_folder+"/00.splitted_input/"+cohort_name+"_snps_only",
+        i_prefix=input_prefix,
+        plink=config['tools']['plink']
+    run:
+        cmd="%s --file %s --snps-only 'just-acgt' --make-bed --out %s" % (params.plink,params.i_prefix,params.output_prefix)
+        shell(cmd)
+
 rule plinkSplit:
     output:
         expand(output_folder+"/00.splitted_input/"+cohort_name+"_{chr}.{ext}", ext=['bed','bim','fam'],chr=chrs)
@@ -16,11 +32,14 @@ rule plinkSplit:
         # o_bim=scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".bim"),
         # o_fam=scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".fam")
     input:
-        expand(input_prefix+".{ext}", ext=['map','ped'])
+        rules.indelsRemove.o_ped,
+        rules.indelsRemove.o_map
+        # expand(input_prefix+".{ext}", ext=['map','ped'])
     params:
         # scatter_chr= lambda w, output : re.search('(\d+-of-\d+)',output[0]).group(1).split('-of-')[0] ,
+        # i_prefix=input_prefix,
         output_prefix=output_folder+"/00.splitted_input/"+cohort_name,
-        i_prefix=input_prefix,
+        i_prefix=output_folder+"/00.splitted_input/"+cohort_name+"_snps_only",
         plink=config['tools']['plink']
     # log:
     #     stdout=log_folder+"/plinkSplit_{scatteritem}.stdout",
@@ -108,6 +127,28 @@ rule snpFlip:
             exit 0
         fi
         """
+
+rule allFix:
+    output:
+        output_folder + "/02.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_flipped_allFix.bim",
+        output_folder + "/02.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_flipped_allFix.bed",
+        output_folder + "/02.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_flipped_allFix.fam"
+    input:
+        rules.snpFlip.output[0],
+        rules.snpFlip.output[1],
+        rules.snpFlip.output[2]
+    params:
+        bfiles_flipped_prefix=output_folder+"/02.flipped_input/"+ ref_panel + "/" + cohort_name+"_{chr}_flipped",
+        bfiles_allFix_prefix=output_folder+"/02.flipped_input/"+ ref_panel + "/" + cohort_name+"_{chr}_flipped_allFix",
+        plink=config['tools']['plink'],
+        update_a1_str=config['path']['allele_recode_file']+" 5 3 '#'"
+        update_a2_str=config['path']['allele_recode_file']+" 4 3 '#'"
+    shell:
+        """
+        {params.plink} --file {params.flipped_prefix} --a1-allele {params.update_a1_str} --a2-allele {params.update_a2_str} --make-bed --out {params.bfiles_allFix_prefix}
+        """
+
+
 # convert to vcf file format to use SHAPEIT4
 rule plink2vcf:
     output:
@@ -115,11 +156,12 @@ rule plink2vcf:
         output_folder + "/02.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_flipped.vcf.gz.tbi"
         # strand_rsid=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_rsids.to_flip"
     input:
-        rules.snpFlip.output[0],
-        rules.snpFlip.output[1],
-        rules.snpFlip.output[2]
+        rules.allFix.output[0],
+        rules.allFix.output[1],
+        rules.allFix.output[2]
     params:
         bfiles_flipped_prefix=output_folder+"/02.flipped_input/"+ ref_panel + "/" + cohort_name+"_{chr}_flipped",
+        vcf_flipped_prefix=
         plink=config['tools']['plink']
     shell:
         """
