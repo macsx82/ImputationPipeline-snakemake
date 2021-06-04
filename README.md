@@ -50,6 +50,7 @@ snakemake -s ~/scripts/pipelines/ImputationPipeline-snakemake/Snakefile -p -r --
 #3/6/2021
 
 We needed to create a resource for allele check and alignment.
+We need to use opnl
 We used version 154 of dbSNP.
 
 ```bash
@@ -66,4 +67,54 @@ Merge in a single table
 do
 cat /netapp/nfs/resources/dbSNP/human_9606_b154_GRCh37p13/VCF/GCF_000001405.25.chr${chr}.dbSNP154.tab
 done) > /netapp/nfs/resources/dbSNP/human_9606_b154_GRCh37p13/GCF_000001405.25.dbSNP154.tab
+```
+
+---
+#4/6/2021
+
+The first step of a2 update, gives 47 warning for "Impossible A2 allele assignment".
+Working in folder ~/analyses/test_imputation/00.splitted_input.
+
+```bash
+fgrep "Impossible A2 allele assignment" *.log |cut -f 8 -d " "|sed 's/\.//g'
+```
+
+We want to see what kind of variants are those, in dbSNP data and in our data.
+
+```bash
+fgrep -w -f <(fgrep "Impossible A2 allele assignment" *.log |cut -f 8 -d " "|sed 's/\.//g') /netapp/nfs/resources/dbSNP/human_9606_b154_GRCh37p13/GCF_000001405.25.dbSNP154.tab > ../impossible_a2_assign_dbSNP.tab
+fgrep -w -f <(fgrep "Impossible A2 allele assignment" *.log |cut -f 8 -d " "|sed 's/\.//g') Slo_POP_snps_only_mapUpdateExt.bim
+```
+
+We can see that they are all flipped snps in the snp array dataset. So, actually, it is ok.
+
+We also have 458 warnings for "Impossible A1 allele assignment"
+
+```bash
+fgrep "Impossible A1 allele assignment" *.log |cut -f 8 -d " "|sed 's/\.//g'
+```
+
+We want to see what kind of variants are those, in dbSNP data and in our data.
+
+```bash
+fgrep -w -f <(fgrep "Impossible A1 allele assignment" *.log |cut -f 8 -d " "|sed 's/\.//g') /netapp/nfs/resources/dbSNP/human_9606_b154_GRCh37p13/GCF_000001405.25.dbSNP154.tab > ../../impossible_a1_assign_dbSNP.tab
+fgrep -w -f <(fgrep "Impossible A1 allele assignment" *.log |cut -f 8 -d " "|sed 's/\.//g') *.bim
+```
+
+In the menawhile, we need to rebuild the ref table with dbSNP, removing INDELs
+
+```bash
+for chr in {1..22} X Y MT
+do
+echo "bcftools view -m2 -M2 -v snps /netapp/nfs/resources/dbSNP/human_9606_b154_GRCh37p13/VCF/GCF_000001405.25.chr${chr}.vcf.gz |bcftools query -f'%CHROM\t%POS\t%ID\t%REF\t%ALT\n' > /netapp/nfs/resources/dbSNP/human_9606_b154_GRCh37p13/VCF/GCF_000001405.25.chr${chr}.dbSNP154.tab" | qsub -N get_${chr}_data -V -cwd -l h_vmem=15G -q fast
+done
+```
+
+and merge all back in a single table
+
+```bash
+(for chr in {1..22} X Y MT
+do
+cat /netapp/nfs/resources/dbSNP/human_9606_b154_GRCh37p13/VCF/GCF_000001405.25.chr${chr}.dbSNP154.tab
+done) > /netapp/nfs/resources/dbSNP/human_9606_b154_GRCh37p13/GCF_000001405.25.SNPS.dbSNP154.tab
 ```
