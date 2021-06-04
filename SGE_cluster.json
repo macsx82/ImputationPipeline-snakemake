@@ -1,7 +1,7 @@
 {
     "__default__":
     {
-        "mem": "3G",
+        "mem": "5G",
         "queue" : "fast",
         "parall_env": "smp",
         "user_mail": "massimiliano.cocca@burlo.trieste.it"
