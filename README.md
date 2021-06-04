@@ -27,6 +27,13 @@ qsub -N ${pop}_${chr}_STEP6 -m ea -M massimiliano.cocca@burlo.trieste.it -o ${ou
 
 snakemake -j 100 --cluster-config cluster.json --cluster "sbatch -A {cluster.account} --mem={cluster.mem} -t {cluster.time} -c {threads}"
 
+
+Sample command:
+
+```bash
+snakemake -s ~/scripts/pipelines/ImputationPipeline-snakemake/Snakefile -p -r --configfile /home/cocca/analyses/test_imputation_20210604/config_test_2.yaml --cores 10 --keep-going
+```
+
 ---
 #05/03/2020
 

@@ -27,6 +27,7 @@ def get_flippable(infile,outfile):
             c_to_flip=line.strip().split("\t")
             # check that we are working with snps and not indels
             if len(c_to_flip[8]) == len(c_to_flip[9]) and c_to_flip[4] != "D" and c_to_flip[4] != "I" :
+                #handle monomorphic sites
                 if c_to_flip[4] == c_to_flip[5] and (c_to_flip[4] != c_to_flip[8] and c_to_flip[4] != c_to_flip[9]):
                     flippable.append(c_to_flip[3])
                     # print(c_to_flip[3], file=open(outfile,"a"))

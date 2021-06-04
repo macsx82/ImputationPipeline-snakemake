@@ -290,8 +290,8 @@ rule snpFlip:
 # convert to vcf file format to use SHAPEIT4
 rule plink2vcf:
     output:
-        output_folder + "/03.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_flipped.vcf.gz",
-        output_folder + "/03.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_flipped.vcf.gz.tbi"
+        output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_allFix_flipped.vcf.gz",
+        output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_allFix_flipped.vcf.gz.tbi"
         # strand_rsid=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_rsids.to_flip"
     input:
         rules.snpFlip.output[0],
@@ -299,7 +299,7 @@ rule plink2vcf:
         rules.snpFlip.output[2]
     params:
         bfiles_allFix_prefix=output_folder + "/03.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix_flipped",
-        vcf_flipped_prefix=output_folder + "/03.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix_flipped",
+        vcf_flipped_prefix=output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_allFix_flipped",
         plink=config['tools']['plink']
     shell:
         """
@@ -317,3 +317,4 @@ rule plink2vcf:
             exit 0
         fi
         """
+
