@@ -97,12 +97,13 @@ def create_chunks(legend,chunk_size,chunk):
 def get_not_assigned_snps(outfile,*infile):
     import re
     rs_ids=[]
-    
     for inputfile in infile:
         c_input_file=open('%s' %(inputfile),'r')
         for line in c_input_file:
-            if re.match("Impossible A1 allele assignment",line.strip()) or re.match("Impossible A2 allele assignment",line.strip()):
-                rs_ids.append((line.strip().split("\t")[7]).replace('.',''))
+            # if (re.match("Warning: Impossible A1 allele assignment",line.strip())):
+            if (re.match("Warning: Impossible A1 allele assignment",line.strip()) or re.match("Warning: Impossible A2 allele assignment",line.strip())):
+                print(line.strip())
+                rs_ids.append((line.strip().split(" ")[7]).replace('.',''))
     unique_rs=list(set(rs_ids))
     open(outfile,"w").write("\n".join(unique_rs))
     open(outfile, 'a').close()
