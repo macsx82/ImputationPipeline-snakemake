@@ -54,6 +54,92 @@ rule mapUpdateExt:
         {params.plink} --file {params.i_prefix} --update-chr {params.update_chr_str} --update-map {params.update_map_str} --make-bed --out {params.bfiles_out_prefix}
         """
 
+# align alleles to external reference data and retrieve alleles names removed because monomorphic
+rule allFix:
+    output:
+        output_folder+"/00.splitted_input/"+ cohort_name+"_snps_only_mapUpdateExt_allFix.bim",
+        output_folder+"/00.splitted_input/"+ cohort_name+"_snps_only_mapUpdateExt_allFix.bed",
+        output_folder+"/00.splitted_input/"+ cohort_name+"_snps_only_mapUpdateExt_allFix.fam",
+        output_folder+"/00.splitted_input/"+ cohort_name+"_snps_only_mapUpdateExt_allFix.log",
+        output_folder + "/00.splitted_input/"+cohort_name+"_snps_only_mapUpdateExt_a1.bim",
+        output_folder + "/00.splitted_input/"+cohort_name+"_snps_only_mapUpdateExt_a1.bed",
+        output_folder + "/00.splitted_input/"+cohort_name+"_snps_only_mapUpdateExt_a1.fam",
+        output_folder + "/00.splitted_input/"+cohort_name+"_snps_only_mapUpdateExt_a1.log"
+    input:
+        rules.mapUpdateExt.output[0],
+        rules.mapUpdateExt.output[1],
+        rules.mapUpdateExt.output[2]
+        # rules.plinkSplit.output[0],
+        # rules.plinkSplit.output[1],
+        # rules.plinkSplit.output[2]
+        # ug_bed=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.bed",
+        # ug_bim=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.bim",
+        # ug_fam=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.fam"
+    params:
+        # bfiles_prefix=output_folder+"/00.splitted_input/"+ ref_panel + "/" + cohort_name+"_{chr}_mapUpdateTGP",
+        bfiles_prefix=output_folder+"/00.splitted_input/"+cohort_name+"_snps_only_mapUpdateExt",
+        # bfiles_prefix=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}",
+        # bfiles_prefix_a1=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}_a1",
+        # bfiles_allFix_prefix=output_folder+"/00.splitted_input/"+ ref_panel + "/" + cohort_name+"_{chr}_allFix",
+        bfiles_prefix_a1=output_folder + "/00.splitted_input/"+cohort_name+"_snps_only_mapUpdateExt_a1",
+        bfiles_allFix_prefix=output_folder+"/00.splitted_input/"+cohort_name+"_snps_only_mapUpdateExt_allFix",
+        plink=config['tools']['plink'],
+        update_a1_str=config['paths']['allele_recode_file']+" 5 3 '#'",
+        update_a2_str=config['paths']['allele_recode_file']+" 4 3 '#'"
+    shell:
+        """
+        {params.plink} --bfile {params.bfiles_prefix} --a1-allele {params.update_a1_str} --make-bed --out {params.bfiles_prefix_a1}
+        {params.plink} --bfile {params.bfiles_prefix_a1} --keep-allele-order --a2-allele {params.update_a2_str} --make-bed --out {params.bfiles_allFix_prefix}
+        """
+
+#generate a file collecting all snps raising an impossible allele assignment warning
+rule impossibleAllAssignmentFile:
+    output:
+        to_flip_rsid=output_folder+"/00.splitted_input/"+cohort_name+"_impossibleAllAssignmentFile_rsids.to_flip"
+    input:
+        rules.allFix.output[3],
+        rules.allFix.output[7]
+    run:
+        get_not_assigned_snps(output.to_flip_rsid,input[0],input[1])
+
+# flip snps recovered from the previous rule
+rule allFixSnpFlip:
+    output:
+        output_folder+"/00.splitted_input/"+ cohort_name+"_snps_only_mapUpdateExt_flipped.bim",
+        output_folder+"/00.splitted_input/"+ cohort_name+"_snps_only_mapUpdateExt_flipped.bed",
+        output_folder+"/00.splitted_input/"+ cohort_name+"_snps_only_mapUpdateExt_flipped.fam"
+        # strand_rsid=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_rsids.to_flip"
+    input:
+        rules.impossibleAllAssignmentFile.output[0],
+        # rules.plinkSplit.output[0],
+        # rules.plinkSplit.output[1],
+        # rules.plinkSplit.output[2]
+        rules.allFix.output[0],
+        rules.allFix.output[1],
+        rules.allFix.output[2]
+    params:
+        bfiles_prefix=output_folder+"/00.splitted_input/"+cohort_name+"_snps_only_mapUpdateExt"
+        # bfiles_prefix=output_folder+"/00.splitted_input/"+ ref_panel + "/" + cohort_name+"_{chr}_allFix",
+        bfiles_flipped_prefix=output_folder+"/00.splitted_input/"+ cohort_name+"_snps_only_mapUpdateExt_flipped",
+        plink=config['tools']['plink']
+    shell:
+        """
+        set +e
+        #we need this file and it could be empty, so we will touch it!
+        # touch {input[0]}
+        {params.plink} --bfile {params.bfiles_prefix} --flip {input[0]} --keep-allele-order --make-bed --out {params.bfiles_flipped_prefix}
+        exitcode=$?
+        if [ $exitcode -eq 0 ]
+        then
+            echo "No error found..exiting correctly"
+            exit 0
+        else
+            echo "WARNING....The software raised some errors or warning, be careful and check the results. (EXIT CODE ${{exitcode}})"
+            exit 0
+        fi
+        """
+
+# After the flipping, we can continue as before, performing the allele fixing on the splitted dataset
 rule plinkSplit:
     output:
         expand(output_folder+"/00.splitted_input/"+cohort_name+"_{chr}.{ext}", ext=['bed','bim','fam'],chr=chrs)
@@ -61,16 +147,20 @@ rule plinkSplit:
         # o_bim=scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".bim"),
         # o_fam=scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".fam")
     input:
-        rules.mapUpdateExt.output[0],
-        rules.mapUpdateExt.output[1],
-        rules.mapUpdateExt.output[2],
+        rules.allFixSnpFlip.output[0],
+        rules.allFixSnpFlip.output[1],
+        rules.allFixSnpFlip.output[2],
+        # rules.mapUpdateExt.output[0],
+        # rules.mapUpdateExt.output[1],
+        # rules.mapUpdateExt.output[2],
         # expand(input_prefix+".{ext}", ext=['map','ped'])
     params:
         # scatter_chr= lambda w, output : re.search('(\d+-of-\d+)',output[0]).group(1).split('-of-')[0] ,
         # i_prefix=input_prefix,
         output_prefix=output_folder+"/00.splitted_input/"+cohort_name,
         # i_prefix=output_folder+"/00.splitted_input/"+cohort_name+"_snps_only",
-        i_prefix=output_folder+"/00.splitted_input/"+cohort_name+"_snps_only_mapUpdateExt",
+        # i_prefix=output_folder+"/00.splitted_input/"+cohort_name+"_snps_only_mapUpdateExt",
+        i_prefix=output_folder+"/00.splitted_input/"+ cohort_name+"_snps_only_mapUpdateExt_flipped",
         plink=config['tools']['plink']
     # log:
     #     stdout=log_folder+"/plinkSplit_{scatteritem}.stdout",
@@ -81,15 +171,15 @@ rule plinkSplit:
             shell(cmd)
 
 
-# align aleles to 1000G data and retrieve alleles names removed because monomorphic
-rule allFix:
+# Now run the second step of allele alignement to external ref data. Now we should have no warnings at all, or the ones still present are from unrecoverable snps
+rule allFixSplitted:
     output:
         output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix.bim",
         output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix.bed",
         output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix.fam",
-        output_folder + "/00.splitted_input/"+cohort_name+"_{chr}_a1.bim",
-        output_folder + "/00.splitted_input/"+cohort_name+"_{chr}_a1.bed",
-        output_folder + "/00.splitted_input/"+cohort_name+"_{chr}_a1.fam"
+        output_folder + "/00.splitted_input/"+ ref_panel + "/"+cohort_name+"_{chr}_a1.bim",
+        output_folder + "/00.splitted_input/"+ ref_panel + "/"+cohort_name+"_{chr}_a1.bed",
+        output_folder + "/00.splitted_input/"+ ref_panel + "/"+cohort_name+"_{chr}_a1.fam"
     input:
         rules.plinkSplit.output[0],
         rules.plinkSplit.output[1],
@@ -100,7 +190,7 @@ rule allFix:
     params:
         # bfiles_prefix=output_folder+"/00.splitted_input/"+ ref_panel + "/" + cohort_name+"_{chr}_mapUpdateTGP",
         bfiles_prefix=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}",
-        bfiles_prefix_a1=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}_a1",
+        bfiles_prefix_a1=output_folder + "/00.splitted_input/"+ ref_panel + "/"+cohort_name+"_{chr}_a1",
         bfiles_allFix_prefix=output_folder+"/00.splitted_input/"+ ref_panel + "/" + cohort_name+"_{chr}_allFix",
         plink=config['tools']['plink'],
         update_a1_str=config['paths']['allele_recode_file']+" 5 3 '#'",
@@ -113,6 +203,8 @@ rule allFix:
         # {params.plink} --bfile {params.bfiles_prefix} --a2-allele {params.update_a2_str} --make-bed --out {params.bfiles_prefix_a1}
         # {params.plink} --bfile {params.bfiles_prefix_a1} --keep-allele-order --a1-allele {params.update_a1_str} --make-bed --out {params.bfiles_allFix_prefix}
 
+
+#check alele orientation with the genetic map provided
 rule snpCheck:
     output:
         # expand("{{output_folder}}/01.refAlign/{{ref_panel}}/{chr}_shapeit_refpanel.alignments.snp.{ext}", ext=['strand','strand.exclude'])

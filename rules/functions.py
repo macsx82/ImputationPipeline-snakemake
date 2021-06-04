@@ -93,4 +93,16 @@ def create_chunks(legend,chunk_size,chunk):
     interval="%s %s" % (chunk_begin, chunk_end)
     return interval
 
-
+# function to get rsId of sites for which we couldn't assign alleles based on a refernce file
+def get_not_assigned_snps(outfile,*infile):
+    import re
+    rs_ids=[]
+    
+    for inputfile in infile:
+        c_input_file=open('%s' %(inputfile),'r')
+        for line in c_input_file:
+            if re.match("Impossible A1 allele assignment",line.strip()) or re.match("Impossible A2 allele assignment",line.strip()):
+                rs_ids.append((line.strip().split("\t")[7]).replace('.',''))
+    unique_rs=list(set(rs_ids))
+    open(outfile,"w").write("\n".join(unique_rs))
+    open(outfile, 'a').close()

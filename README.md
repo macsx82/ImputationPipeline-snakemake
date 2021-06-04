@@ -97,9 +97,10 @@ fgrep "Impossible A1 allele assignment" *.log |cut -f 8 -d " "|sed 's/\.//g'
 We want to see what kind of variants are those, in dbSNP data and in our data.
 
 ```bash
-fgrep -w -f <(fgrep "Impossible A1 allele assignment" *.log |cut -f 8 -d " "|sed 's/\.//g') /netapp/nfs/resources/dbSNP/human_9606_b154_GRCh37p13/GCF_000001405.25.dbSNP154.tab > ../../impossible_a1_assign_dbSNP.tab
+fgrep -w -f <(fgrep "Impossible A1 allele assignment" *.log |cut -f 8 -d " "|sed 's/\.//g') /netapp/nfs/resources/dbSNP/human_9606_b154_GRCh37p13/GCF_000001405.25.dbSNP154.tab > ../impossible_a1_assign_dbSNP.tab
 fgrep -w -f <(fgrep "Impossible A1 allele assignment" *.log |cut -f 8 -d " "|sed 's/\.//g') *.bim
 ```
+
 
 In the menawhile, we need to rebuild the ref table with dbSNP, removing INDELs
 
@@ -113,8 +114,43 @@ done
 and merge all back in a single table
 
 ```bash
-(for chr in {1..22} X Y MT
+(for chr in {1..22} X
 do
 cat /netapp/nfs/resources/dbSNP/human_9606_b154_GRCh37p13/VCF/GCF_000001405.25.chr${chr}.dbSNP154.tab
 done) > /netapp/nfs/resources/dbSNP/human_9606_b154_GRCh37p13/GCF_000001405.25.SNPS.dbSNP154.tab
 ```
+
+One problem with the allele update seems to be that we first updated a2, than a1. We tried also reversing the update, a1 first, than a2. This will still include errors due to the presence of INDELs in the reference file from dbSNP, but we'll fix that later.
+
+We have 40 warnings for "Impossible A1 allele assignment"
+
+```bash
+fgrep "Impossible A1 allele assignment" *.log |cut -f 8 -d " "|sed 's/\.//g'
+```
+
+We want to see what kind of variants are those, in dbSNP data and in our data.
+
+```bash
+fgrep -w -f <(fgrep "Impossible A1 allele assignment" *.log |cut -f 8 -d " "|sed 's/\.//g') /netapp/nfs/resources/dbSNP/human_9606_b154_GRCh37p13/GCF_000001405.25.SNPS.dbSNP154.tab > ../impossible_a1_assign_dbSNP.tab
+fgrep -w -f <(fgrep "Impossible A1 allele assignment" *.log |cut -f 8 -d " "|sed 's/\.//g') *.bim
+```
+
+We have 409 warnings for "Impossible A2 allele assignment"
+
+```bash
+fgrep "Impossible A2 allele assignment" *.log |cut -f 8 -d " "|sed 's/\.//g'
+```
+
+We want to see what kind of variants are those, in dbSNP data and in our data.
+
+```bash
+fgrep -w -f <(fgrep "Impossible A2 allele assignment" *.log |cut -f 8 -d " "|sed 's/\.//g') /netapp/nfs/resources/dbSNP/human_9606_b154_GRCh37p13/GCF_000001405.25.dbSNP154.tab > ../impossible_a2_assign_dbSNP.tab
+fgrep -w -f <(fgrep "Impossible A2 allele assignment" *.log |cut -f 8 -d " "|sed 's/\.//g') Slo_POP_snps_only_mapUpdateExt.bim
+```
+
+So, the most likely reason for the impossible allele assignment is a flipping problem. 
+We will than use the first rule to get all the unassigned snps, flip them in the original dataset and rerun the rule.
+This way, we could till have some unassigned variant, but those should be only due to actual mismatch with the reference data.
+
+rs375065198
+rs199994882
