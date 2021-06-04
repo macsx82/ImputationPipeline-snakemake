@@ -118,7 +118,7 @@ rule allFixSnpFlip:
         rules.allFix.output[1],
         rules.allFix.output[2]
     params:
-        bfiles_prefix=output_folder+"/00.splitted_input/"+cohort_name+"_snps_only_mapUpdateExt"
+        bfiles_prefix=output_folder+"/00.splitted_input/"+cohort_name+"_snps_only_mapUpdateExt",
         # bfiles_prefix=output_folder+"/00.splitted_input/"+ ref_panel + "/" + cohort_name+"_{chr}_allFix",
         bfiles_flipped_prefix=output_folder+"/00.splitted_input/"+ cohort_name+"_snps_only_mapUpdateExt_flipped",
         plink=config['tools']['plink']
@@ -149,7 +149,7 @@ rule plinkSplit:
     input:
         rules.allFixSnpFlip.output[0],
         rules.allFixSnpFlip.output[1],
-        rules.allFixSnpFlip.output[2],
+        rules.allFixSnpFlip.output[2]
         # rules.mapUpdateExt.output[0],
         # rules.mapUpdateExt.output[1],
         # rules.mapUpdateExt.output[2],
