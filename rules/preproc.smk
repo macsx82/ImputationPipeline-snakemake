@@ -11,8 +11,8 @@
 # We want to remove indels from plink files, since we cannot update alleles in a consistent way, at the mment (will be a feature for next release)
 rule indelsRemove:
     output:
-        o_ped=temp(output_folder+"/00.splitted_input/"+cohort_name+"_snps_only.ped"),
-        o_map=temp(output_folder+"/00.splitted_input/"+cohort_name+"_snps_only.map")
+        o_ped=output_folder+"/00.splitted_input/"+cohort_name+"_snps_only.ped",
+        o_map=output_folder+"/00.splitted_input/"+cohort_name+"_snps_only.map"
         # o_fam=scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".fam")
     input:
         expand(input_prefix+".{ext}", ext=['map','ped'])
@@ -28,9 +28,9 @@ rule indelsRemove:
 # Update allele positions and chromosomes using 1000G data. We need to apply this one BEFORE splitting the data by chr, since we will have chr and positions moving around
 rule mapUpdateExt:
     output:
-        o_bim=temp(output_folder+"/00.splitted_input/"+cohort_name+"_snps_only_mapUpdateExt.bim"),
-        o_bed=temp(output_folder+"/00.splitted_input/"+cohort_name+"_snps_only_mapUpdateExt.bed"),
-        o_fam=temp(output_folder+"/00.splitted_input/"+cohort_name+"_snps_only_mapUpdateExt.fam"),
+        o_bim=output_folder+"/00.splitted_input/"+cohort_name+"_snps_only_mapUpdateExt.bim",
+        o_bed=output_folder+"/00.splitted_input/"+cohort_name+"_snps_only_mapUpdateExt.bed",
+        o_fam=output_folder+"/00.splitted_input/"+cohort_name+"_snps_only_mapUpdateExt.fam"
         # output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_mapUpdateTGP.bim",
         # output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_mapUpdateTGP.bed",
         # output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_mapUpdateTGP.fam",
@@ -87,9 +87,9 @@ rule allFix:
         output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix.bim",
         output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix.bed",
         output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix.fam",
-        temp(output_folder + "/00.splitted_input/"+cohort_name+"_{chr}_a1.bim"),
-        temp(output_folder + "/00.splitted_input/"+cohort_name+"_{chr}_a1.bed"),
-        temp(output_folder + "/00.splitted_input/"+cohort_name+"_{chr}_a1.fam")
+        output_folder + "/00.splitted_input/"+cohort_name+"_{chr}_a1.bim",
+        output_folder + "/00.splitted_input/"+cohort_name+"_{chr}_a1.bed",
+        output_folder + "/00.splitted_input/"+cohort_name+"_{chr}_a1.fam"
     input:
         rules.plinkSplit.output[0],
         rules.plinkSplit.output[1],
