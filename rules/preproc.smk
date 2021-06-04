@@ -268,7 +268,7 @@ rule snpFlip:
         rules.allFix.output[2]
     params:
         bfiles_prefix=output_folder+"/00.splitted_input/"+ ref_panel + "/" + cohort_name+"_{chr}_allFix",
-        bfiles_flipped_prefix=output_folder+"/02.flipped_input/"+ ref_panel + "/" + cohort_name+"_{chr}_flipped",
+        bfiles_flipped_prefix=output_folder+"/02.flipped_input/"+ ref_panel + "/" + cohort_name+"_{chr}_allFix_flipped",
         plink=config['tools']['plink']
     shell:
         """
