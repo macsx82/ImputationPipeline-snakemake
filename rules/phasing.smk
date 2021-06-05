@@ -42,7 +42,7 @@ rule phase:
         output_folder+"/benchmarks/{chr}.phase_rule.tsv"
     shell:
         """
-        {params.phasing_tool} --input {input[0]} --map {params.g_map} --region {chr} --output {output[0]} --thread {threads} --log {log[0]} --mcmc-iterations {params.mcmc_iterations} --pbwt-depth {params.pbwt_depth}
+        {params.phasing_tool} --input {input[0]} --map {params.g_map} --region {wildcards.chr} --output {output[0]} --thread {threads} --log {log[0]} --mcmc-iterations {params.mcmc_iterations} --pbwt-depth {params.pbwt_depth}
         tabix -p vcf {output[0]}
         """
 
