@@ -39,8 +39,12 @@ rules:
   snpFlip:
   allFix:
   plink2vcf:
+  phase:
+    mcmc_iterations: '10b,1p,1b,1p,1b,1p,1b,1p,10m' #maxed out parameteres according to SHAPEIT4 manual. Default setting are : 5b,1p,1b,1p,1b,1p,5m
+    pbwt_depth: 8 #maxed out parameteres according to SHAPEIT4 manual. Default setting are : 4
 
 tools:
   shapeit: "/share/apps/bio/bin/shapeit"
+  phasing_tool: "shapeit4_path"
   impute: "impute_path"
   plink: "plink_path"
