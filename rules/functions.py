@@ -108,3 +108,50 @@ def get_not_assigned_snps(outfile,*infile):
     unique_rs=list(set(rs_ids))
     open(outfile,"w").write("\n".join(unique_rs))
     open(outfile, 'a').close()
+
+#function to recover allele names in monomorphic sites from the update allele file
+#we need the update alle file for the snp array and the bim file from plink format
+def update_mono_snps(allele_update,plink_bim,outfile):
+    import re
+    # read allele update file
+    allele_update_file=open('%s' %(allele_update))
+    all_update={}
+    for line in allele_update_file:
+        variant=line.strip().split('\t')
+        rsID=variant[0]
+        alleles=variant[2].split(' ')
+        all_update[rsID]=alleles
+
+    # we also need to check for flipped alleles
+    complement={'A':'T','T':'A','C':'G','G':'C'}
+    # read plink bim
+    plink_bim_file=open('%s' %(plink_bim),'r')
+    # open the stream to the output file
+    output_file=open(outfile,'w')
+
+    for bim_line in plink_bim_file:
+        # read line
+        # now check if we have a monomorphic site for wich we have to update the allele name 
+        if bim_line.strip().split('\t')[4]=='0':
+            # do stuff to get the correct name
+            c_line=bim_line.strip().split('\t')
+            c_chr=c_line[0]
+            c_rsID=c_line[1]
+            c_cm=c_line[2]
+            c_pos=c_line[3]
+            c_a1=c_line[4]
+            c_a2=c_line[5]
+            # since we have a cleaned rsID, we need firs to get the right one among update_alleles keys
+            rs_key=[x for x in all_update.keys() if re.search(c_rsID+'$',x)]
+            # now we have to get the alleles from the update allele dict
+            # and check which one we have. Easy case is if there is no flipping
+            if c_a2 in all_update[rs_key[0]]:
+                new_a1=list(set(all_update[rs_key[0]]) - set(list(c_a2)))[0]
+            else:
+                # here it could be that we have flipped data, so we need to use the complement for both a2 lookup and a1 retrieve
+                new_a1=complement[list(set(all_update[rs_key[0]]) - set(list(complement[c_a2])))[0]]
+            _ = output_file.write('%s\t%s\t%s\t%s\t%s\t%s\n' %(c_chr,c_rsID,c_cm,c_pos,new_a1,c_a2))
+        else:
+            # print line as it is in the output file
+            _ = output_file.write(bim_line)
+    output_file.close()

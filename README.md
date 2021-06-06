@@ -159,7 +159,36 @@ fgrep -w -f <(fgrep "Impossible A2 allele assignment" *.log |cut -f 8 -d " "|sed
 
 So, the most likely reason for the impossible allele assignment is a flipping problem. 
 We will than use the first rule to get all the unassigned snps, flip them in the original dataset and rerun the rule.
-This way, we could till have some unassigned variant, but those should be only due to actual mismatch with the reference data.
+This way, we could still have some unassigned variant, but those should be only due to actual mismatch with the reference data.
 
 rs375065198
 rs199994882
+
+
+#05/06/2020
+Sample command to run the pipeline on system queues
+
+```bash
+snakemake -s ~/scripts/pipelines/ImputationPipeline-snakemake/Snakefile -p -r --jobs 50 --configfile /home/cocca/analyses/test_imputation_20210604/config_test_2.yaml --cluster-config ~/scripts/pipelines/ImputationPipeline-snakemake/SGE_cluster.json --keep-going --cluster "qsub -N {config[cohort_name]}_{rule} -V -cwd -m ea -M {cluster.user_mail} -pe {cluster.parall_env} {threads} -o {config[paths][log_folder]}/\$JOB_ID_{config[cohort_name]}_{rule}.log -e {config[paths][log_folder]}/\$JOB_ID_{config[cohort_name]}_{rule}.e -V -l h_vmem={cluster.mem} -q {cluster.queue}"
+```
+
+---
+#6/6/2021
+
+Check if we can retrieve the monomophic sites for which we cannot use the dbSNP data
+example case:
+
+Plink file before GSA prefix cleaning and processing
+6       GSA-rs116229940 0       174798  0       A
+
+Plink file after GSA (and other) prefix cleaning and processing
+6       rs116229940     0       174798  0       T
+
+Vcf format 
+6       174798  rs116229940     T       .
+
+Update allele file
+GSA-rs116229940 A B     A G
+
+
+Since the vcf file has been processed in different ways, we need to take into account switching and flipping.

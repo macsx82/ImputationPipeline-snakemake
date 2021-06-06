@@ -287,6 +287,30 @@ rule snpFlip:
         fi
         """
 
+# rule to fix the missing alt alleles in plink files before vcf conversion
+#here we just need to update the BIM file, no need to generate a new genotype set using plink
+#to keep things organised we still will create a copy of the genotypes in the monoRecovered folder
+rule recoverMono:
+    output:
+        output_folder + "/03.flipped_input/" + ref_panel + "/ReMo/"+ cohort_name+"_{chr}_allFix_flipped_ReMo.bim",
+        output_folder + "/03.flipped_input/" + ref_panel + "/ReMo/"+ cohort_name+"_{chr}_allFix_flipped_ReMo.bed",
+        output_folder + "/03.flipped_input/" + ref_panel + "/ReMo/"+ cohort_name+"_{chr}_allFix_flipped_ReMo.fam"
+    input:
+        chip_update_allele_file=config['paths']['snp_array_update_allele_file'],
+        bim_file=rules.snpFlip.output[0]
+        bed_file=rules.snpFlip.output[1]
+        fam_file=rules.snpFlip.output[2]
+    params:
+        bfiles_allFix_prefix=output_folder + "/03.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix_flipped",
+        vcf_flipped_prefix=output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_allFix_flipped",
+        plink=config['tools']['plink']
+    run:
+        update_mono_snps(input.chip_update_allele_file,input.bim_file,output[0])
+        cp_bed_cmd="cp %s %s" %(input.bed_file,output[1])
+        cp_fam_cmd="cp %s %s" %(input.fam_file,output[2])
+        shell(cp_bed_cmd)
+        shell(cp_fam_cmd)
+
 # convert to vcf file format to use SHAPEIT4
 rule plink2vcf:
     output:
@@ -294,11 +318,14 @@ rule plink2vcf:
         output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_allFix_flipped.vcf.gz.tbi"
         # strand_rsid=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_rsids.to_flip"
     input:
-        rules.snpFlip.output[0],
-        rules.snpFlip.output[1],
-        rules.snpFlip.output[2]
+        rules.recoverMono.output[0],
+        rules.recoverMono.output[1],
+        rules.recoverMono.output[2]
+        # rules.snpFlip.output[0],
+        # rules.snpFlip.output[1],
+        # rules.snpFlip.output[2]
     params:
-        bfiles_allFix_prefix=output_folder + "/03.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix_flipped",
+        bfiles_allFix_prefix=output_folder + "/03.flipped_input/" + ref_panel + "/ReMo/"+ cohort_name+"_{chr}_allFix_flipped_ReMo",
         vcf_flipped_prefix=output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_allFix_flipped",
         plink=config['tools']['plink']
     shell:
