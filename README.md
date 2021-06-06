@@ -169,7 +169,7 @@ rs199994882
 Sample command to run the pipeline on system queues
 
 ```bash
-snakemake -s ~/scripts/pipelines/ImputationPipeline-snakemake/Snakefile -p -r --jobs 50 --configfile /home/cocca/analyses/test_imputation_20210604/config_test_2.yaml --cluster-config ~/scripts/pipelines/ImputationPipeline-snakemake/SGE_cluster.json --keep-going --cluster "qsub -N {config[cohort_name]}_{rule} -V -cwd -m ea -M {cluster.user_mail} -pe {cluster.parall_env} {threads} -o {config[paths][log_folder]}/\$JOB_ID_{config[cohort_name]}_{rule}.log -e {config[paths][log_folder]}/\$JOB_ID_{config[cohort_name]}_{rule}.e -V -l h_vmem={cluster.mem} -q {cluster.queue}"
+snakemake -s ~/scripts/pipelines/ImputationPipeline-snakemake/Snakefile -p -r --jobs 50 --configfile /home/cocca/analyses/test_imputation_20210604/config_test_2.yaml --cluster-config ~/scripts/pipelines/ImputationPipeline-snakemake/SGE_cluster.json --keep-going --cluster "qsub -N {config[cohort_name]}_{rule} -V -cwd -m ea -M {cluster.user_mail} -pe {cluster.parall_env} {threads} -o {config[paths][log_folder]}/{config[cohort_name]}_{rule}.log -e {config[paths][log_folder]}/{config[cohort_name]}_{rule}.e -V -l h_vmem={cluster.mem} -q {cluster.queue}"
 ```
 
 ---

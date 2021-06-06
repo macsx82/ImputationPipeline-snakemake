@@ -297,8 +297,8 @@ rule recoverMono:
         output_folder + "/03.flipped_input/" + ref_panel + "/ReMo/"+ cohort_name+"_{chr}_allFix_flipped_ReMo.fam"
     input:
         chip_update_allele_file=config['paths']['snp_array_update_allele_file'],
-        bim_file=rules.snpFlip.output[0]
-        bed_file=rules.snpFlip.output[1]
+        bim_file=rules.snpFlip.output[0],
+        bed_file=rules.snpFlip.output[1],
         fam_file=rules.snpFlip.output[2]
     params:
         bfiles_allFix_prefix=output_folder + "/03.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix_flipped",
