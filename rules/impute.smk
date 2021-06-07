@@ -70,14 +70,14 @@ rule impute:
 		"""
 
 # rule to concat back data imputed by chromosome
-rule concatImputed:
-	wildcard_constraints:
-		g_chunk='\d+',
-		chr='\d+'
-	output:
-	input:
-	params:
-	shell:	
+# rule concatImputed:
+# 	wildcard_constraints:
+# 		g_chunk='\d+',
+# 		chr='\d+'
+# 	output:
+# 	input:
+# 	params:
+# 	shell:	
 # Rules preserved here and custom made for impute2 and impute2 reference panels
 # 
 # rule chunkGenerator:
