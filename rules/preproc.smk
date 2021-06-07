@@ -357,12 +357,13 @@ rule vcfFixRef:
     params:
         ext_ref_file=config['paths']['ext_ref_annot_file'],
         ref_fasta=config['paths']['ref_fasta'],
-        temp=config['rules']['vcfFixRef']['temp']
+        temp=config['rules']['vcfFixRef']['temp'],
+        bcftools_bin=config['tools']['bcftools']
     shell:
         """
         # conda activate gatk4170
-        bcftools +fixref {input[0]} -O z -o {output[0]} -- -i {params.ext_ref_file} -f {params.ref_fasta}
-        bcftools sort -T {params.temp} {output[0]} -O z -o {output[1]}
+        {params.bcftools_bin} +fixref {input[0]} -O z -o {output[0]} -- -i {params.ext_ref_file} -f {params.ref_fasta}
+        {params.bcftools_bin} sort -T {params.temp} {output[0]} -O z -o {output[1]}
         tabix -p vcf {output[1]}
         """
 
@@ -375,10 +376,11 @@ rule vcfAnnotate:
         rules.vcfFixRef.output[1],
         rules.vcfFixRef.output[2]
     params:
-        ext_ref_file=config['paths']['ext_ref_annot_file']
+        ext_ref_file=config['paths']['ext_ref_annot_file'],
+        bcftools_bin=config['tools']['bcftools']
     shell:
         """
-        bcftools annotate --set-id '%CHROM:%POS\_%REF\_%FIRST_ALT' {input[0]} | bcftools annotate -a {params.ext_ref_file} -c ID -O z -o {output[0]}
+        {params.bcftools_bin} annotate --set-id '%CHROM:%POS\_%REF\_%FIRST_ALT' {input[0]} | {params.bcftools_bin} annotate -a {params.ext_ref_file} -c ID -O z -o {output[0]}
         tabix -p vcf {output[0]}
         """
 
