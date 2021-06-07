@@ -7,125 +7,127 @@ rule chunkGenerator:
 		g_chunk='\d+',
 		chr='\d+'
 	output:
-		output_folder+"/04.impute_intervals/{chr}/{chr}.{g_chunk}.int"
+		output_folder+"/05.impute_intervals/{chr}/{chr}.{g_chunk}.int"
 		# directory(output_folder+"/04.impute_intervals/{chr}")
 	input:
-		ref_hap=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".hap.gz",
-		ref_legend=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".legend.gz"
+		# regardless of the format of the panel, here we use the reference panel itself
+		ref_panel=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".vcf.gz",
+		study_geno=rules.phase.output[0]
 	params:
-		chunk_size=config['rules']['impute']['chunk_size']
+		chunker_tool=config['tools']['chunker_tool'],
+		coord_by_chunker=output_folder+"/05.impute_intervals/{chr}/{chr}.coordinates.txt".format(chr=wildcards.chr)
 	run:
-		# here we will generate the interval string
-		# get chr start and end and how many chunks we need for the current chr
-		chrom,start,end,chunk_num= get_chunk_num(input.ref_legend,params.chunk_size)
-		for chunk in list(range(1,chunk_num+1)):
-			out_file=output_folder+"/04.impute_intervals/"+chrom+"/"+chrom+"."+"{:02d}".format(chunk) +".int"
-			interval=create_chunks(input.ref_legend,params.chunk_size,chunk)
-			open(out_file,"w").write(interval)
+		chunk_cmd="%s --h %s --r %s --g %s --o %s" %(params.chunker_tool,input.ref_panel, wildcards.chr, input.study_geno, params.coord_by_chunker)
+		shell(chunk_cmd)
+		# read the generated file and proceed as we did before
+		with open(params.coord_by_chunker) as chunk_file:
+			for line in chunk_file:
+				chunk=int(line.strip().split("\t")[0])+1
+				chrom=line.strip().split("\t")[1]
+				interval=line.strip().split("\t")[3]
+				out_file=output_folder+"/05.impute_intervals/"+chrom+"/"+chrom+"."+"{:02d}".format(chunk) +".int"
+				open(out_file,"w").write(interval)
+	# run:
+	# 	# here we will generate the interval string
+	# 	# get chr start and end and how many chunks we need for the current chr
+	# 	chrom,start,end,chunk_num= get_chunk_num(input.ref_legend,params.chunk_size)
+	# 	for chunk in list(range(1,chunk_num+1)):
+	# 		out_file=output_folder+"/05.impute_intervals/"+chrom+"/"+chrom+"."+"{:02d}".format(chunk) +".int"
+	# 		interval=create_chunks(input.ref_legend,params.chunk_size,chunk)
+	# 		open(out_file,"w").write(interval)
 
 # rule to run imputation for each chunk
-rule impute:
-	wildcard_constraints:
-		g_chunk='\d+',
-		chr='\d+'
-	output:
-		expand(output_folder+"/05.imputed/{{chr}}/{{chr}}.{{g_chunk}}.{ext}", ext=["gen.gz","gen_info","gen_info_by_sample","gen_samples","gen_summary","gen_warnings"])
-	input:
-		ref_hap=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".hap.gz",
-		ref_legend=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".legend.gz",
-		study_geno=rules.phase.output[0],
-		study_samples=rules.phase.output[1],
-		# interval_file=rules.chunkGenerator.output
-	threads:
-		config["rules"]["impute"]["threads"]
-	resources:
-		mem_mb=config["rules"]["impute"]["mem"]
-	benchmark:
-		output_folder+"/benchmarks/{chr}.{g_chunk}.impute_rule.tsv"
-	params:
-		impute=config['tools']['impute'],
-		ne=config['rules']['impute']['ne'],
-		iterations=config['rules']['impute']['iter'],
-		burnin=config['rules']['impute']['burnin'],
-		k_hap=config['rules']['impute']['k_hap'],
-		buffer_size=config['rules']['impute']['buffer_size'],
-		interval= lambda wildcards: get_imputation_interval("{output_folder}/04.impute_intervals/{chr}/{chr}.{g_chunk}.int".format(chr=wildcards.chr, g_chunk=wildcards.g_chunk, output_folder=output_folder)),
-		# interval=get_imputation_interval('{input.interval_file}'),
-		impute_options=config['rules']['impute']['options'],
-		gen_map=config['paths']['genetic_map_path']+"/genetic_map_chr{chr}_combined_b37.txt",
-		out_prefix=output_folder+"/05.imputed/{chr}/{chr}.{g_chunk}.gen",
-		chrx_str=''
-	shell:
-		"""
-		{params.impute} {params.impute_options} -m {params.gen_map} -h {input.ref_hap} -l {input.ref_legend} -known_haps_g {input.study_geno} -sample_g {input.study_samples} -iter {params.iterations} -burnin {params.burnin} -k_hap {params.k_hap} -int {params.interval} -Ne {params.ne} -buffer {params.buffer_size} -o {params.out_prefix} {params.chrx_str}
-		"""
-
-# this rule is used to gzip the resulting gen files. we decided to not include this step in the previous rule to maximize parallelisation
-# but we need to be sure we will have enough disk space
-# rule genGzip:
+# rule impute:
+# 	wildcard_constraints:
+# 		g_chunk='\d+',
+# 		chr='\d+'
 # 	output:
+# 		expand(output_folder+"/05.imputed/{{chr}}/{{chr}}.{{g_chunk}}.{ext}", ext=["gen.gz","gen_info","gen_info_by_sample","gen_samples","gen_summary","gen_warnings"])
 # 	input:
+# 		ref_hap=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".hap.gz",
+# 		ref_legend=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".legend.gz",
+# 		study_geno=rules.phase.output[0],
+# 		study_samples=rules.phase.output[1],
+# 		# interval_file=rules.chunkGenerator.output
+# 	threads:
+# 		config["rules"]["impute"]["threads"]
+# 	resources:
+# 		mem_mb=config["rules"]["impute"]["mem"]
+# 	benchmark:
+# 		output_folder+"/benchmarks/{chr}.{g_chunk}.impute_rule.tsv"
 # 	params:
+# 		impute=config['tools']['impute'],
+# 		ne=config['rules']['impute']['ne'],
+# 		iterations=config['rules']['impute']['iter'],
+# 		burnin=config['rules']['impute']['burnin'],
+# 		k_hap=config['rules']['impute']['k_hap'],
+# 		buffer_size=config['rules']['impute']['buffer_size'],
+# 		interval= lambda wildcards: get_imputation_interval("{output_folder}/04.impute_intervals/{chr}/{chr}.{g_chunk}.int".format(chr=wildcards.chr, g_chunk=wildcards.g_chunk, output_folder=output_folder)),
+# 		# interval=get_imputation_interval('{input.interval_file}'),
+# 		impute_options=config['rules']['impute']['options'],
+# 		gen_map=config['paths']['genetic_map_path']+"/genetic_map_chr{chr}_combined_b37.txt",
+# 		out_prefix=output_folder+"/05.imputed/{chr}/{chr}.{g_chunk}.gen",
+# 		chrx_str=''
 # 	shell:
+# 		"""
+# 		{params.impute} {params.impute_options} -m {params.gen_map} -h {input.ref_hap} -l {input.ref_legend} -known_haps_g {input.study_geno} -sample_g {input.study_samples} -iter {params.iterations} -burnin {params.burnin} -k_hap {params.k_hap} -int {params.interval} -Ne {params.ne} -buffer {params.buffer_size} -o {params.out_prefix} {params.chrx_str}
+# 		"""
+# Rules preserved here and custom made for impute2 and impute2 reference panels
+# 
+# rule chunkGenerator:
+# 	wildcard_constraints:
+# 		g_chunk='\d+',
+# 		chr='\d+'
+# 	output:
+# 		output_folder+"/04.impute_intervals/{chr}/{chr}.{g_chunk}.int"
+# 		# directory(output_folder+"/04.impute_intervals/{chr}")
+# 	input:
+# 		ref_hap=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".hap.gz",
+# 		ref_legend=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".legend.gz"
+# 	params:
+# 		chunk_size=config['rules']['impute']['chunk_size']
+# 	run:
+# 		# here we will generate the interval string
+# 		# get chr start and end and how many chunks we need for the current chr
+# 		chrom,start,end,chunk_num= get_chunk_num(input.ref_legend,params.chunk_size)
+# 		for chunk in list(range(1,chunk_num+1)):
+# 			out_file=output_folder+"/04.impute_intervals/"+chrom+"/"+chrom+"."+"{:02d}".format(chunk) +".int"
+# 			interval=create_chunks(input.ref_legend,params.chunk_size,chunk)
+# 			open(out_file,"w").write(interval)
 
-# let "chunk_num=($chr_end - $chr_begin)/$chunk_size" # bash rounds automatically
-# if [[ $chunk_num <1 ]]; then
-# 	chunk_num=1
-# fi
-
-# #check if command list file exists and remove it
-# if [[ -s $imputedir/chr${chr}_command.list ]];then
-# 	rm $imputedir/chr${chr}_command.list
-# fi
-
-# for chunk in `seq 1 $chunk_num`; do
-# 	chunkStr=`printf "%02d" $chunk`
-# 	if [[ -e $imputedir/chr$chr.$chunkStr.log ]]; then
-# 		continue
-# 	fi
-# 	if [[ $chunk -gt 1 ]]; then
-# 		chunk_begin=`echo "$chr_begin+($chunk-1)*$chunk_size+1" | bc`
-# 	else
-# 		chunk_begin=$chr_begin
-# 	fi
-# 	if [[ $chunk -eq $chunk_num ]]; then
-# 		mem=${m} #12000
-# 		queue=${q}
-# 		chunk_end=$chr_end
-# 	else
-# 		mem=${m} #12000
-# 		queue=${q}
-# 		chunk_end=`echo "$chr_begin+($chunk*$chunk_size)" | bc`
-# 	fi
-	
-# 	if [[ $by_chunk == "Y" ]]; then
-# 		refhap=$refdir/$refname/chr$chr.${chunkStr}$postfix.hap.gz
-# 		reflegend=$refdir/$refname/chr$chr.${chunkStr}$postfix.legend.gz
-# 	fi
-# 	gen_map=${genmap_dir}/genetic_map_chr${chr}_combined_b37.txt
-
-# 	if [[ -s $imputedir/chr$chr.$chunkStr.gen.gz ]];then
-# 		echo "Chunk $imputedir/chr$chr.$chunkStr.gen.gz already imputed!!!Skip!"
-# 	else
-# 	echo -e "#!/usr/bin/env bash
-# 	\nmkdir -p ${imputedir}
-# 	#$impute2 -allow_large_regions -m ${gen_map} -h $refhap -l $reflegend -known_haps_g $phasedir/chr$chr.haps.gz -sample_g $phasedir/chr$chr.sample $extra_str -use_prephased_g -k_hap $k_hap -int $chunk_begin $chunk_end -Ne 20000 -buffer $buffer_size -o $imputedir/chr$chr.$chunkStr.gen $chrX_impute_str
-# 	\n$impute2 -allow_large_regions -m ${gen_map} -h $refhap -l $reflegend -known_haps_g $phasedir/chr$chr.haps.gz -sample_g $phasedir/chr$chr.sample $extra_str -use_prephased_g -iter ${iter} -burnin ${burnin} -k_hap $k_hap -int $chunk_begin $chunk_end -Ne 20000 -buffer $buffer_size -o $imputedir/chr$chr.$chunkStr.gen $chrX_impute_str
-# 	\ngzip -f $imputedir/chr$chr.$chunkStr.gen
-# 	\nif [[ -e $imputedir/chr$chr.$chunkStr.gen_allele_probs ]]; then
-# 	\ngzip $imputedir/chr$chr.$chunkStr.gen_allele_probs $imputedir/chr$chr.$chunkStr.gen_haps
-# 	\nfi
-# 	\nN_info=\`awk 'NR>1' $imputedir/chr$chr.$chunkStr.gen_info | wc -l | awk '{printf \$1}'\`
-# 	\nN_gen=\`zcat $imputedir/chr$chr.$chunkStr.gen.gz | wc -l | awk '{printf \$1}'\`
-#             if [[ \$N_info != \$N_gen ]]; then
-#                     echo \"chr$chr $chunkStr: \$N_info for info, \$N_gen for gen\" > $imputedir/chr$chr.$chunkStr.ERR
-#             fi
-#             " > $imputedir/chr$chr.$chunkStr.cmd
-#             chmod ug+x $imputedir/chr$chr.$chunkStr.cmd
-# 	# cd $imputedir
-	
-# 	ls $imputedir/chr$chr.$chunkStr.cmd >> $imputedir/chr${chr}_command.list.tmp
-# 	fi
-# done
-
-
+# # rule to run imputation for each chunk
+# rule impute:
+# 	wildcard_constraints:
+# 		g_chunk='\d+',
+# 		chr='\d+'
+# 	output:
+# 		expand(output_folder+"/05.imputed/{{chr}}/{{chr}}.{{g_chunk}}.{ext}", ext=["gen.gz","gen_info","gen_info_by_sample","gen_samples","gen_summary","gen_warnings"])
+# 	input:
+# 		ref_hap=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".hap.gz",
+# 		ref_legend=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".legend.gz",
+# 		study_geno=rules.phase.output[0],
+# 		study_samples=rules.phase.output[1],
+# 		# interval_file=rules.chunkGenerator.output
+# 	threads:
+# 		config["rules"]["impute"]["threads"]
+# 	resources:
+# 		mem_mb=config["rules"]["impute"]["mem"]
+# 	benchmark:
+# 		output_folder+"/benchmarks/{chr}.{g_chunk}.impute_rule.tsv"
+# 	params:
+# 		impute=config['tools']['impute'],
+# 		ne=config['rules']['impute']['ne'],
+# 		iterations=config['rules']['impute']['iter'],
+# 		burnin=config['rules']['impute']['burnin'],
+# 		k_hap=config['rules']['impute']['k_hap'],
+# 		buffer_size=config['rules']['impute']['buffer_size'],
+# 		interval= lambda wildcards: get_imputation_interval("{output_folder}/04.impute_intervals/{chr}/{chr}.{g_chunk}.int".format(chr=wildcards.chr, g_chunk=wildcards.g_chunk, output_folder=output_folder)),
+# 		# interval=get_imputation_interval('{input.interval_file}'),
+# 		impute_options=config['rules']['impute']['options'],
+# 		gen_map=config['paths']['genetic_map_path']+"/genetic_map_chr{chr}_combined_b37.txt",
+# 		out_prefix=output_folder+"/05.imputed/{chr}/{chr}.{g_chunk}.gen",
+# 		chrx_str=''
+# 	shell:
+# 		"""
+# 		{params.impute} {params.impute_options} -m {params.gen_map} -h {input.ref_hap} -l {input.ref_legend} -known_haps_g {input.study_geno} -sample_g {input.study_samples} -iter {params.iterations} -burnin {params.burnin} -k_hap {params.k_hap} -int {params.interval} -Ne {params.ne} -buffer {params.buffer_size} -o {params.out_prefix} {params.chrx_str}
+# 		"""

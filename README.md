@@ -169,26 +169,63 @@ rs199994882
 Sample command to run the pipeline on system queues
 
 ```bash
-snakemake -s ~/scripts/pipelines/ImputationPipeline-snakemake/Snakefile -p -r --jobs 50 --configfile /home/cocca/analyses/test_imputation_20210604/config_test_2.yaml --cluster-config ~/scripts/pipelines/ImputationPipeline-snakemake/SGE_cluster.json --keep-going --cluster "qsub -N {config[cohort_name]}_{rule} -V -cwd -m ea -M {cluster.user_mail} -pe {cluster.parall_env} {threads} -o {config[paths][log_folder]}/{config[cohort_name]}_{rule}.log -e {config[paths][log_folder]}/{config[cohort_name]}_{rule}.e -V -l h_vmem={cluster.mem} -q {cluster.queue}"
+snakemake -s ~/scripts/pipelines/ImputationPipeline-snakemake/Snakefile -p -r --jobs 50 --configfile /home/cocca/analyses/test_imputation_20210604/config_test_2.yaml --cluster-config ~/scripts/pipelines/ImputationPipeline-snakemake/SGE_cluster.json --keep-going --cluster "qsub -N {config[cohort_name]}_{rule} -V -cwd -m ea -M {cluster.user_mail} -pe {cluster.parall_env} {threads} -o {config[paths][log_folder]}/\\$JOB_ID_{config[cohort_name]}_{rule}.log -e {config[paths][log_folder]}/\\$JOB_ID_{config[cohort_name]}_{rule}.e -V -l h_vmem={cluster.mem} -q {cluster.queue}"
 ```
 
 ---
 #6/6/2021
 
-Check if we can retrieve the monomophic sites for which we cannot use the dbSNP data
-example case:
+Added rules to retrieve monomorphic sites.
 
-Plink file before GSA prefix cleaning and processing
-6       GSA-rs116229940 0       174798  0       A
+We need also to update the imputation rule to use IMPUTE5.
 
-Plink file after GSA (and other) prefix cleaning and processing
-6       rs116229940     0       174798  0       T
+We need to generate a new set of reference panels, using custom IMPUTE5 format.
+First, convert to VCF format:
 
-Vcf format 
-6       174798  rs116229940     T       .
+```bash
+basepath=/shared/resources/references/IGRPv1
+for chr in {1..22}
+do
 
-Update allele file
-GSA-rs116229940 A B     A G
+mkdir -p ${basepath}/VCF/${chr}
+
+echo "bcftools convert --haplegendsample2vcf ${basepath}/HAP_LEGEND_SAMPLES/${chr}/${chr}.IGRPv1.hap.gz,${basepath}/HAP_LEGEND_SAMPLES/${chr}/${chr}.IGRPv1.legend.gz,${basepath}/HAP_LEGEND_SAMPLES/${chr}/${chr}.IGRPv1.samples -O z -o ${basepath}/VCF/${chr}/${chr}.IGRPv1.vcf.gz;tabix -p vcf ${basepath}/VCF/${chr}/${chr}.IGRPv1.vcf.gz" |qsub -N convert_${chr}_vcf -V -cwd -l h_vmem=15G -q fast
+done
+```
+
+We need to clean the VCF files from variants other than SNPs and Indels, since it seems there are issues with characters other than ATCG in ALT field (<CN0>, <INS:...:...>, etc)
+
+```bash
+basepath=/shared/resources/references/IGRPv1
+for chr in {1..21}
+do
+
+mkdir -p ${basepath}/VCF/${chr}
+
+echo "bcftools view -e\"ALT~'<'\" ${basepath}/VCF/${chr}/${chr}.IGRPv1.vcf.gz -O z -o ${basepath}/VCF/${chr}/${chr}.IGRPv1.clean.vcf.gz;tabix -p vcf ${basepath}/VCF/${chr}/${chr}.IGRPv1.clean.vcf.gz" |qsub -N clean_${chr}_vcf -V -cwd -l h_vmem=15G -q fast
+done
+```
 
 
-Since the vcf file has been processed in different ways, we need to take into account switching and flipping.
+After this first conversion and the cleaning, we can convert all to IMP5 format using the converter by Marchini et al.
+
+```bash
+basepath=/shared/resources/references/IGRPv1
+# for chr in {7..21}
+# for chr in {1..22}
+for chr in 22
+do
+mkdir -p ${basepath}/IMP5/${chr}
+# echo "/shared/software/impute5_v1.1.4/imp5Converter_1.1.4_static --h ${basepath}/VCF/${chr}/${chr}.IGRPv1.vcf.gz --r ${chr} --o ${basepath}/IMP5/${chr}/${chr}.IGRPv1.imp5" |qsub -N convert_${chr}_imp5 -V -cwd -l h_vmem=15G -q fast
+# echo "/shared/software/impute5_v1.1.5/imp5Converter_1.1.5_static --h ${basepath}/VCF/${chr}/${chr}.IGRPv1.vcf.gz --r ${chr} --o ${basepath}/IMP5/${chr}/${chr}.IGRPv1.imp5" |qsub -N convert_${chr}_imp5 -V -cwd -l h_vmem=15G -q fast
+# echo "/shared/software/impute5_v1.1.5/imp5Converter_1.1.5_static --h ${basepath}/VCF/${chr}/${chr}.IGRPv1.clean.vcf.gz --r ${chr} --o ${basepath}/IMP5/${chr}/${chr}.IGRPv1.imp5" |qsub -N convert_${chr}_imp5 -V -cwd -l h_vmem=15G -q fast
+echo "/shared/software/impute5_v1.1.5/imp5Chunker_1.1.5_static --h ${basepath}/VCF/${chr}/${chr}.IGRPv1.clean.vcf.gz --r ${chr} --g /home/cocca/analyses/test_imputation_20210604/04.phased_data/IGRPv1/Slo_POP_22_phased.vcf.gz --o /home/cocca/analyses/test_imputation_20210604/04.phased_data/IGRPv1/Slo_POP_22_phased.coordinates.txt" |qsub -N chunk_${chr}_imp5 -V -cwd -l h_vmem=15G -q fast
+done
+```
+
+
+Chunk ID / chromosome ID / Buffered region / Imputation region /Length / Number of target markers / Number of reference markers
+0       22      22:16050036-26192765    22:16050036-25941503    9883102 2032    318194
+1       22      22:25688138-35225787    22:25941504-34849841    8905956 2031    288410
+2       22      22:34550905-44869030    22:34849842-44596965    9744107 2031    333267
+3       22      22:44340904-51244237    22:44596966-51244237    6616406 2030    273868
