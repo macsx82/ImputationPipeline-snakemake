@@ -386,7 +386,7 @@ rule vcfAnnotate:
         stde=log_folder+"/vcfAnnotate_{chr}.e",
     shell:
         """
-        {params.bcftools_bin} annotate --set-id '%CHROM:%POS\_%REF\_%FIRST_ALT' {input[0]} | {params.bcftools_bin} annotate -a {params.ext_ref_file} -c ID -O z -o {output[0]} > {log.stdo} 2> {log.stde}
+        {params.bcftools_bin} annotate --set-id '%CHROM:%POS\_%REF\_%FIRST_ALT' {input[0]} -O z | {params.bcftools_bin} annotate -a {params.ext_ref_file} -c ID -O z -o {output[0]} > {log.stdo} 2> {log.stde}
         tabix -p vcf {output[0]}
         """
 
