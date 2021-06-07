@@ -373,6 +373,8 @@ rule vcfFixRef:
 # Annotate with rsIds according to external resource
 rule vcfAnnotate:
     output:
+        output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_fixRef_sorted_pre_rsID.vcf.gz",
+        output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_fixRef_sorted_pre_rsID.vcf.gz.tbi",
         output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_fixRef_sorted_rsID.vcf.gz",
         output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_fixRef_sorted_rsID.vcf.gz.tbi"
     input:
@@ -383,10 +385,12 @@ rule vcfAnnotate:
         bcftools_bin=config['tools']['bcftools']
     log:
         stdo=log_folder+"/vcfAnnotate_{chr}.o",
-        stde=log_folder+"/vcfAnnotate_{chr}.e",
+        stde=log_folder+"/vcfAnnotate_{chr}.e"
     shell:
         """
-        {params.bcftools_bin} annotate --set-id '%CHROM:%POS\_%REF\_%FIRST_ALT' {input[0]} -O z | {params.bcftools_bin} annotate -a {params.ext_ref_file} -c ID -O z -o {output[0]} > {log.stdo} 2> {log.stde}
+        {params.bcftools_bin} annotate --set-id '%CHROM:%POS\_%REF\_%FIRST_ALT' {input[0]} -O z -o {output[0]} > {log.stdo} 2> {log.stde}
         tabix -p vcf {output[0]}
+        {params.bcftools_bin} annotate -a {params.ext_ref_file} -c ID {output[0]} -O z -o {output[2]} >> {log.stdo} 2>> {log.stde}
+        tabix -p vcf {output[2]}
         """
 
