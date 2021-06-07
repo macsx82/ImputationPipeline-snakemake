@@ -20,6 +20,8 @@ paths:
   genetic_map_path: "/netapp/nfs/resources/1000GP_phase3/impute/" #path containing genetic maps for IMPUTATION and PHASING (SHAPEIT4 and IMPUTE5 version)
   ref_panel_base_folder: "ref_panel_base_dir" #folder path containing reference panel files
   allele_recode_file: "allele_recode_file" #folder path containing an allele recode file
+  ext_ref_annot_file: "/netapp/nfs/resources/dbSNP/human_9606_b154_GRCh37p13/GCF_000001405.25.vcf.gz" #external reference file to perform annotation on VCF files
+  ref_fasta: "/shared/resources/hgRef/hg19/hg19_nochr.fasta" #reference fasta file
   snp_array_update_allele_file: "snp_array_update_allele_file" #absolute path containing the update allele file specific for the snp array used
 
 rules:
@@ -35,6 +37,8 @@ rules:
     options: '--out-gp-field'
     mem: 15000 #default to 15Gb
     threads: 4 #in impute2 his parameter is not used, maybe in following versions
+  concatImputed:
+    temp: "temp folder path" #in case we need to sort the concatenated vcf files 
   indelsRemove:
   plinkSplit:
   snpCheck:
@@ -44,6 +48,8 @@ rules:
   snpFlip:
   allFix:
   plink2vcf:
+  vcfFixRef:
+    temp: "temp folder path" #in case we need to sort the concatenated vcf files 
   phase:
     mcmc_iterations: '10b,1p,1b,1p,1b,1p,1b,1p,10m' #maxed out parameteres according to SHAPEIT4 manual. Default setting are : 5b,1p,1b,1p,1b,1p,5m
     pbwt_depth: 8 #maxed out parameteres according to SHAPEIT4 manual. Default setting are : 4
@@ -54,3 +60,4 @@ tools:
   impute: "impute_path"
   chunker_tool: "chunker_path"
   plink: "plink_path"
+  bcftools: "bcftools_path"

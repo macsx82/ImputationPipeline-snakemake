@@ -190,6 +190,7 @@ do
 mkdir -p ${basepath}/VCF/${chr}
 
 echo "bcftools convert --haplegendsample2vcf ${basepath}/HAP_LEGEND_SAMPLES/${chr}/${chr}.IGRPv1.hap.gz,${basepath}/HAP_LEGEND_SAMPLES/${chr}/${chr}.IGRPv1.legend.gz,${basepath}/HAP_LEGEND_SAMPLES/${chr}/${chr}.IGRPv1.samples -O z -o ${basepath}/VCF/${chr}/${chr}.IGRPv1.vcf.gz;tabix -p vcf ${basepath}/VCF/${chr}/${chr}.IGRPv1.vcf.gz" |qsub -N convert_${chr}_vcf -V -cwd -l h_vmem=15G -q fast
+
 done
 ```
 
@@ -224,8 +225,21 @@ done
 ```
 
 
-Chunk ID / chromosome ID / Buffered region / Imputation region /Length / Number of target markers / Number of reference markers
-0       22      22:16050036-26192765    22:16050036-25941503    9883102 2032    318194
-1       22      22:25688138-35225787    22:25941504-34849841    8905956 2031    288410
-2       22      22:34550905-44869030    22:34849842-44596965    9744107 2031    333267
-3       22      22:44340904-51244237    22:44596966-51244237    6616406 2030    273868
+We need to add rsIDs to ref panel in VCF format:
+
+```bash
+basepath=/shared/resources/references/VCF/IGRPv1
+
+for chr in {1..22}
+do
+
+mkdir -p ${basepath}/rsID/${chr}
+
+echo "bcftools annotate --set-id +'%CHROM:%POS\_%REF\_%FIRST_ALT' ${basepath}/${chr}/${chr}.IGRPv1.vcf.gz -O z -o ${basepath}/rsID/${chr}/${chr}.IGRPv1.vcf.gz;tabix -p vcf ${basepath}/rsID/${chr}/${chr}.IGRPv1.vcf.gz" |qsub -N annots_${chr}_vcf -V -cwd -l h_vmem=15G -q fast
+
+done
+```
+
+Test fixref plugin
+
+bcftools +fixref /home/cocca/analyses/test_imputation_20210604/03.flipped_input/IGRPv1/VCF/Slo_POP_22_allFix_flipped.vcf.gz -O z -o /home/cocca/analyses/test_imputation_20210604/03.flipped_input/IGRPv1/VCF/Slo_POP_22_allFix_flipped_REFFIX.vcf.gz -- -f /shared/resources/hgRef/hg19/hg19_nochr.fasta -i /netapp/nfs/resources/dbSNP/human_9606_b154_GRCh37p13/GCF_000001405.25.vcf.gz

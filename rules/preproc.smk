@@ -345,3 +345,40 @@ rule plink2vcf:
         fi
         """
 
+# fix strand according to external resource. We will be working by rsID, so we hope we can fix most of the issues, if still present.
+rule vcfFixRef:
+    output:
+        output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_fixRef.vcf.gz",
+        output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_fixRef_sorted.vcf.gz",
+        output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_fixRef_sorted.vcf.gz.tbi"
+    input:
+        rules.plink2vcf.output[0],
+        rules.plink2vcf.output[1]
+    params:
+        ext_ref_file=config['paths']['ext_ref_annot_file'],
+        ref_fasta=config['paths']['ref_fasta'],
+        temp=config['rules']['vcfFixRef']['temp']
+    shell:
+        """
+        # conda activate gatk4170
+        bcftools +fixref {input[0]} -O z -o {output[0]} -- -i {params.ext_ref_file} -f {params.ref_fasta}
+        bcftools sort -T {params.temp} {output[0]} -O z -o {output[1]}
+        tabix -p vcf {output[1]}
+        """
+
+# Annotate with rsIds according to external resource
+rule vcfAnnotate:
+    output:
+        output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_fixRef_sorted_rsID.vcf.gz",
+        output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_fixRef_sorted_rsID.vcf.gz.tbi"
+    input:
+        rules.vcfFixRef.output[1],
+        rules.vcfFixRef.output[2]
+    params:
+        ext_ref_file=config['paths']['ext_ref_annot_file']
+    shell:
+        """
+        bcftools annotate --set-id '%CHROM:%POS\_%REF\_%FIRST_ALT' {input[0]} | bcftools annotate -a {params.ext_ref_file} -c ID -O z -o {output[0]}
+        tabix -p vcf {output[0]}
+        """
+

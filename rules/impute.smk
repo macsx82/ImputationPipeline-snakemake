@@ -69,6 +69,15 @@ rule impute:
 		{params.impute} {params.impute_options} --m {params.g_map} --h {input.ref_panel} --g {input.study_geno} --r {params.interval} --o {params.out_prefix}.vcf.gz --l {params.out_prefix}.log --b {params.buffer_size} --threads {threads} --ne {params.ne} --pbwt-depth {params.pbwt_depth} {params.chrx_str}
 		"""
 
+# rule to concat back data imputed by chromosome
+rule concatImputed:
+	wildcard_constraints:
+		g_chunk='\d+',
+		chr='\d+'
+	output:
+	input:
+	params:
+	shell:	
 # Rules preserved here and custom made for impute2 and impute2 reference panels
 # 
 # rule chunkGenerator:
