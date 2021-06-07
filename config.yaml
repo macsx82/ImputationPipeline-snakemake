@@ -25,15 +25,16 @@ paths:
 rules:
   chunkGenerator:
   impute:
-    k_hap: 10000
+    # k_hap: 10000
     ne : 20000
-    iter: 60
-    burnin: 20
+    pbwt_depth: 8
+    # iter: 60
+    # burnin: 20
     buffer_size: 250
-    chunk_size: 3000000
-    options: '-allow_large_regions -use_prephased_g -o_gz'
+    # chunk_size: 3000000
+    options: '--out-gp-field'
     mem: 15000 #default to 15Gb
-    threads: 1 #in impute2 his parameter is not used, maybe in following versions
+    threads: 4 #in impute2 his parameter is not used, maybe in following versions
   indelsRemove:
   plinkSplit:
   snpCheck:

@@ -37,41 +37,38 @@ rule chunkGenerator:
 	# 		open(out_file,"w").write(interval)
 
 # rule to run imputation for each chunk
-# rule impute:
-# 	wildcard_constraints:
-# 		g_chunk='\d+',
-# 		chr='\d+'
-# 	output:
-# 		expand(output_folder+"/05.imputed/{{chr}}/{{chr}}.{{g_chunk}}.{ext}", ext=["gen.gz","gen_info","gen_info_by_sample","gen_samples","gen_summary","gen_warnings"])
-# 	input:
-# 		ref_hap=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".hap.gz",
-# 		ref_legend=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".legend.gz",
-# 		study_geno=rules.phase.output[0],
-# 		study_samples=rules.phase.output[1],
-# 		# interval_file=rules.chunkGenerator.output
-# 	threads:
-# 		config["rules"]["impute"]["threads"]
-# 	resources:
-# 		mem_mb=config["rules"]["impute"]["mem"]
-# 	benchmark:
-# 		output_folder+"/benchmarks/{chr}.{g_chunk}.impute_rule.tsv"
-# 	params:
-# 		impute=config['tools']['impute'],
-# 		ne=config['rules']['impute']['ne'],
-# 		iterations=config['rules']['impute']['iter'],
-# 		burnin=config['rules']['impute']['burnin'],
-# 		k_hap=config['rules']['impute']['k_hap'],
-# 		buffer_size=config['rules']['impute']['buffer_size'],
-# 		interval= lambda wildcards: get_imputation_interval("{output_folder}/04.impute_intervals/{chr}/{chr}.{g_chunk}.int".format(chr=wildcards.chr, g_chunk=wildcards.g_chunk, output_folder=output_folder)),
-# 		# interval=get_imputation_interval('{input.interval_file}'),
-# 		impute_options=config['rules']['impute']['options'],
-# 		gen_map=config['paths']['genetic_map_path']+"/genetic_map_chr{chr}_combined_b37.txt",
-# 		out_prefix=output_folder+"/05.imputed/{chr}/{chr}.{g_chunk}.gen",
-# 		chrx_str=''
-# 	shell:
-# 		"""
-# 		{params.impute} {params.impute_options} -m {params.gen_map} -h {input.ref_hap} -l {input.ref_legend} -known_haps_g {input.study_geno} -sample_g {input.study_samples} -iter {params.iterations} -burnin {params.burnin} -k_hap {params.k_hap} -int {params.interval} -Ne {params.ne} -buffer {params.buffer_size} -o {params.out_prefix} {params.chrx_str}
-# 		"""
+rule impute:
+	wildcard_constraints:
+		g_chunk='\d+',
+		chr='\d+'
+	output:
+		expand(output_folder+"/06.imputed/{{chr}}/{{chr}}.{{g_chunk}}.{ext}", ext=["vcf.gz","log"])
+	input:
+		ref_panel=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".vcf.gz",
+		study_geno=rules.phase.output[0]
+		# interval_file=rules.chunkGenerator.output
+	threads:
+		config["rules"]["impute"]["threads"]
+	resources:
+		mem_mb=config["rules"]["impute"]["mem"]
+	benchmark:
+		output_folder+"/benchmarks/{chr}.{g_chunk}.impute_rule.tsv"
+	params:
+		impute=config['tools']['impute'],
+		ne=config['rules']['impute']['ne'],
+		pbwt_depth=config['rules']['impute']['pbwt_depth'],
+		buffer_size=config['rules']['impute']['buffer_size'],
+		interval= lambda wildcards: get_imputation_interval("{output_folder}/05.impute_intervals/{chr}/{chr}.{g_chunk}.int".format(chr=wildcards.chr, g_chunk=wildcards.g_chunk, output_folder=output_folder)),
+		# interval=get_imputation_interval('{input.interval_file}'),
+		impute_options=config['rules']['impute']['options'],
+		g_map=config['paths']['genetic_map_path']+"/chr{chr}.b37.gmap.gz",
+		out_prefix=output_folder+"/06.imputed/{chr}/{chr}.{g_chunk}",
+		chrx_str=''
+	shell:
+		"""
+		{params.impute} {params.impute_options} --m {params.gen_map} --h {input.ref_panel} --g {input.study_geno} --r {params.interval} --o {params.out_prefix}.vcf.gz --l {params.out_prefix}.log --b {params.buffer_size} --threads {threads} --ne {params.ne} --pbwt-depth {params.pbwt_depth} {params.chrx_str}
+		"""
+
 # Rules preserved here and custom made for impute2 and impute2 reference panels
 # 
 # rule chunkGenerator:
