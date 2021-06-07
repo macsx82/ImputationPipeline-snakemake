@@ -53,9 +53,11 @@ rule all:
         # [ "%s/04.impute_intervals/%s/%s.%s.int" % (output_folder,key,key,value) for key, value in chunked.items()]
         # expand(output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_allFix_flipped.vcf.gz", chr=chrs),
         # expand(output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_allFix_flipped.vcf.gz.tbi", chr=chrs)
-        expand(output_folder + "/04.phased_data/" + ref_panel + "/"+ cohort_name +"_{chr}_phased.vcf.gz", chr=chrs),
-        expand(output_folder + "/04.phased_data/" + ref_panel + "/"+ cohort_name +"_{chr}_phased.vcf.gz.tbi", chr=chrs)
-
+        # expand(output_folder + "/04.phased_data/" + ref_panel + "/"+ cohort_name +"_{chr}_phased.vcf.gz", chr=chrs),
+        # expand(output_folder + "/04.phased_data/" + ref_panel + "/"+ cohort_name +"_{chr}_phased.vcf.gz.tbi", chr=chrs)
+        # expand(output_folder+"/05.impute_intervals/{chr}/{chr}.{g_chunk}.int",chr=chrs,g_chunk=list(range(1,11)))
+        expand(output_folder+"/05.impute_intervals/{chr}/{chr}.{g_chunk}.int",chr=chrs,g_chunk=["{:02d}".format(chunk) for chunk in list(range(1,11))])
+        # output_folder+"/05.impute_intervals/{chr}/{chr}.{g_chunk}.int"
         # [ expand(output_folder+"/05.imputed/{chr}/{chr}.{g_chunk}.{ext}", ext=["gen.gz","gen_info","gen_info_by_sample","gen_samples","gen_summary","gen_warnings"], chr=key, g_chunk=["{:02d}".format(chunk) for chunk in list(range(1,value+1))]) for key, value in chunked.items()] 
         # [ output_folder+"/04.impute_intervals/{key}/{key}.{value}.int" for key, value in chunked.items()]
         # directory(expand(output_folder+"/04.impute_intervals/{chr}/",chr=chrs))
