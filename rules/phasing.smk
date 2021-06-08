@@ -29,7 +29,8 @@ rule phase:
         output_folder+ "/04.phased_data/" + ref_panel + "/"+ cohort_name +"_{chr}_phased.vcf.gz",
         output_folder+ "/04.phased_data/" + ref_panel + "/"+ cohort_name +"_{chr}_phased.vcf.gz.tbi"
     input:
-        rules.plink2vcf.output[0]
+        # rules.plink2vcf.output[0]
+        rules.vcfAnnotate.output[0]
     params:
         g_map=config['paths']['genetic_map_path']+"/chr{chr}.b37.gmap.gz",
         mcmc_iterations=config['rules']['phase']['mcmc_iterations'],
