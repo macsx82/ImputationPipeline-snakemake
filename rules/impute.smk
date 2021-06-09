@@ -7,7 +7,8 @@ rule chunkGenerator:
 		g_chunk='\d+',
 		chr='\d+'
 	output:
-		output_folder+"/05.impute_intervals/{chr}/{chr}.{g_chunk}.int"
+		# output_folder+"/05.impute_intervals/{chr}/{chr}.{g_chunk}.int"
+		coord_by_chunker=output_folder+"/05.impute_intervals/{chr}/{chr}.coordinates.txt"
 		# directory(output_folder+"/04.impute_intervals/{chr}")
 	input:
 		# regardless of the format of the panel, here we use the reference panel itself
@@ -15,12 +16,36 @@ rule chunkGenerator:
 		study_geno=rules.phase.output[0]
 	params:
 		chunker_tool=config['tools']['chunker_tool'],
-		coord_by_chunker=lambda wildcards: output_folder+"/05.impute_intervals/{chr}/{chr}.coordinates.txt".format(chr=wildcards.chr)
+		# coord_by_chunker=lambda wildcards: output_folder+"/05.impute_intervals/{chr}/{chr}.coordinates.txt".format(chr=wildcards.chr)
 	run:
-		chunk_cmd="%s --h %s --r %s --g %s --o %s" %(params.chunker_tool,input.ref_panel, wildcards.chr, input.study_geno, params.coord_by_chunker)
+		chunk_cmd="%s --h %s --r %s --g %s --o %s" %(params.chunker_tool,input.ref_panel, wildcards.chr, input.study_geno, output.coord_by_chunker)
 		shell(chunk_cmd)
 		# read the generated file and proceed as we did before
-		with open(params.coord_by_chunker) as chunk_file:
+		# with open(params.coord_by_chunker) as chunk_file:
+		# 	for line in chunk_file:
+		# 		chunk=int(line.strip().split("\t")[0])+1
+		# 		chrom=line.strip().split("\t")[1]
+		# 		interval=line.strip().split("\t")[3]
+		# 		out_file=output_folder+"/05.impute_intervals/"+chrom+"/"+chrom+"."+"{:02d}".format(chunk) +".int"
+		# 		open(out_file,"w").write(interval)
+
+rule chunkIntervalFileGenerator:
+	wildcard_constraints:
+		g_chunk='\d+',
+		chr='\d+'
+	output:
+		output_folder+"/05.impute_intervals/{chr}/{chr}.{g_chunk}.int"
+		# directory(output_folder+"/04.impute_intervals/{chr}")
+	input:
+		# regardless of the format of the panel, here we use the reference panel itself
+		rules.chunkGenerator.output[0]
+		# ref_panel=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".vcf.gz",
+		# study_geno=rules.phase.output[0]
+	params:
+		coord_by_chunker=lambda wildcards: output_folder+"/05.impute_intervals/{chr}/{chr}.coordinates.txt".format(chr=wildcards.chr)
+	run:
+		# read the generated file and proceed as we did before
+		with open(input[0]) as chunk_file:
 			for line in chunk_file:
 				chunk=int(line.strip().split("\t")[0])+1
 				chrom=line.strip().split("\t")[1]
@@ -69,15 +94,26 @@ rule impute:
 		{params.impute} {params.impute_options} --m {params.g_map} --h {input.ref_panel} --g {input.study_geno} --r {params.interval} --o {params.out_prefix}.vcf.gz --l {params.out_prefix}.log --b {params.buffer_size} --threads {threads} --ne {params.ne} --pbwt-depth {params.pbwt_depth} {params.chrx_str}
 		"""
 
-# rule to concat back data imputed by chromosome
+# # rule to concat back data imputed by chromosome
 # rule concatImputed:
 # 	wildcard_constraints:
 # 		g_chunk='\d+',
 # 		chr='\d+'
 # 	output:
+# 		expand(output_folder+"/06.imputed/MERGED/{{chr}}/{{chr}}.{ext}", ext=["vcf.gz","vcf.gz.tbi"])
 # 	input:
+# 		lambda wildcards: collect_imputed_chunks(output_folder+"/06.imputed",wildcards.chr)
 # 	params:
-# 	shell:	
+# 		bcftools_bin=config['tools']['bcftools'],
+# 		temp=config['rules']['concatImputed']['temp']
+# 	shell:
+# 		"""
+# 		{params.bcftools_bin} concat {input}| {params.bcftools_bin} sort -T {params.temp} -O z -o {output[0]}
+# 		tabix -p vcf {output[0]}
+
+# 		"""
+
+
 # Rules preserved here and custom made for impute2 and impute2 reference panels
 # 
 # rule chunkGenerator:

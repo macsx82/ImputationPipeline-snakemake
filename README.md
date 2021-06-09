@@ -229,13 +229,16 @@ We need to add rsIDs to ref panel in VCF format:
 
 ```bash
 basepath=/shared/resources/references/VCF/IGRPv1
-
-for chr in {1..22}
+dbSNP=/netapp/nfs/resources/dbSNP/human_9606_b154_GRCh37p13/GCF_000001405.25.vcf.gz
+# for chr in 1 {3..22}
+# for chr in 2
+for chr in 1 3 4
 do
 
-mkdir -p ${basepath}/rsID/${chr}
+mkdir -p ${basepath}/a_rsID/${chr}
 
-echo "bcftools annotate --set-id +'%CHROM:%POS\_%REF\_%FIRST_ALT' ${basepath}/${chr}/${chr}.IGRPv1.vcf.gz -O z -o ${basepath}/rsID/${chr}/${chr}.IGRPv1.vcf.gz;tabix -p vcf ${basepath}/rsID/${chr}/${chr}.IGRPv1.vcf.gz" |qsub -N annots_${chr}_vcf -V -cwd -l h_vmem=15G -q fast
+# echo "bcftools annotate --set-id +'%CHROM:%POS\_%REF\_%FIRST_ALT' ${basepath}/noRs/${chr}/${chr}.IGRPv1.vcf.gz -O z -o ${basepath}/${chr}/${chr}.IGRPv1.vcf.gz;tabix -p vcf ${basepath}/${chr}/${chr}.IGRPv1.vcf.gz" |qsub -N annots_${chr}_vcf -V -cwd -l h_vmem=20G -q fast
+echo "bcftools annotate -a ${dbSNP} -c ID ${basepath}/${chr}/${chr}.IGRPv1.vcf.gz -O z -o ${basepath}/a_rsID/${chr}/${chr}.IGRPv1.vcf.gz;tabix -p vcf ${basepath}/a_rsID/${chr}/${chr}.IGRPv1.vcf.gz" |qsub -N annots_${chr}_vcf -V -cwd -l h_vmem=15G -q "fast@apollo2.burlo.trieste.it"
 
 done
 ```
