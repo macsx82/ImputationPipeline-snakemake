@@ -180,5 +180,5 @@ def update_mono_snps(allele_update,plink_bim,outfile):
     output_file.close()
 
 # define a function to collect all chunks for a chromosome
-def collect_imputed_chunks(imputed_folder,chrom):
+# def collect_imputed_chunks(imputed_folder,chrom):
     
