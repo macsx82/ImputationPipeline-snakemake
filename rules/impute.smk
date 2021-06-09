@@ -35,7 +35,7 @@ rule chunkIntervalFileGenerator:
 		g_chunk='\d+',
 		chr='\d+'
 	output:
-		expand(output_folder+"/05.impute_intervals/{chr}/{chr}.{g_chunk}.int")
+		expand(output_folder+"/05.impute_intervals/{chr}/{chr}.{{g_chunk}}.int",chr=chrs)
 		# directory(output_folder+"/04.impute_intervals/{chr}")
 	input:
 		# regardless of the format of the panel, here we use the reference panel itself
