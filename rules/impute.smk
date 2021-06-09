@@ -35,7 +35,7 @@ rule chunkIntervalFileGenerator:
 		g_chunk='\d+',
 		chr='\d+'
 	output:
-		output_folder+"/05.impute_intervals/{chr}/{chr}.{g_chunk}.int"
+		expand(output_folder+"/05.impute_intervals/{chr}/{chr}.{g_chunk}.int")
 		# directory(output_folder+"/04.impute_intervals/{chr}")
 	input:
 		# regardless of the format of the panel, here we use the reference panel itself
@@ -43,7 +43,7 @@ rule chunkIntervalFileGenerator:
 		# ref_panel=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".vcf.gz",
 		# study_geno=rules.phase.output[0]
 	params:
-		coord_by_chunker=lambda wildcards: output_folder+"/05.impute_intervals/{chr}/{chr}.coordinates.txt".format(chr=wildcards.chr)
+		# coord_by_chunker=lambda wildcards: output_folder+"/05.impute_intervals/{chr}/{chr}.coordinates.txt".format(chr=wildcards.chr)
 	run:
 		# read the generated file and proceed as we did before
 		with open(input[0]) as chunk_file:
