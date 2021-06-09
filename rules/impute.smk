@@ -70,8 +70,8 @@ rule impute:
 		expand(output_folder+"/06.imputed/{{chr}}/{{chr}}.{{g_chunk}}.{ext}", ext=["vcf.gz","log"])
 	input:
 		ref_panel=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".vcf.gz",
-		study_geno=rules.phase.output[0]
-		# interval_file=rules.chunkGenerator.output
+		study_geno=rules.phase.output[0],
+		interval_file=rules.chunkIntervalFileGenerator.output
 	threads:
 		config["rules"]["impute"]["threads"]
 	resources:
