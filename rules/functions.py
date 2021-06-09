@@ -180,5 +180,13 @@ def update_mono_snps(allele_update,plink_bim,outfile):
     output_file.close()
 
 # define a function to collect all chunks for a chromosome
-# def collect_imputed_chunks(imputed_folder,chrom):
-    
+def collect_imputed_chunks(imputed_folder,chrom):
+    from os import listdir
+    import re
+    from os.path import join, isfile
+    # chrom=22
+    # imputed_folder="/home/cocca/analyses/test_imputation_20210604/06.imputed"
+    imputed_pattern=str(chrom)+".\d+.vcf.gz"
+    # read the folder content and return it as a list
+    vcf_files= [ join(imputed_folder,str(chrom),vcf_f) for vcf_f in listdir(join(imputed_folder,str(chrom))) if re.search(imputed_pattern,vcf_f)]
+

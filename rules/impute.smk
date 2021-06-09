@@ -96,23 +96,23 @@ rule impute:
 		"""
 
 # # rule to concat back data imputed by chromosome
-# rule concatImputed:
-# 	wildcard_constraints:
-# 		g_chunk='\d+',
-# 		chr='\d+'
-# 	output:
-# 		expand(output_folder+"/06.imputed/MERGED/{{chr}}/{{chr}}.{ext}", ext=["vcf.gz","vcf.gz.tbi"])
-# 	input:
-# 		lambda wildcards: collect_imputed_chunks(output_folder+"/06.imputed",wildcards.chr)
-# 	params:
-# 		bcftools_bin=config['tools']['bcftools'],
-# 		temp=config['rules']['concatImputed']['temp']
-# 	shell:
-# 		"""
-# 		{params.bcftools_bin} concat {input}| {params.bcftools_bin} sort -T {params.temp} -O z -o {output[0]}
-# 		tabix -p vcf {output[0]}
+rule concatImputed:
+	wildcard_constraints:
+		g_chunk='\d+',
+		chr='\d+'
+	output:
+		expand(output_folder+"/06.imputed/MERGED/{{chr}}/{{chr}}.{ext}", ext=["vcf.gz","vcf.gz.tbi"])
+	input:
+		lambda wildcards: collect_imputed_chunks(output_folder+"/06.imputed",wildcards.chr)
+	params:
+		bcftools_bin=config['tools']['bcftools'],
+		temp=config['rules']['concatImputed']['temp']
+	shell:
+		"""
+		{params.bcftools_bin} concat {input}| {params.bcftools_bin} sort -T {params.temp} -O z -o {output[0]}
+		tabix -p vcf {output[0]}
 
-# 		"""
+		"""
 
 
 # Rules preserved here and custom made for impute2 and impute2 reference panels
