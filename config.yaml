@@ -26,6 +26,7 @@ paths:
 
 rules:
   chunkGenerator:
+    window-size: 5000000
   impute:
     # k_hap: 10000
     ne : 20000
