@@ -190,3 +190,4 @@ def collect_imputed_chunks(imputed_folder,chrom):
     # read the folder content and return it as a list
     vcf_files= [ join(imputed_folder,str(chrom),vcf_f) for vcf_f in listdir(join(imputed_folder,str(chrom))) if re.search(imputed_pattern,vcf_f)]
 
+    return vcf_files
