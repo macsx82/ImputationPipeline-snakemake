@@ -61,7 +61,7 @@ rule impute:
 		g_chunk='\d+',
 		chr='\d+'
 	output:
-		expand(output_folder+"/06.imputed/{chr}/{chr}.{g_chunk}.{ext}", ext=["vcf.gz","log"])
+		expand(output_folder+"/06.imputed/{{chr}}/{{chr}}.{{g_chunk}}.{ext}", ext=["vcf.gz","log"])
 	input:
 		interval_file=output_folder+"/05.impute_intervals/{chr}/splitted/{chr}.{g_chunk}.int",
 		ref_panel=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".vcf.gz",
