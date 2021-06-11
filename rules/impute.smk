@@ -35,7 +35,7 @@ checkpoint chunkIntervalFileGenerator:
 		g_chunk='\d+',
 		chr='\d+'
 	output:
-		intervals=directory(output_folder+"/05.impute_intervals/{chr}")
+		intervals=directory(output_folder+"/05.impute_intervals/{chr}/splitted")
 		# expand(output_folder+"/05.impute_intervals/{{chr}}/{{chr}}.{{g_chunk}}.int")
 		# directory(output_folder+"/04.impute_intervals/{chr}")
 	input:
@@ -63,7 +63,7 @@ rule impute:
 	output:
 		expand(output_folder+"/06.imputed/{{chr}}/{{chr}}.{{g_chunk}}.{ext}", ext=["vcf.gz","log"])
 	input:
-		interval_file=output_folder+"/05.impute_intervals/{chr}/{chr}.{g_chunk}.int",
+		interval_file=output_folder+"/05.impute_intervals/{chr}/splitted/{chr}.{g_chunk}.int",
 		ref_panel=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".vcf.gz",
 		study_geno=rules.phase.output[0]
 		# interval_file=rules.chunkIntervalFileGenerator.output
@@ -78,7 +78,7 @@ rule impute:
 		ne=config['rules']['impute']['ne'],
 		pbwt_depth=config['rules']['impute']['pbwt_depth'],
 		buffer_size=config['rules']['impute']['buffer_size'],
-		interval= lambda wildcards: get_imputation_interval("{output_folder}/05.impute_intervals/{chr}/{chr}.{g_chunk}.int".format(chr=wildcards.chr, g_chunk=wildcards.g_chunk, output_folder=output_folder)),
+		interval= lambda wildcards: get_imputation_interval("{output_folder}/05.impute_intervals/{chr}/splitted/{chr}.{g_chunk}.int".format(chr=wildcards.chr, g_chunk=wildcards.g_chunk, output_folder=output_folder)),
 		# interval=get_imputation_interval('{input.interval_file}'),
 		impute_options=config['rules']['impute']['options'],
 		g_map=config['paths']['genetic_map_path']+"/chr{chr}.b37.gmap.gz",
