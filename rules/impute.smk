@@ -30,12 +30,13 @@ rule chunkGenerator:
 		# 		out_file=output_folder+"/05.impute_intervals/"+chrom+"/"+chrom+"."+"{:02d}".format(chunk) +".int"
 		# 		open(out_file,"w").write(interval)
 
-rule chunkIntervalFileGenerator:
+checkpoint chunkIntervalFileGenerator:
 	wildcard_constraints:
 		g_chunk='\d+',
 		chr='\d+'
 	output:
-		expand(output_folder+"/05.impute_intervals/{{chr}}/{{chr}}.{{g_chunk}}.int")
+		intervals=directory(output_folder+"/05.impute_intervals/{chr}")
+		# expand(output_folder+"/05.impute_intervals/{{chr}}/{{chr}}.{{g_chunk}}.int")
 		# directory(output_folder+"/04.impute_intervals/{chr}")
 	input:
 		# regardless of the format of the panel, here we use the reference panel itself
@@ -53,14 +54,6 @@ rule chunkIntervalFileGenerator:
 				interval=line.strip().split("\t")[3]
 				out_file=output_folder+"/05.impute_intervals/"+chrom+"/"+chrom+"."+"{:02d}".format(chunk) +".int"
 				open(out_file,"w").write(interval)
-	# run:
-	# 	# here we will generate the interval string
-	# 	# get chr start and end and how many chunks we need for the current chr
-	# 	chrom,start,end,chunk_num= get_chunk_num(input.ref_legend,params.chunk_size)
-	# 	for chunk in list(range(1,chunk_num+1)):
-	# 		out_file=output_folder+"/05.impute_intervals/"+chrom+"/"+chrom+"."+"{:02d}".format(chunk) +".int"
-	# 		interval=create_chunks(input.ref_legend,params.chunk_size,chunk)
-	# 		open(out_file,"w").write(interval)
 
 # rule to run imputation for each chunk
 rule impute:
@@ -72,7 +65,8 @@ rule impute:
 	input:
 		ref_panel=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".vcf.gz",
 		study_geno=rules.phase.output[0],
-		interval_file=rules.chunkIntervalFileGenerator.output
+		output_folder+"/05.impute_intervals/{chr}/{chr}.{g_chunk}.int"
+		# interval_file=rules.chunkIntervalFileGenerator.output
 	threads:
 		config["rules"]["impute"]["threads"]
 	resources:
@@ -95,6 +89,7 @@ rule impute:
 		{params.impute} {params.impute_options} --m {params.g_map} --h {input.ref_panel} --g {input.study_geno} --r {params.interval} --o {params.out_prefix}.vcf.gz --l {params.out_prefix}.log --b {params.buffer_size} --threads {threads} --ne {params.ne} --pbwt-depth {params.pbwt_depth} {params.chrx_str}
 		"""
 
+
 # # rule to concat back data imputed by chromosome
 rule concatImputed:
 	wildcard_constraints:
@@ -103,7 +98,8 @@ rule concatImputed:
 	output:
 		expand(output_folder+"/06.imputed/MERGED/{{chr}}/{{chr}}.{ext}", ext=["vcf.gz","vcf.gz.tbi"])
 	input:
-		lambda wildcards: collect_imputed_chunks(output_folder+"/06.imputed",wildcards.chr)
+		# lambda wildcards: collect_imputed_chunks(output_folder+"/06.imputed",wildcards.chr)
+		collect_imputed_chunks
 	params:
 		bcftools_bin=config['tools']['bcftools'],
 		temp=config['rules']['concatImputed']['temp']
@@ -111,7 +107,6 @@ rule concatImputed:
 		"""
 		{params.bcftools_bin} concat {input}| {params.bcftools_bin} sort -T {params.temp} -O z -o {output[0]}
 		tabix -p vcf {output[0]}
-
 		"""
 
 
