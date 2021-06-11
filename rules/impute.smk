@@ -63,9 +63,9 @@ rule impute:
 	output:
 		expand(output_folder+"/06.imputed/{{chr}}/{{chr}}.{{g_chunk}}.{ext}", ext=["vcf.gz","log"])
 	input:
+		interval_file=output_folder+"/05.impute_intervals/{chr}/{chr}.{g_chunk}.int",
 		ref_panel=config["paths"]["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".vcf.gz",
-		study_geno=rules.phase.output[0],
-		output_folder+"/05.impute_intervals/{chr}/{chr}.{g_chunk}.int"
+		study_geno=rules.phase.output[0]
 		# interval_file=rules.chunkIntervalFileGenerator.output
 	threads:
 		config["rules"]["impute"]["threads"]
