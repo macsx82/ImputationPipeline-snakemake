@@ -1,5 +1,11 @@
 # functions for the imputation pieline
 
+# define a function to create and open a file in write mode
+# got from https://stackoverflow.com/a/30582525
+def createAndOpen(filename, mode):
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+    return open(filename, mode)
+
 def generate_end_of_pipeline_files(key):
     return "%s/%s/chr%s.pipe.done" % (config["output_folder"],config["pop"],key)
 
