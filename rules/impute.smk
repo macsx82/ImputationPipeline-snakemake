@@ -52,7 +52,7 @@ checkpoint chunkIntervalFileGenerator:
 				chunk=int(line.strip().split("\t")[0])+1
 				chrom=line.strip().split("\t")[1]
 				interval=line.strip().split("\t")[3]
-				out_file=output_folder+"/05.impute_intervals/"+chrom+"/"+chrom+"."+"{:02d}".format(chunk) +".int"
+				out_file=output_folder+"/05.impute_intervals/"+chrom+"/splitted/"+chrom+"."+"{:02d}".format(chunk) +".int"
 				open(out_file,"w").write(interval)
 
 # rule to run imputation for each chunk
