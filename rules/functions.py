@@ -205,4 +205,4 @@ def collect_imputed_chunks(wildcards):
     # chrom=22
     # imputed_folder="/home/cocca/analyses/test_imputation_20210604/06.imputed"
     checkpoint_output = checkpoints.chunkIntervalFileGenerator.get(**wildcards).output[0]
-    return expand(output_folder+"/06.imputed/{chr}/{chr}.{g_chunk}.{ext}",ext=["vcf.gz","log"],chr=wildcard.chr,g_chunk=glob_wildcards(os.path.join(checkpoint_output, "{chr}.{g_chunk}.vcf.gz")).i)
+    return expand(output_folder+"/06.imputed/{chr}/{chr}.{g_chunk}.{ext}",ext=["vcf.gz","log"],chr=wildcards.chr,g_chunk=glob_wildcards(os.path.join(checkpoint_output, "{chr}.{g_chunk}.vcf.gz")).i)
