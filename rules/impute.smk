@@ -98,7 +98,6 @@ rule concatImputed:
 	output:
 		expand(output_folder+"/06.imputed/MERGED/{{chr}}/{{chr}}.{ext}", ext=["vcf.gz","vcf.gz.tbi"])
 	input:
-		# lambda wildcards: collect_imputed_chunks(output_folder+"/06.imputed",wildcards.chr)
 		collect_imputed_chunks
 	params:
 		bcftools_bin=config['tools']['bcftools'],
