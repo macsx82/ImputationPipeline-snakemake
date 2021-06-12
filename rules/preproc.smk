@@ -31,20 +31,11 @@ rule mapUpdateExt:
         o_bim=output_folder+"/00.cleaned_input/"+cohort_name+"_snps_only_mapUpdateExt.bim",
         o_bed=output_folder+"/00.cleaned_input/"+cohort_name+"_snps_only_mapUpdateExt.bed",
         o_fam=output_folder+"/00.cleaned_input/"+cohort_name+"_snps_only_mapUpdateExt.fam"
-        # output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_mapUpdateTGP.bim",
-        # output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_mapUpdateTGP.bed",
-        # output_folder + "/00.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_mapUpdateTGP.fam",
     input:
         rules.indelsRemove.output[0],
         rules.indelsRemove.output[1]
-        # rules.snpFlip.output[2]
-        # ug_bed=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.bed",
-        # ug_bim=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.bim",
-        # ug_fam=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.fam"
     params:
         i_prefix=output_folder+"/00.cleaned_input/"+cohort_name+"_snps_only",
-        # bfiles_prefix=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}",
-        # bfiles_out_prefix=output_folder+"/00.splitted_input/"+ ref_panel + "/" + cohort_name+"_{chr}_mapUpdateTGP",
         bfiles_out_prefix=output_folder+"/00.cleaned_input/"+cohort_name+"_snps_only_mapUpdateExt",
         plink=config['tools']['plink'],
         update_chr_str=config['paths']['allele_recode_file']+" 1 3 '#'",
@@ -69,18 +60,8 @@ rule allFix:
         rules.mapUpdateExt.output[0],
         rules.mapUpdateExt.output[1],
         rules.mapUpdateExt.output[2]
-        # rules.plinkSplit.output[0],
-        # rules.plinkSplit.output[1],
-        # rules.plinkSplit.output[2]
-        # ug_bed=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.bed",
-        # ug_bim=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.bim",
-        # ug_fam=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.fam"
     params:
-        # bfiles_prefix=output_folder+"/00.splitted_input/"+ ref_panel + "/" + cohort_name+"_{chr}_mapUpdateTGP",
         bfiles_prefix=output_folder+"/00.cleaned_input/"+cohort_name+"_snps_only_mapUpdateExt",
-        # bfiles_prefix=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}",
-        # bfiles_prefix_a1=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}_a1",
-        # bfiles_allFix_prefix=output_folder+"/00.splitted_input/"+ ref_panel + "/" + cohort_name+"_{chr}_allFix",
         bfiles_prefix_a1=output_folder + "/00.cleaned_input/"+cohort_name+"_snps_only_mapUpdateExt_a1",
         bfiles_allFix_prefix=output_folder+"/00.cleaned_input/"+cohort_name+"_snps_only_mapUpdateExt_allFix",
         plink=config['tools']['plink'],
@@ -99,6 +80,9 @@ rule impossibleAllAssignmentFile:
     input:
         rules.allFix.output[3],
         rules.allFix.output[7]
+    log:
+        stdout=log_folder+"/impossibleAllAssignmentFile.o",
+        stderr=log_folder+"/impossibleAllAssignmentFile.e"
     run:
         get_not_assigned_snps(output.to_flip_rsid,input[0],input[1])
 
@@ -108,20 +92,18 @@ rule allFixSnpFlip:
         output_folder+"/00.cleaned_input/"+ cohort_name+"_snps_only_mapUpdateExt_flipped.bim",
         output_folder+"/00.cleaned_input/"+ cohort_name+"_snps_only_mapUpdateExt_flipped.bed",
         output_folder+"/00.cleaned_input/"+ cohort_name+"_snps_only_mapUpdateExt_flipped.fam"
-        # strand_rsid=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_rsids.to_flip"
     input:
         rules.impossibleAllAssignmentFile.output[0],
-        # rules.plinkSplit.output[0],
-        # rules.plinkSplit.output[1],
-        # rules.plinkSplit.output[2]
         rules.allFix.output[0],
         rules.allFix.output[1],
         rules.allFix.output[2]
     params:
         bfiles_prefix=output_folder+"/00.cleaned_input/"+cohort_name+"_snps_only_mapUpdateExt",
-        # bfiles_prefix=output_folder+"/00.splitted_input/"+ ref_panel + "/" + cohort_name+"_{chr}_allFix",
         bfiles_flipped_prefix=output_folder+"/00.cleaned_input/"+ cohort_name+"_snps_only_mapUpdateExt_flipped",
         plink=config['tools']['plink']
+    log:
+        stdout=log_folder+"/allFixSnpFlip.o",
+        stderr=log_folder+"/allFixSnpFlip.e"
     shell:
         """
         set +e
@@ -143,28 +125,17 @@ rule allFixSnpFlip:
 rule plinkSplit:
     output:
         expand(output_folder+"/01.splitted_input/"+cohort_name+"_{chr}.{ext}", ext=['bed','bim','fam'],chr=chrs)
-        # o_bed=scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".bed"),
-        # o_bim=scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".bim"),
-        # o_fam=scatter.split(output_folder+"/00.splitted_input/{scatteritem}_"+cohort_name+".fam")
     input:
         rules.allFixSnpFlip.output[0],
         rules.allFixSnpFlip.output[1],
         rules.allFixSnpFlip.output[2]
-        # rules.mapUpdateExt.output[0],
-        # rules.mapUpdateExt.output[1],
-        # rules.mapUpdateExt.output[2],
-        # expand(input_prefix+".{ext}", ext=['map','ped'])
     params:
-        # scatter_chr= lambda w, output : re.search('(\d+-of-\d+)',output[0]).group(1).split('-of-')[0] ,
-        # i_prefix=input_prefix,
         output_prefix=output_folder+"/01.splitted_input/"+cohort_name,
-        # i_prefix=output_folder+"/00.splitted_input/"+cohort_name+"_snps_only",
-        # i_prefix=output_folder+"/00.splitted_input/"+cohort_name+"_snps_only_mapUpdateExt",
         i_prefix=output_folder+"/00.cleaned_input/"+ cohort_name+"_snps_only_mapUpdateExt_flipped",
         plink=config['tools']['plink']
-    # log:
-    #     stdout=log_folder+"/plinkSplit_{scatteritem}.stdout",
-    #     stderr=log_folder+"/plinkSplit_{scatteritem}.stderr"
+    log:
+        stdout=log_folder+"/plinkSplit_{chr}.o",
+        stderr=log_folder+"/plinkSplit_{chr}.e"
     run:
         for chr in chrs:
             cmd="%s --bfile %s --chr %s --make-bed --out %s_%s" % (params.plink,params.i_prefix,chr,params.output_prefix,chr)
@@ -184,9 +155,6 @@ rule allFixSplitted:
         rules.plinkSplit.output[0],
         rules.plinkSplit.output[1],
         rules.plinkSplit.output[2]
-        # ug_bed=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.bed",
-        # ug_bim=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.bim",
-        # ug_fam=output_folder + "/00.splitted_input/"+cohort_name+"_{chr}.fam"
     params:
         # bfiles_prefix=output_folder+"/00.splitted_input/"+ ref_panel + "/" + cohort_name+"_{chr}_mapUpdateTGP",
         bfiles_prefix=output_folder + "/01.splitted_input/"+cohort_name+"_{chr}",
@@ -195,14 +163,14 @@ rule allFixSplitted:
         plink=config['tools']['plink'],
         update_a1_str=config['paths']['allele_recode_file']+" 5 3 '#'",
         update_a2_str=config['paths']['allele_recode_file']+" 4 3 '#'"
+    log:
+        stdo=log_folder+"/allFixSplitted_{chr}.o",
+        stde=log_folder+"/allFixSplitted_{chr}.e"
     shell:
         """
         {params.plink} --bfile {params.bfiles_prefix} --a1-allele {params.update_a1_str} --make-bed --out {params.bfiles_prefix_a1}
         {params.plink} --bfile {params.bfiles_prefix_a1} --keep-allele-order --a2-allele {params.update_a2_str} --make-bed --out {params.bfiles_allFix_prefix}
         """
-        # {params.plink} --bfile {params.bfiles_prefix} --a2-allele {params.update_a2_str} --make-bed --out {params.bfiles_prefix_a1}
-        # {params.plink} --bfile {params.bfiles_prefix_a1} --keep-allele-order --a1-allele {params.update_a1_str} --make-bed --out {params.bfiles_allFix_prefix}
-
 
 #check alele orientation with the genetic map provided
 rule snpCheck:
@@ -223,9 +191,10 @@ rule snpCheck:
     params:
         output_prefix=output_folder+"/02.refAlign/"+ref_panel+"/{chr}_shapeit_"+ref_panel+".alignments",
         shapeit=config['tools']['shapeit']
-        # output_prefix=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_shapeit_refpanel.alignments"
+    log:
+        stdo=log_folder+"/snpCheck_{chr}.o",
+        stde=log_folder+"/snpCheck_{chr}.e"
     shell:
-        # {config[shapeit_path]} -check --input-bed {input.ug_bed} {input.ug_bim} {input.ug_fam} \
         """
         set +e
         {params.shapeit} -check --input-bed {input.ug_bed} {input.ug_bim} {input.ug_fam} \
@@ -248,6 +217,9 @@ rule snpFlipFile:
         strand_rsid=output_folder+"/02.refAlign/"+ref_panel+"/{chr}_shapeit_rsids.to_flip"
     input:
         rules.snpCheck.output[0]
+    log:
+        stdo=log_folder+"/snpFlipFile_{chr}.o",
+        stde=log_folder+"/snpFlipFile_{chr}.e"
     run:
         get_flippable(input[0],output.strand_rsid)
 
@@ -257,12 +229,8 @@ rule snpFlip:
         output_folder + "/03.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix_flipped.bim",
         output_folder + "/03.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix_flipped.bed",
         output_folder + "/03.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix_flipped.fam"
-        # strand_rsid=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_rsids.to_flip"
     input:
         rules.snpFlipFile.output[0],
-        # rules.plinkSplit.output[0],
-        # rules.plinkSplit.output[1],
-        # rules.plinkSplit.output[2]
         rules.allFix.output[0],
         rules.allFix.output[1],
         rules.allFix.output[2]
@@ -270,6 +238,9 @@ rule snpFlip:
         bfiles_prefix=output_folder+"/01.splitted_input/"+ ref_panel + "/" + cohort_name+"_{chr}_allFix",
         bfiles_flipped_prefix=output_folder+"/03.flipped_input/"+ ref_panel + "/" + cohort_name+"_{chr}_allFix_flipped",
         plink=config['tools']['plink']
+    log:
+        stdo=log_folder+"/snpFlip_{chr}.o",
+        stde=log_folder+"/snpFlip_{chr}.e"
     shell:
         """
         set +e
@@ -304,6 +275,9 @@ rule recoverMono:
         bfiles_allFix_prefix=output_folder + "/03.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix_flipped",
         vcf_flipped_prefix=output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_allFix_flipped",
         plink=config['tools']['plink']
+    log:
+        stdo=log_folder+"/recoverMono_{chr}.o",
+        stde=log_folder+"/recoverMono_{chr}.e"
     run:
         update_mono_snps(input.chip_update_allele_file,input.bim_file,output[0])
         cp_bed_cmd="cp %s %s" %(input.bed_file,output[1])
@@ -316,18 +290,17 @@ rule plink2vcf:
     output:
         output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_allFix_flipped.vcf.gz",
         output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_allFix_flipped.vcf.gz.tbi"
-        # strand_rsid=config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_rsids.to_flip"
     input:
         rules.recoverMono.output[0],
         rules.recoverMono.output[1],
         rules.recoverMono.output[2]
-        # rules.snpFlip.output[0],
-        # rules.snpFlip.output[1],
-        # rules.snpFlip.output[2]
     params:
         bfiles_allFix_prefix=output_folder + "/03.flipped_input/" + ref_panel + "/ReMo/"+ cohort_name+"_{chr}_allFix_flipped_ReMo",
         vcf_flipped_prefix=output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_allFix_flipped",
         plink=config['tools']['plink']
+    log:
+        stdo=log_folder+"/plink2vcf_{chr}.o",
+        stde=log_folder+"/plink2vcf_{chr}.e"
     shell:
         """
         set +e

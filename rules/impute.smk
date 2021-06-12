@@ -84,6 +84,9 @@ rule impute:
 		g_map=config['paths']['genetic_map_path']+"/chr{chr}.b37.gmap.gz",
 		out_prefix=output_folder+"/06.imputed/{chr}/{chr}.{g_chunk}",
 		chrx_str=''
+	log:
+        stdout=log_folder+"/impute_{chr}_{g_chunk}.o",
+        stderr=log_folder+"/impute_{chr}_{g_chunk}.e"
 	shell:
 		"""
 		{params.impute} {params.impute_options} --m {params.g_map} --h {input.ref_panel} --g {input.study_geno} --r {params.interval} --o {params.out_prefix}.vcf.gz --l {params.out_prefix}.log --b {params.buffer_size} --threads {threads} --ne {params.ne} --pbwt-depth {params.pbwt_depth} {params.chrx_str}
