@@ -21,6 +21,9 @@ rule indelsRemove:
         output_prefix=output_folder+"/00.cleaned_input/"+cohort_name+"_snps_only",
         i_prefix=input_prefix,
         plink=config['tools']['plink']
+    log:
+        stdout=log_folder+"/indelsRemove.o",
+        stderr=log_folder+"/indelsRemove.e"
     run:
         cmd="%s --file %s --snps-only 'just-acgt' --recode --out %s" % (params.plink,params.i_prefix,params.output_prefix)
         shell(cmd)
@@ -40,6 +43,9 @@ rule mapUpdateExt:
         plink=config['tools']['plink'],
         update_chr_str=config['paths']['allele_recode_file']+" 1 3 '#'",
         update_map_str=config['paths']['allele_recode_file']+" 2 3 '#'"
+    log:
+        stdout=log_folder+"/mapUpdateExt.o",
+        stderr=log_folder+"/mapUpdateExt.e"
     shell:
         """
         {params.plink} --file {params.i_prefix} --update-chr {params.update_chr_str} --update-map {params.update_map_str} --make-bed --out {params.bfiles_out_prefix}
@@ -67,6 +73,9 @@ rule allFix:
         plink=config['tools']['plink'],
         update_a1_str=config['paths']['allele_recode_file']+" 5 3 '#'",
         update_a2_str=config['paths']['allele_recode_file']+" 4 3 '#'"
+    log:
+        stdout=log_folder+"/allFix.o",
+        stderr=log_folder+"/allFix.e"
     shell:
         """
         {params.plink} --bfile {params.bfiles_prefix} --a1-allele {params.update_a1_str} --make-bed --out {params.bfiles_prefix_a1}
@@ -134,8 +143,8 @@ rule plinkSplit:
         i_prefix=output_folder+"/00.cleaned_input/"+ cohort_name+"_snps_only_mapUpdateExt_flipped",
         plink=config['tools']['plink']
     log:
-        stdout=log_folder+"/plinkSplit_{chr}.o",
-        stderr=log_folder+"/plinkSplit_{chr}.e"
+        stdout=log_folder+"/plinkSplit.o",
+        stderr=log_folder+"/plinkSplit.e"
     run:
         for chr in chrs:
             cmd="%s --bfile %s --chr %s --make-bed --out %s_%s" % (params.plink,params.i_prefix,chr,params.output_prefix,chr)
