@@ -38,7 +38,9 @@ rule phase:
         phasing_tool=config['tools']['phasing_tool']
     threads: 16
     log:
-        output_folder+ "/04.phased_data/" + ref_panel + "/"+ cohort_name +"_{chr}_phase.log"
+        output_folder+ "/04.phased_data/" + ref_panel + "/"+ cohort_name +"_{chr}_phase.log",
+        stdout=log_folder+"/phase_{chr}.o",
+        stderr=log_folder+"/phase_{chr}.e"
     benchmark:
         output_folder+"/benchmarks/{chr}.phase_rule.tsv"
     shell:

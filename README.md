@@ -246,3 +246,12 @@ done
 Test fixref plugin
 
 bcftools +fixref /home/cocca/analyses/test_imputation_20210604/03.flipped_input/IGRPv1/VCF/Slo_POP_22_allFix_flipped.vcf.gz -O z -o /home/cocca/analyses/test_imputation_20210604/03.flipped_input/IGRPv1/VCF/Slo_POP_22_allFix_flipped_REFFIX.vcf.gz -- -f /shared/resources/hgRef/hg19/hg19_nochr.fasta -i /netapp/nfs/resources/dbSNP/human_9606_b154_GRCh37p13/GCF_000001405.25.vcf.gz
+
+---
+#12/06/2021
+
+Sample command to run the pipeline on system queues
+
+```bash
+snakemake -s ~/scripts/pipelines/ImputationPipeline-snakemake/Snakefile -p -r --jobs 50 --configfile /home/cocca/analyses/test_imputation_20210604/config_test_2.yaml --cluster-config ~/scripts/pipelines/ImputationPipeline-snakemake/SGE_cluster.json --cluster "qsub -N {config[cohort_name]}_{rule} -V -cwd -m ea -M {cluster.user_mail} -pe {cluster.parall_env} {threads} -o {config[paths][log_folder]}/\\$JOB_ID_{config[cohort_name]}_{rule}.log -e {config[paths][log_folder]}/\\$JOB_ID_{config[cohort_name]}_{rule}.e -V -l h_vmem={cluster.mem} -q {cluster.queue}"
+```
