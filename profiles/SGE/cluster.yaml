@@ -6,5 +6,5 @@ __options__:
   pe: "smp {rule.threads}"
 
 __default__:
-  output: {rulename}.{jobid}.log
-  error: {rulename}.{jobid}.err
+  output: "{log.stdout}"
+  error: "{log.stderr}"
