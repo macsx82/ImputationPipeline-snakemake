@@ -260,5 +260,5 @@ snakemake -s ~/scripts/pipelines/ImputationPipeline-snakemake/Snakefile --restar
 Try to work with profiles to submit jobs on cluster, following the new snakemake standard, since --clustrer-config is deprecated (though still working)
 
 ```bash
-snakemake -s ~/scripts/pipelines/ImputationPipeline-snakemake/Snakefile --restart-times 3 -p -r --jobs 100 --configfile /home/cocca/analyses/test_imputation_20210604/config_test_2.yaml --cluster-config ~/scripts/pipelines/ImputationPipeline-snakemake/SGE_cluster.json --cluster "qsub -N {config[cohort_name]}_{rule} -V -cwd -m ea -M {cluster.user_mail} -pe {cluster.parall_env} {threads} -o {rule.log.stdout} -e {rule.log.stderr} -V -l h_vmem={cluster.mem} -q {cluster.queue}"
+snakemake -s ~/scripts/pipelines/ImputationPipeline-snakemake/Snakefile -p -r --configfile /home/cocca/analyses/test_imputation_20210604/config_test_2.yaml --profile ~/scripts/pipelines/ImputationPipeline-snakemake/profiles/SGE
 ```

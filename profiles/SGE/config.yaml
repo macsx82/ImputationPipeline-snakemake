@@ -1,4 +1,4 @@
-restart-times: 1
+restart-times: 3
 cluster: "sge-submit.py"
 cluster-status: "sge-status.py"
 jobscript: jobscript.sh

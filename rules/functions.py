@@ -209,7 +209,7 @@ def collect_imputed_chunks(wildcards):
     return expand(output_folder+"/06.imputed/{chr}/{chr}.{g_chunk}.vcf.gz",chr=wildcards.chr,g_chunk=glob_wildcards(os.path.join(checkpoint_output, "{chr}.{g_chunk}.int")).g_chunk)
 
 # function to define memory requirement based on job rerun attempt, after the fist one
-def get_mem_mb(def_mem):
+def get_mem_mb(def_mem, wildcards, attempt):
     import math
     if attempt > 1:
         return floor(int(def_mem) + (int(def_mem) * attempt * 0.5))

@@ -1,15 +1,10 @@
 __resources__:
-  coproc_v100: 
-    - "gpu"
-    - "nvidia_gpu"
-  node_type: 
-    - "node_type"
-    - "machine_type"
-  nodes: "np" 
-  ppn: "proc_per_node"
+  h_vmem: {rule.resources.mem_mb}
+
+__options__:
+  q: fast
+  pe: "smp {rule.threads}"
 
 __default__:
-  runtime: "48:0:0"
-  join: yes
-  output: logs/sge/snakejob.{rulename}.{jobid}.log
-  error: logs/sge/snakejob.{rulename}.{jobid}.log
+  output: {rule.log.stdout}
+  error: {rule.log.stderr}
