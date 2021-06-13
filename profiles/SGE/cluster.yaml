@@ -5,6 +5,6 @@ __options__:
 
 __default__:
   q: "fast"
-  pe: "smp {threads}"
+  pe: "smp {rule.threads}"
   # output: {log.stdout}
   # error: {log.stderr}
