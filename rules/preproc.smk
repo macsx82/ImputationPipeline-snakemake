@@ -188,7 +188,7 @@ rule getDupeByPos:
     output:
         output_folder + "/01.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_DupeByPos.list"
     input:
-        rule.allFixSplitted.output[0]
+        rules.allFixSplitted.output[0]
     params:
     log:
         stdout=log_folder+"/getDupeByPos_{chr}.o",
@@ -203,7 +203,7 @@ rule removeDupSnpsByID:
         ug_bim=output_folder + "/01.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFixCleaned.bim",
         ug_fam=output_folder + "/01.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFixCleaned.fam"
     input:
-        rule.getDupeByPos.output[0],
+        rules.getDupeByPos.output[0],
         ug_bed=output_folder + "/01.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix.bed",
         ug_bim=output_folder + "/01.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix.bim",
         ug_fam=output_folder + "/01.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix.fam"
