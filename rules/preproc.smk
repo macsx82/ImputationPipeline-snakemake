@@ -173,8 +173,8 @@ rule allFixSplitted:
         update_a1_str=config['paths']['allele_recode_file']+" 5 3 '#'",
         update_a2_str=config['paths']['allele_recode_file']+" 4 3 '#'"
     log:
-        stdo=log_folder+"/allFixSplitted_{chr}.o",
-        stde=log_folder+"/allFixSplitted_{chr}.e"
+        stdout=log_folder+"/allFixSplitted_{chr}.o",
+        stderr=log_folder+"/allFixSplitted_{chr}.e"
     shell:
         """
         {params.plink} --bfile {params.bfiles_prefix} --a1-allele {params.update_a1_str} --make-bed --out {params.bfiles_prefix_a1}
@@ -201,8 +201,8 @@ rule snpCheck:
         output_prefix=output_folder+"/02.refAlign/"+ref_panel+"/{chr}_shapeit_"+ref_panel+".alignments",
         shapeit=config['tools']['shapeit']
     log:
-        stdo=log_folder+"/snpCheck_{chr}.o",
-        stde=log_folder+"/snpCheck_{chr}.e"
+        stdout=log_folder+"/snpCheck_{chr}.o",
+        stderr=log_folder+"/snpCheck_{chr}.e"
     shell:
         """
         set +e
@@ -227,8 +227,8 @@ rule snpFlipFile:
     input:
         rules.snpCheck.output[0]
     log:
-        stdo=log_folder+"/snpFlipFile_{chr}.o",
-        stde=log_folder+"/snpFlipFile_{chr}.e"
+        stdout=log_folder+"/snpFlipFile_{chr}.o",
+        stderr=log_folder+"/snpFlipFile_{chr}.e"
     run:
         get_flippable(input[0],output.strand_rsid)
 
@@ -248,8 +248,8 @@ rule snpFlip:
         bfiles_flipped_prefix=output_folder+"/03.flipped_input/"+ ref_panel + "/" + cohort_name+"_{chr}_allFix_flipped",
         plink=config['tools']['plink']
     log:
-        stdo=log_folder+"/snpFlip_{chr}.o",
-        stde=log_folder+"/snpFlip_{chr}.e"
+        stdout=log_folder+"/snpFlip_{chr}.o",
+        stderr=log_folder+"/snpFlip_{chr}.e"
     shell:
         """
         set +e
@@ -285,8 +285,8 @@ rule recoverMono:
         vcf_flipped_prefix=output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_allFix_flipped",
         plink=config['tools']['plink']
     log:
-        stdo=log_folder+"/recoverMono_{chr}.o",
-        stde=log_folder+"/recoverMono_{chr}.e"
+        stdout=log_folder+"/recoverMono_{chr}.o",
+        stderr=log_folder+"/recoverMono_{chr}.e"
     run:
         update_mono_snps(input.chip_update_allele_file,input.bim_file,output[0])
         cp_bed_cmd="cp %s %s" %(input.bed_file,output[1])
@@ -308,8 +308,8 @@ rule plink2vcf:
         vcf_flipped_prefix=output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_allFix_flipped",
         plink=config['tools']['plink']
     log:
-        stdo=log_folder+"/plink2vcf_{chr}.o",
-        stde=log_folder+"/plink2vcf_{chr}.e"
+        stdout=log_folder+"/plink2vcf_{chr}.o",
+        stderr=log_folder+"/plink2vcf_{chr}.e"
     shell:
         """
         set +e
@@ -342,12 +342,12 @@ rule vcfFixRef:
         temp=config['rules']['vcfFixRef']['temp'],
         bcftools_bin=config['tools']['bcftools']
     log:
-        stdo=log_folder+"/vcfFixRef_{chr}.o",
-        stde=log_folder+"/vcfFixRef_{chr}.e",
+        stdout=log_folder+"/vcfFixRef_{chr}.o",
+        stderr=log_folder+"/vcfFixRef_{chr}.e",
     shell:
         """
         # conda activate gatk4170
-        {params.bcftools_bin} +fixref {input[0]} -O z -o {output[0]} -- -i {params.ext_ref_file} -f {params.ref_fasta} > {log.stdo} 2> {log.stde}
+        {params.bcftools_bin} +fixref {input[0]} -O z -o {output[0]} -- -i {params.ext_ref_file} -f {params.ref_fasta} > {log.stdout} 2> {log.stderr}
         {params.bcftools_bin} sort -T {params.temp} {output[0]} -O z -o {output[1]} >> {log.stdo} 2>> {log.stde}
         tabix -p vcf {output[1]}
         """
@@ -366,13 +366,13 @@ rule vcfAnnotate:
         ext_ref_file=config['paths']['ext_ref_annot_file'],
         bcftools_bin=config['tools']['bcftools']
     log:
-        stdo=log_folder+"/vcfAnnotate_{chr}.o",
-        stde=log_folder+"/vcfAnnotate_{chr}.e"
+        stdout=log_folder+"/vcfAnnotate_{chr}.o",
+        stderr=log_folder+"/vcfAnnotate_{chr}.e"
     shell:
         """
-        {params.bcftools_bin} annotate --set-id '%CHROM:%POS\_%REF\_%FIRST_ALT' {input[0]} -O z -o {output[0]} > {log.stdo} 2> {log.stde}
+        {params.bcftools_bin} annotate --set-id '%CHROM:%POS\_%REF\_%FIRST_ALT' {input[0]} -O z -o {output[0]} > {log.stdout} 2> {log.stderr}
         tabix -p vcf {output[0]}
-        {params.bcftools_bin} annotate -a {params.ext_ref_file} -c ID {output[0]} -O z -o {output[2]} >> {log.stdo} 2>> {log.stde}
+        {params.bcftools_bin} annotate -a {params.ext_ref_file} -c ID {output[0]} -O z -o {output[2]} >> {log.stdout} 2>> {log.stderr}
         tabix -p vcf {output[2]}
         """
 

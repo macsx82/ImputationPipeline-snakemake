@@ -22,7 +22,7 @@ rule chunkGenerator:
 		stdout=log_folder+"/chunkGenerator_{chr}.o",
 		stderr=log_folder+"/chunkGenerator_{chr}.e"
 	run:
-		chunk_cmd="%s --h %s --r %s --g %s --window-size %s --o %s" %(params.chunker_tool,input.ref_panel, wildcards.chr, input.study_geno,params.win_size,output.coord_by_chunker)
+		chunk_cmd="%s --h %s --r %s --g %s --window-size %s --o %s > %s 2> %s" %(params.chunker_tool,input.ref_panel, wildcards.chr, input.study_geno,params.win_size,output.coord_by_chunker,log.stdout,log.stderr)
 		shell(chunk_cmd)
 		# read the generated file and proceed as we did before
 		# with open(params.coord_by_chunker) as chunk_file:
@@ -95,7 +95,7 @@ rule impute:
 		stderr=log_folder+"/impute_{chr}_{g_chunk}.e"
 	shell:
 		"""
-		{params.impute} {params.impute_options} --m {params.g_map} --h {input.ref_panel} --g {input.study_geno} --r {params.interval} --o {params.out_prefix}.vcf.gz --l {params.out_prefix}.log --b {params.buffer_size} --threads {threads} --ne {params.ne} --pbwt-depth {params.pbwt_depth} {params.chrx_str}
+		{params.impute} {params.impute_options} --m {params.g_map} --h {input.ref_panel} --g {input.study_geno} --r {params.interval} --o {params.out_prefix}.vcf.gz --l {params.out_prefix}.log --b {params.buffer_size} --threads {threads} --ne {params.ne} --pbwt-depth {params.pbwt_depth} {params.chrx_str} > {log.stdout} 2> {log.stderr}
 		"""
 
 
@@ -116,8 +116,8 @@ rule concatImputed:
 		stderr=log_folder+"/concatImputed_{chr}.e"
 	shell:
 		"""
-		{params.bcftools_bin} concat {input}| {params.bcftools_bin} sort -T {params.temp} -O z -o {output[0]}
-		tabix -p vcf {output[0]}
+		{params.bcftools_bin} concat {input}| {params.bcftools_bin} sort -T {params.temp} -O z -o {output[0]} > {log.stdout} 2> {log.stderr}
+		tabix -p vcf {output[0]} >> {log.stdout} 2>> {log.stderr}
 		"""
 
 
