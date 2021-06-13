@@ -1,10 +1,10 @@
 __resources__:
-  h_vmem: {rule.resources.mem_mb}
+  h_vmem: {resources.mem_mb}
 
 __options__:
-  pe: "smp {rule.threads}"
 
 __default__:
   q: "fast"
+  pe: "smp {threads}"
   # output: {log.stdout}
   # error: {log.stderr}
