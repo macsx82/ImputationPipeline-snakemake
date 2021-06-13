@@ -110,7 +110,7 @@ rule concatImputed:
 		collect_imputed_chunks
 	params:
 		bcftools_bin=config['tools']['bcftools'],
-		temp=config['rules']['concatImputed']['temp']
+		temp=define_tmp(config['rules']['concatImputed']['temp'])
 	log:
 		stdout=log_folder+"/concatImputed_{chr}.o",
 		stderr=log_folder+"/concatImputed_{chr}.e"

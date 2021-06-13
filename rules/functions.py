@@ -215,3 +215,12 @@ def get_mem_mb(def_mem, attempt):
         return floor(int(def_mem) + (int(def_mem) * attempt * 0.5))
     else :
         return int(def_mem)
+
+# function to create a temporary folder
+def define_tmp(config_temp):
+    import subprocess
+    cmd="mktemp -u -d -p %s" % (config_temp)
+
+    exec_cmd=subprocess.Popen(cmd.split(" "),stdout=subprocess.PIPE,stderr=subprocess.PIPE) 
+    stdout,stderr=exec_cmd.communicate()
+    return stdout.decode().strip()

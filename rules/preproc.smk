@@ -339,7 +339,7 @@ rule vcfFixRef:
     params:
         ext_ref_file=config['paths']['ext_ref_annot_file'],
         ref_fasta=config['paths']['ref_fasta'],
-        temp=config['rules']['vcfFixRef']['temp'],
+        temp=define_tmp(config['rules']['vcfFixRef']['temp']),
         bcftools_bin=config['tools']['bcftools']
     log:
         stdout=log_folder+"/vcfFixRef_{chr}.o",
