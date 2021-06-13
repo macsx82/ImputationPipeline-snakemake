@@ -262,3 +262,4 @@ Try to work with profiles to submit jobs on cluster, following the new snakemake
 ```bash
 snakemake -s ~/scripts/pipelines/ImputationPipeline-snakemake/Snakefile -p -r --configfile /home/cocca/analyses/test_imputation_20210604/config_test_2.yaml --profile ~/scripts/pipelines/ImputationPipeline-snakemake/profiles/SGE
 ```
+
