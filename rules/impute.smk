@@ -76,7 +76,7 @@ rule impute:
 	threads:
 		config["rules"]["impute"]["threads"]
 	resources:
-		mem_mb=get_mem_mb(config["rules"]["impute"]["mem"], attempt)
+		mem_mb=lambda wildcards, attempt: get_mem_mb(config["rules"]["impute"]["mem"], attempt)
 	benchmark:
 		output_folder+"/benchmarks/{chr}.{g_chunk}.impute_rule.tsv"
 	params:
