@@ -164,6 +164,8 @@ def load_cluster_config(path):
 def ensure_directory_exists(path):
     """Check if directory exists and create if not"""
     directory = os.path.dirname(path)
+    if directory == "":
+        return
     if not os.path.exists(directory):
         os.makedirs(directory, exist_ok=True)
     return
