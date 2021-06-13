@@ -6,5 +6,5 @@ __options__:
   pe: "smp {rule.threads}"
 
 __default__:
-  output: "{rule}.log"
-  error: "{rule}.err"
+  output: {rule}.log
+  error: {rule}.err
