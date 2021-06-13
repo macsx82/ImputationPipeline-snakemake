@@ -224,3 +224,54 @@ def define_tmp(config_temp):
     exec_cmd=subprocess.Popen(cmd.split(" "),stdout=subprocess.PIPE,stderr=subprocess.PIPE) 
     stdout,stderr=exec_cmd.communicate()
     return stdout.decode().strip()
+
+# function to flatten a list in case it is a list of nested lists
+# got it from https://thispointer.com/python-convert-list-of-lists-or-nested-list-to-flat-list/
+def flattenNestedList(nestedList):
+    ''' Converts a nested list to a flat list '''
+    flatList = []
+    # Iterate over all the elements in given list
+    for elem in nestedList:
+        # Check if type of element is list
+        if isinstance(elem, list):
+            # Extend the flat list by adding contents of this element (list)
+            flatList.extend(flattenNestedList(elem))
+        else:
+            # Append the elemengt to the list
+            flatList.append(elem)    
+    return flatList
+
+# function to extract a list of duplicate sites to be removed using position
+# it is possible that with the update step using the external reference, we will introduce some position duplicates
+# we need a rule to take care of them, removing duplicates if they dont have an rsID
+# first we want the list of duplicate rsID. We need to look for duplicate positions, then lookup the rsID in the bim file, than check if it has an rsID or a bs name from the array manufcturer.
+# we will remove the bs named by using it in our list
+def getDupeByPos(infile,outlist):
+    import collections
+    import re
+    # get all duplicates positions, since we need to extract the relevant rsID, to create the exclusion list
+    bim_file=open('%s' %(infile),'r')
+    rs_ids=collections.defaultdict(list)
+    # define a list of ids to remove
+    to_rem=[]
+    for line in bim_file:
+        pos=line.strip().split("\t")[3]
+        rsid=line.strip().split("\t")[1]
+        rs_ids[pos].append(rsid)
+
+    for k in rs_ids.keys():
+        if len(rs_ids[k]) > 1:
+            # we want to check if one of the ids starts with rs. If this is the case, we want to remove the other. If we have two rsId, we will remove both of them. If we don't have any rsId, we will remove both of them
+            pos_to_rem=[] #we need a variable to temporary store matching ids, so we can check how many of them we have
+            for v in rs_ids[k]:
+                if not re.match("rs", v) :
+                    to_rem.append(v)
+                elif re.match("rs", v) :
+                    pos_to_rem.append(v)
+            if len(pos_to_rem) > 1 : # we could also check if len(pos_to_rem) == len(rs_ids[k]), but if here we have 3 duplicates by position one without rs, and 2 starting with rs, we still have to remove all of them. So we just want one item in this list
+                to_rem.append(pos_to_rem)
+    # get unique values                
+    unique_rs=list(set(flattenNestedList(to_rem)))
+    open(outlist,"w").write("\n".join(unique_rs))
+    open(outlist, 'a').close()
+

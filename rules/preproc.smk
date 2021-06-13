@@ -180,6 +180,44 @@ rule allFixSplitted:
         {params.plink} --bfile {params.bfiles_prefix} --a1-allele {params.update_a1_str} --make-bed --out {params.bfiles_prefix_a1} > {log.stdout} 2> {log.stderr}
         {params.plink} --bfile {params.bfiles_prefix_a1} --keep-allele-order --a2-allele {params.update_a2_str} --make-bed --out {params.bfiles_allFix_prefix} >> {log.stdout} 2>> {log.stderr}
         """
+#it is possible that with this update step, we will introduce some position duplicates
+#we need a rule to take care of them, removing duplicates if they dont have an rsID
+# first we want the list of duplicate rsID. We need to look for duplicate positions, then lookup the rsID in the bim file, than check if it has an rsID or a bs name from the array manufcturer.
+# we will remove the bs named by using it in our list
+rule getDupeByPos:
+    output:
+        output_folder + "/01.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_DupeByPos.list"
+    input:
+        rule.allFixSplitted.output[0]
+    params:
+    log:
+        stdout=log_folder+"/getDupeByPos_{chr}.o",
+        stderr=log_folder+"/getDupeByPos_{chr}.e"    
+    run:
+        getDupeByPos(input[0],output[0])
+
+# now remove the duplicated snps
+rule removeDupSnpsByID:
+    output:
+        ug_bed=output_folder + "/01.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFixCleaned.bed",
+        ug_bim=output_folder + "/01.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFixCleaned.bim",
+        ug_fam=output_folder + "/01.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFixCleaned.fam"
+    input:
+        rule.getDupeByPos.output[0],
+        ug_bed=output_folder + "/01.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix.bed",
+        ug_bim=output_folder + "/01.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix.bim",
+        ug_fam=output_folder + "/01.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix.fam"
+    params:
+        bfiles_prefix=output_folder + "/01.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix",
+        bfiles_allFixCleaned_prefix=output_folder+"/01.splitted_input/"+ ref_panel + "/" + cohort_name+"_{chr}_allFixCleaned",
+        plink=config['tools']['plink']
+    log:
+        stdout=log_folder+"/removeDupSnpsByID_{chr}.o",
+        stderr=log_folder+"/removeDupSnpsByID_{chr}.e"
+    shell:
+        """
+        {params.plink} --bfile {params.bfiles_prefix} --keep-allele-order --exclude {input[0]} --make-bed --out {params.bfiles_allFixCleaned_prefix} >> {log.stdout} 2>> {log.stderr}
+        """    
 
 #check alele orientation with the genetic map provided
 rule snpCheck:
@@ -190,9 +228,9 @@ rule snpCheck:
         # config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_shapeit_refpanel.alignments.snp.strand",
         # config["output_folder"] + "/" + config["pop"] + "/" + config["ref_panel"] + "/" +config["chr"] + "/" + config["pop"] + "_shapeit_refpanel.alignments.snp.strand.exclude"
     input:
-        ug_bed=output_folder + "/01.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix.bed",
-        ug_bim=output_folder + "/01.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix.bim",
-        ug_fam=output_folder + "/01.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix.fam",
+        ug_bed=output_folder + "/01.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFixCleaned.bed",
+        ug_bim=output_folder + "/01.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFixCleaned.bim",
+        ug_fam=output_folder + "/01.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFixCleaned.fam",
         rp_hap=config["rules"]['snpCheck']["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".hap.gz",
         rp_legend=config["rules"]['snpCheck']["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".legend.gz",
         rp_samples=config["rules"]['snpCheck']["ref_panel_base_folder"]+ "/"+ref_panel+"/{chr}/{chr}."+ ref_panel+".samples",
