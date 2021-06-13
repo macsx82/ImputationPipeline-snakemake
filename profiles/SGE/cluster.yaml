@@ -2,9 +2,9 @@ __resources__:
   h_vmem: {rule.resources.mem_mb}
 
 __options__:
-  q: fast
   pe: "smp {rule.threads}"
 
 __default__:
+  q: "fast"
   # output: {log.stdout}
   # error: {log.stderr}
