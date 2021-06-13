@@ -6,5 +6,5 @@ __options__:
   pe: "smp {rule.threads}"
 
 __default__:
-  output: "{log.stdout}"
-  error: "{log.stderr}"
+  output: "PIPPO.o"
+  error: "PIPPO.e"
