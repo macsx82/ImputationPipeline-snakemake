@@ -44,7 +44,7 @@ rules:
   plinkSplit:
   snpCheck:
         ref_panel_base_folder: "ref_panel_base_dir" #shapeit2 ref panel format path for this rule ONLY
-        genetic_map_path: "/netapp/nfs/resources/1000GP_phase3/impute/" #shapeit2 genetic map format path, to be used in this rule ONLY
+        genetic_map_path: "/netapp/nfs/resources/1000GP_phase3/impute" #shapeit2 genetic map format path, to be used in this rule ONLY
   snpFlipFile:
   snpFlip:
   allFix:

@@ -25,7 +25,7 @@ rule indelsRemove:
         stdout=log_folder+"/indelsRemove.o",
         stderr=log_folder+"/indelsRemove.e"
     run:
-        cmd="%s --file %s --snps-only 'just-acgt' --recode --out %s" % (params.plink,params.i_prefix,params.output_prefix)
+        cmd="%s --file %s --snps-only 'just-acgt' --recode --out %s > %s 2> %s " % (params.plink,params.i_prefix,params.output_prefix,log.stdout, log.stderr)
         shell(cmd)
 
 # Update allele positions and chromosomes using 1000G data. We need to apply this one BEFORE splitting the data by chr, since we will have chr and positions moving around
@@ -48,7 +48,7 @@ rule mapUpdateExt:
         stderr=log_folder+"/mapUpdateExt.e"
     shell:
         """
-        {params.plink} --file {params.i_prefix} --update-chr {params.update_chr_str} --update-map {params.update_map_str} --make-bed --out {params.bfiles_out_prefix}
+        {params.plink} --file {params.i_prefix} --update-chr {params.update_chr_str} --update-map {params.update_map_str} --make-bed --out {params.bfiles_out_prefix} > {log.stdout} 2> {log.stderr}
         """
 
 # align alleles to external reference data and retrieve alleles names removed because monomorphic
@@ -78,8 +78,8 @@ rule allFix:
         stderr=log_folder+"/allFix.e"
     shell:
         """
-        {params.plink} --bfile {params.bfiles_prefix} --a1-allele {params.update_a1_str} --make-bed --out {params.bfiles_prefix_a1}
-        {params.plink} --bfile {params.bfiles_prefix_a1} --keep-allele-order --a2-allele {params.update_a2_str} --make-bed --out {params.bfiles_allFix_prefix}
+        {params.plink} --bfile {params.bfiles_prefix} --a1-allele {params.update_a1_str} --make-bed --out {params.bfiles_prefix_a1} > {log.stdout} 2> {log.stderr}
+        {params.plink} --bfile {params.bfiles_prefix_a1} --keep-allele-order --a2-allele {params.update_a2_str} --make-bed --out {params.bfiles_allFix_prefix} >> {log.stdout} 2>> {log.stderr}
         """
 
 #generate a file collecting all snps raising an impossible allele assignment warning
@@ -118,7 +118,7 @@ rule allFixSnpFlip:
         set +e
         #we need this file and it could be empty, so we will touch it!
         # touch {input[0]}
-        {params.plink} --bfile {params.bfiles_prefix} --flip {input[0]} --keep-allele-order --make-bed --out {params.bfiles_flipped_prefix}
+        {params.plink} --bfile {params.bfiles_prefix} --flip {input[0]} --keep-allele-order --make-bed --out {params.bfiles_flipped_prefix} > {log.stdout} 2> {log.stderr}
         exitcode=$?
         if [ $exitcode -eq 0 ]
         then
@@ -147,7 +147,7 @@ rule plinkSplit:
         stderr=log_folder+"/plinkSplit.e"
     run:
         for chr in chrs:
-            cmd="%s --bfile %s --chr %s --make-bed --out %s_%s" % (params.plink,params.i_prefix,chr,params.output_prefix,chr)
+            cmd="%s --bfile %s --chr %s --make-bed --out %s_%s > %s 2> %s" % (params.plink,params.i_prefix,chr,params.output_prefix,chr, log.stdout, log.stderr)
             shell(cmd)
 
 
@@ -177,8 +177,8 @@ rule allFixSplitted:
         stderr=log_folder+"/allFixSplitted_{chr}.e"
     shell:
         """
-        {params.plink} --bfile {params.bfiles_prefix} --a1-allele {params.update_a1_str} --make-bed --out {params.bfiles_prefix_a1}
-        {params.plink} --bfile {params.bfiles_prefix_a1} --keep-allele-order --a2-allele {params.update_a2_str} --make-bed --out {params.bfiles_allFix_prefix}
+        {params.plink} --bfile {params.bfiles_prefix} --a1-allele {params.update_a1_str} --make-bed --out {params.bfiles_prefix_a1} > {log.stdout} 2> {log.stderr}
+        {params.plink} --bfile {params.bfiles_prefix_a1} --keep-allele-order --a2-allele {params.update_a2_str} --make-bed --out {params.bfiles_allFix_prefix} >> {log.stdout} 2>> {log.stderr}
         """
 
 #check alele orientation with the genetic map provided
@@ -209,7 +209,7 @@ rule snpCheck:
         {params.shapeit} -check --input-bed {input.ug_bed} {input.ug_bim} {input.ug_fam} \
         -M {input.g_map} \
         --input-ref {input.rp_hap} {input.rp_legend} {input.rp_samples} \
-        --output-log {params.output_prefix}
+        --output-log {params.output_prefix} > {log.stdout} 2> {log.stderr}
         exitcode=$?
         if [ $exitcode -eq 0 ]
         then
@@ -255,7 +255,7 @@ rule snpFlip:
         set +e
         #we need this file and it could be empty, so we will touch it!
         # touch {input[0]}
-        {params.plink} --bfile {params.bfiles_prefix} --flip {input[0]} --keep-allele-order --make-bed --out {params.bfiles_flipped_prefix}
+        {params.plink} --bfile {params.bfiles_prefix} --flip {input[0]} --keep-allele-order --make-bed --out {params.bfiles_flipped_prefix} > {log.stdout} 2> {log.stderr}
         exitcode=$?
         if [ $exitcode -eq 0 ]
         then
@@ -314,7 +314,7 @@ rule plink2vcf:
         """
         set +e
         #we need this file and it could be empty, so we will touch it!
-        {params.plink} --bfile {params.bfiles_allFix_prefix} --keep-allele-order --recode vcf-iid bgz --out {params.vcf_flipped_prefix}
+        {params.plink} --bfile {params.bfiles_allFix_prefix} --keep-allele-order --recode vcf-iid bgz --out {params.vcf_flipped_prefix} > {log.stdout} 2> {log.stderr}
         tabix -p vcf {output[0]}
         exitcode=$?
         if [ $exitcode -eq 0 ]
