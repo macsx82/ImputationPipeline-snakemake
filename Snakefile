@@ -75,8 +75,8 @@ rule all:
 # include_prefix="rules"
 # include:
 #     include_prefix + "/functions.py"
-include:
-    include_prefix + "/preproc.smk"
+# include:
+    # include_prefix + "/preproc.smk"
 include:
     include_prefix + "/phasing.smk"
 include:
