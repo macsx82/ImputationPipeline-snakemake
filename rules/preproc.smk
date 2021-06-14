@@ -278,11 +278,11 @@ rule snpFlip:
         output_folder + "/03.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix_flipped.fam"
     input:
         rules.snpFlipFile.output[0],
-        rules.allFix.output[0],
-        rules.allFix.output[1],
-        rules.allFix.output[2]
+        rules.removeDupSnpsByID.output[0],
+        rules.removeDupSnpsByID.output[1],
+        rules.removeDupSnpsByID.output[2]
     params:
-        bfiles_prefix=output_folder+"/01.splitted_input/"+ ref_panel + "/" + cohort_name+"_{chr}_allFix",
+        bfiles_prefix=output_folder+"/01.splitted_input/"+ ref_panel + "/" + cohort_name+"_{chr}_allFixCleaned",
         bfiles_flipped_prefix=output_folder+"/03.flipped_input/"+ ref_panel + "/" + cohort_name+"_{chr}_allFix_flipped",
         plink=config['tools']['plink']
     log:
