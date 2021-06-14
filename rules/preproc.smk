@@ -216,7 +216,7 @@ rule removeDupSnpsByID:
         stderr=log_folder+"/removeDupSnpsByID_{chr}.e"
     shell:
         """
-        {params.plink} --bfile {params.bfiles_prefix} --keep-allele-order --exclude {input[0]} --make-bed --out {params.bfiles_allFixCleaned_prefix} >> {log.stdout} 2>> {log.stderr}
+        {params.plink} --bfile {params.bfiles_prefix} --keep-allele-order --exclude {input[0]} --make-bed --out {params.bfiles_allFixCleaned_prefix} > {log.stdout} 2> {log.stderr}
         """    
 
 #check alele orientation with the genetic map provided
@@ -326,11 +326,24 @@ rule recoverMono:
         stdout=log_folder+"/recoverMono_{chr}.o",
         stderr=log_folder+"/recoverMono_{chr}.e"
     run:
-        update_mono_snps(input.chip_update_allele_file,input.bim_file,output[0])
-        cp_bed_cmd="cp %s %s" %(input.bed_file,output[1])
-        cp_fam_cmd="cp %s %s" %(input.fam_file,output[2])
-        shell(cp_bed_cmd)
-        shell(cp_fam_cmd)
+        logger = logging.getLogger('logging_test')
+        fh = logging.FileHandler(str(log.stdout))
+        fh.setLevel(logging.INFO)
+        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+        fh.setFormatter(formatter)
+        logger.addHandler(fh)
+        try: 
+            logger.info('Starting operation!')
+            # do something
+            update_mono_snps(input.chip_update_allele_file,input.bim_file,output[0])
+            cp_bed_cmd="cp %s %s" %(input.bed_file,output[1])
+            cp_fam_cmd="cp %s %s" %(input.fam_file,output[2])
+            shell(cp_bed_cmd)
+            shell(cp_fam_cmd)
+            logger.info('Ended!')
+        except Exception as e: 
+            logger.error(e, exc_info=True)
+
 
 # convert to vcf file format to use SHAPEIT4
 rule plink2vcf:

@@ -5,6 +5,8 @@
 #
 # configfile: "config.yaml"
 import pathlib
+import logging
+
 
 # recover some fixed variables from config file
 output_folder = config['paths']["output_folder"]

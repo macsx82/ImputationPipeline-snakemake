@@ -18,14 +18,14 @@ def get_flippable(infile,outfile):
     complement={'A':'T','T':'A','C':'G','G':'C'}
     strand_file=open('%s' %(infile),'r')
 
-    # get all duplicates ids, since we need to exclude them form the flipping, if we find them only once in the flippable list
+    # get all duplicates ids, since we need to exclude them from the flipping, if we find them only once in the flippable list
     rs_ids=[]
     for line in strand_file:
         if re.match("Strand", line.strip().split("\t")[0]):
             rs_ids.append(line.strip().split("\t")[3])
     unique_rs=list(set(rs_ids))
     duplicates=list(set([rs_id for rs_id in unique_rs if rs_ids.count(rs_id)>1]))
-    #now we have the duplciates we can remove from the flippable list 
+    #now we have the duplicates we can remove from the flippable list 
     strand_file.seek(0)
     flippable=[]
     for line in strand_file:
@@ -157,7 +157,7 @@ def update_mono_snps(allele_update,plink_bim,outfile):
     plink_bim_file=open('%s' %(plink_bim),'r')
     # open the stream to the output file
     output_file=open(outfile,'w')
-
+    new_bim=[]
     for bim_line in plink_bim_file:
         # read line
         # now check if we have a monomorphic site for wich we have to update the allele name 
@@ -170,7 +170,7 @@ def update_mono_snps(allele_update,plink_bim,outfile):
             c_pos=c_line[3]
             c_a1=c_line[4]
             c_a2=c_line[5]
-            # since we have a cleaned rsID, we need firs to get the right one among update_alleles keys
+            # since we have a cleaned rsID, we need first to get the right one among update_alleles keys
             rs_key=[x for x in all_update.keys() if re.search(c_rsID+'$',x)]
             # now we have to get the alleles from the update allele dict
             # and check which one we have. Easy case is if there is no flipping
@@ -180,24 +180,16 @@ def update_mono_snps(allele_update,plink_bim,outfile):
                 # here it could be that we have flipped data, so we need to use the complement for both a2 lookup and a1 retrieve
                 new_a1=complement[list(set(all_update[rs_key[0]]) - set(list(complement[c_a2])))[0]]
             _ = output_file.write('%s\t%s\t%s\t%s\t%s\t%s\n' %(c_chr,c_rsID,c_cm,c_pos,new_a1,c_a2))
+            # new_bim.append('%s\t%s\t%s\t%s\t%s\t%s\n' %(c_chr,c_rsID,c_cm,c_pos,new_a1,c_a2))
         else:
             # print line as it is in the output file
             _ = output_file.write(bim_line)
+            # new_bim.append(bim_line)
+        # if len(new_bim) % 5000 == 0:
+        #     print(len(new_bim))
     output_file.close()
 
 # define a function to collect all chunks for a chromosome
-# def collect_imputed_chunks(imputed_folder,chrom):
-#     from os import listdir
-#     import re
-#     from os.path import join, isfile
-#     # chrom=22
-#     # imputed_folder="/home/cocca/analyses/test_imputation_20210604/06.imputed"
-#     imputed_pattern=str(chrom)+".\d+.vcf.gz"
-#     # read the folder content and return it as a list
-#     vcf_files= [join(imputed_folder,str(chrom),vcf_f) for vcf_f in listdir(join(imputed_folder,str(chrom))) if re.search(imputed_pattern,vcf_f)]
-
-#     return vcf_files
-
 def collect_imputed_chunks(wildcards):
     from os import listdir
     import re
