@@ -171,7 +171,7 @@ def update_mono_snps(allele_update,plink_bim,outfile):
             c_a1=c_line[4]
             c_a2=c_line[5]
             # since we have a cleaned rsID, we need first to get the right one among update_alleles keys
-            rs_key=[x for x in all_update.keys() if re.search(c_rsID+'$',x)]
+            rs_key=[x for x in all_update.keys() if re.search(re.escape(c_rsID)+'$',x)]
             # now we have to get the alleles from the update allele dict
             # and check which one we have. Easy case is if there is no flipping
             if c_a2 in all_update[rs_key[0]]:
