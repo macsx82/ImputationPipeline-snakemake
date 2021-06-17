@@ -66,7 +66,8 @@ rule all:
         # [ expand(output_folder+"/06.imputed/{chr}/{chr}.{g_chunk}.{ext}", ext=["vcf.gz","log"], chr=chrs, g_chunk=["{:02d}".format(chunk) for chunk in list(range(1,5))])] 
         # expand(output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_fixRef_sorted_rsID.vcf.gz", chr=chrs),
         # expand(output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_fixRef_sorted_rsID.vcf.gz.tbi", chr=chrs)
-        expand(output_folder+"/06.imputed/MERGED/{chr}/{chr}.{ext}", ext=["vcf.gz","vcf.gz.tbi"],chr=chrs)
+        expand(output_folder+"/06.imputed/MERGED/{chr}/{chr}.{ext}", ext=["vcf.gz","vcf.gz.tbi"],chr=chrs),
+        expand(output_folder+"/06.imputed/BIMBAM/{chr}/{chr}.{ext}", ext=["bimbam.gz","pos"],chr=chrs)
         # [ output_folder+"/04.impute_intervals/{key}/{key}.{value}.int" for key, value in chunked.items()]
         # directory(expand(output_folder+"/04.impute_intervals/{chr}/",chr=chrs))
         # expand(output_folder+"/04.impute_intervals/{chr}/{chr}.{{g_chunk}}.pippo",chr=chrs)
