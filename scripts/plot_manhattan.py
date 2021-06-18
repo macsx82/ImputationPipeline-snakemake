@@ -21,7 +21,7 @@ def _gen_data(fhs, columns, sep):
             if line[0] == "#": continue
             toks = line.strip().split(sep)
             print(toks)
-            print(columns)
+            print(list(columns))
             yield toks[columns[0]], int(toks[columns[1]]), float(toks[columns[2]])
 
 def chr_cmp(a, b):
