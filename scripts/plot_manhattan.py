@@ -69,7 +69,7 @@ def manhattan(fhs, columns, image_path, no_log, colors, sep, title, lines, ymax)
         # keep track so that chrs don't overlap.
         last_x = xs[-1]
 
-    xs_by_chr = [(k, xs_by_chr[k]) for k in sorted(xs_by_chr.keys(), cmp=chr_cmp)]
+    xs_by_chr = [(k, xs_by_chr[k]) for k in sorted(xs_by_chr.keys(), key=cmp_to_key(chr_cmp))]
 
     xs = np.array(xs)
     ys = np.array(ys) if no_log else -np.log10(ys)
