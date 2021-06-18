@@ -81,7 +81,7 @@ def manhattan(fhs, columns, image_path, no_log, colors, sep, title, lines, ymax)
     if title is not None:
         plt.title(title)
 
-    ax.set_ylabel('-log10(p-value)')
+    ax.set_ylabel('-log10(info score)')
     if lines:
         ax.vlines(xs, 0, ys, colors=cs, alpha=0.5)
     else:

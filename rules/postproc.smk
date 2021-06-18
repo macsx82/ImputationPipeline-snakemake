@@ -54,9 +54,9 @@ rule convertBimbam:
 	shell:
 		"""
 		#We just need to format the vcf file and extract the DS field already present in the VCF, for the main bimbam
-		{params.bcftools_bin} query -f'%ID,%REF,%ALT[,DS]\n' | gzip --best -c > {output[0]} 2> {log.stderr}
+		{params.bcftools_bin} query -f'%ID,%REF,%ALT[,DS]\\n' | gzip --best -c > {output[0]} 2> {log.stderr}
 		
 		#We just need to format the vcf file and extract the position
-		{params.bcftools_bin} query -f'%ID,%POS,%CHROM\n' -o {output[1]} >> {log.stdout} 2>> {log.stderr}
+		{params.bcftools_bin} query -f'%ID,%POS,%CHROM\\n' -o {output[1]} >> {log.stdout} 2>> {log.stderr}
 		"""
 
