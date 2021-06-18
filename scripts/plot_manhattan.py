@@ -23,6 +23,9 @@ def _gen_data(fhs, columns, sep):
             toks = line.strip().split(sep)
             yield toks[columns[0]], int(toks[columns[1]]), float(toks[columns[2]])
 
+def cmp(a, b):
+    return (a > b) - (a < b)
+
 def chr_cmp(a, b):
     a = a.lower().replace("_", ""); b = b.lower().replace("_", "")
     achr = a[3:] if a.startswith("chr") else a
