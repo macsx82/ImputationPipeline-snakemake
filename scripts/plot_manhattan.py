@@ -118,6 +118,7 @@ def main():
              " points in space. plotting will take longer with this option.")
 
     opts, args = p.parse_args()
+    print(opts)
     if (len(args) == 0):
         sys.exit(not p.print_help())
     fhs = get_filehandles(args)
