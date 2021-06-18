@@ -19,8 +19,9 @@ def _gen_data(fhs, columns, sep):
     for fh in fhs:
         for line in fh:
             if line[0] == "#": continue
-            toks = line.split(sep)
+            toks = line.strip().split(sep)
             print(toks)
+            print(columns)
             yield toks[columns[0]], int(toks[columns[1]]), float(toks[columns[2]])
 
 def chr_cmp(a, b):
