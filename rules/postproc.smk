@@ -13,8 +13,8 @@ rule infoStatsChrom:
 		stderr=log_folder+"/infoStatsChrom_{chr}.e"
 	shell:
 		"""
-		{params.bcftools_bin} query -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/INFO\n" {input} | scripts/imputationStats.py --tab {output[0]} --fig {output[1]} > {log.stdout} 2> {log.stderr}
-		{params.bcftools_bin} query -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/INFO\n" {input} | scripts/plot_manhattan.py --cols 0,1,6 --title 'Impute INFO score chr{wildcards.chr}' --image {output[2]} --ymax=5 - >> {log.stdout} 2>> {log.stderr}
+		{params.bcftools_bin} query -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/INFO\n" {input} | python scripts/imputationStats.py --tab {output[0]} --fig {output[1]} > {log.stdout} 2> {log.stderr}
+		{params.bcftools_bin} query -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/INFO\n" {input} | python scripts/plot_manhattan.py --cols 0,1,6 --title 'Impute INFO score chr{wildcards.chr}' --image {output[2]} --ymax=5 - >> {log.stdout} 2>> {log.stderr}
 		"""
 
 
@@ -32,8 +32,8 @@ rule infoStatsChunks:
 		stderr=log_folder+"/infoStatsChunks_{chr}_{g_chunk}.e"
 	shell:
 		"""
-		{params.bcftools_bin} query -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/INFO\n" {input} | scripts/imputationStats.py --tab {output[0]} --fig {output[1]} > {log.stdout} 2> {log.stderr}
-		{params.bcftools_bin} query -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/INFO\n" {input} | scripts/plot_manhattan.py --cols 0,1,6 --title 'Impute INFO score chr{wildcards.chr} chunk {wildcards.g_chunk}' --image {output[2]} --ymax=5 - >> {log.stdout} 2>> {log.stderr}
+		{params.bcftools_bin} query -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/INFO\n" {input} | python scripts/imputationStats.py --tab {output[0]} --fig {output[1]} > {log.stdout} 2> {log.stderr}
+		{params.bcftools_bin} query -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/INFO\n" {input} | python scripts/plot_manhattan.py --cols 0,1,6 --title 'Impute INFO score chr{wildcards.chr} chunk {wildcards.g_chunk}' --image {output[2]} --ymax=5 - >> {log.stdout} 2>> {log.stderr}
 		"""
 
 
@@ -52,7 +52,7 @@ rule convertBimbam:
 	shell:
 		"""
 		#We just need to format the vcf file and extract the DS field already present in the VCF, for the main bimbam
-		{params.bcftools_bin} query -f'%ID,%REF,%ALT[,DS]\n' | gzip --best -c > {output[0]} > {log.stdout} 2> {log.stderr}
+		{params.bcftools_bin} query -f'%ID,%REF,%ALT[,DS]\n' | gzip --best -c > {output[0]} 2> {log.stderr}
 		
 		#We just need to format the vcf file and extract the position
 		{params.bcftools_bin} query -f'%ID,%POS,%CHROM\n' -o {output[1]} >> {log.stdout} 2>> {log.stderr}
