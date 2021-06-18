@@ -204,6 +204,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--tab', type=str, help="MANDATORY: Provide full path to the output file for the table report.")
 parser.add_argument('--fig', type=str, help="MANDATORY: Provide full path to the output file for the plot (PDF) report.")
 
+args=parser.parse_args()
 # open files for writing
 # out_tab=open(args.tab,'w')
 # test='/home/cocca/analyses/imputation/20210613/MOLISANI/06.imputed/MERGED/22/22.tab.INFO'

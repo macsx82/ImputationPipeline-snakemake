@@ -7,14 +7,15 @@ rule infoStatsChrom:
 	input:
 		output_folder+"/06.imputed/MERGED/{chr}/{chr}.vcf.gz"
 	params:
-		bcftools_bin=config['tools']['bcftools']
+		bcftools_bin=config['tools']['bcftools'],
+		scripts_folder=config['paths']['scripts']
 	log:
 		stdout=log_folder+"/infoStatsChrom_{chr}.o",
 		stderr=log_folder+"/infoStatsChrom_{chr}.e"
 	shell:
 		"""
-		{params.bcftools_bin} query -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/INFO\n" {input} | /home/cocca/scripts/pipelines/ImputationPipeline-snakemake/scripts/imputationStats.py --tab {output[0]} --fig {output[1]} > {log.stdout} 2> {log.stderr}
-		{params.bcftools_bin} query -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/INFO\n" {input} | /home/cocca/scripts/pipelines/ImputationPipeline-snakemake/scripts/plot_manhattan.py --cols 0,1,6 --title 'Impute INFO score chr{wildcards.chr}' --image {output[2]} --ymax=5 - >> {log.stdout} 2>> {log.stderr}
+		{params.bcftools_bin} query -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/INFO\n" {input} | {params.scripts_folder}/imputationStats.py --tab {output[0]} --fig {output[1]} > {log.stdout} 2> {log.stderr}
+		{params.bcftools_bin} query -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/INFO\n" {input} | {params.scripts_folder}/plot_manhattan.py --cols 0,1,6 --title 'Impute INFO score chr{wildcards.chr}' --image {output[2]} --ymax=5 - >> {log.stdout} 2>> {log.stderr}
 		"""
 
 
@@ -26,14 +27,15 @@ rule infoStatsChunks:
 	input:
 		output_folder+"/06.imputed/{chr}/{chr}.{g_chunk}.vcf.gz"
 	params:
-		bcftools_bin=config['tools']['bcftools']
+		bcftools_bin=config['tools']['bcftools'],
+		scripts_folder=config['paths']['scripts']
 	log:
 		stdout=log_folder+"/infoStatsChunks_{chr}_{g_chunk}.o",
 		stderr=log_folder+"/infoStatsChunks_{chr}_{g_chunk}.e"
 	shell:
 		"""
-		{params.bcftools_bin} query -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/INFO\n" {input} | /home/cocca/scripts/pipelines/ImputationPipeline-snakemake/scripts/imputationStats.py --tab {output[0]} --fig {output[1]} > {log.stdout} 2> {log.stderr}
-		{params.bcftools_bin} query -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/INFO\n" {input} | /home/cocca/scripts/pipelines/ImputationPipeline-snakemake/scripts/plot_manhattan.py --cols 0,1,6 --title 'Impute INFO score chr{wildcards.chr} chunk {wildcards.g_chunk}' --image {output[2]} --ymax=5 - >> {log.stdout} 2>> {log.stderr}
+		{params.bcftools_bin} query -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/INFO\n" {input} | {params.scripts_folder}/imputationStats.py --tab {output[0]} --fig {output[1]} > {log.stdout} 2> {log.stderr}
+		{params.bcftools_bin} query -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/INFO\n" {input} | {params.scripts_folder}/plot_manhattan.py --cols 0,1,6 --title 'Impute INFO score chr{wildcards.chr} chunk {wildcards.g_chunk}' --image {output[2]} --ymax=5 - >> {log.stdout} 2>> {log.stderr}
 		"""
 
 

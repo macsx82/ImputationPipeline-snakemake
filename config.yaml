@@ -23,6 +23,7 @@ paths:
   ext_ref_annot_file: "/netapp/nfs/resources/dbSNP/human_9606_b154_GRCh37p13/GCF_000001405.25.vcf.gz" #external reference file to perform annotation on VCF files
   ref_fasta: "/shared/resources/hgRef/hg19/hg19_nochr.fasta" #reference fasta file
   snp_array_update_allele_file: "snp_array_update_allele_file" #absolute path containing the update allele file specific for the snp array used
+  scripts: "scripts_folder_path" #folder containing scripts needed in the workflo
 
 rules:
   chunkGenerator:
