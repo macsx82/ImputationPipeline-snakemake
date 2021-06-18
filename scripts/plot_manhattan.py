@@ -94,7 +94,7 @@ def manhattan(fhs, columns, image_path, no_log, colors, sep, title, lines, ymax)
     plt.ylim(ymin=0)
     if ymax is not None: plt.ylim(ymax=ymax)
     plt.xticks([c[1] for c in xs_by_chr], [c[0] for c in xs_by_chr], rotation=-90, size=8.5)
-    print >>sys.stderr, "saving to: %s" % image_path
+    print("saving to: %s" % image_path,sys.stderr)
     plt.savefig(image_path)
     #plt.show()
 
