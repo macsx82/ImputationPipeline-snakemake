@@ -3,7 +3,7 @@ rule infoStatsChrom:
 	output:
 		output_folder+"/07.stats/{chr}/{chr}_impute_summary.csv",
 		output_folder+"/07.stats/{chr}/{chr}_impute_summary.pdf",
-		output_folder+"/07.stats/{chr}/{chr}_impute_manhattan.pdf"
+		output_folder+"/07.stats/{chr}/{chr}_impute_manhattan.png"
 	input:
 		output_folder+"/06.imputed/MERGED/{chr}/{chr}.vcf.gz"
 	params:
@@ -23,7 +23,7 @@ rule infoStatsChunks:
 	output:
 		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary.csv",
 		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary.pdf",
-		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_manhattan.pdf"
+		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_manhattan.png"
 	input:
 		output_folder+"/06.imputed/{chr}/{chr}.{g_chunk}.vcf.gz"
 	params:
