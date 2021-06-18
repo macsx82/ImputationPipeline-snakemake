@@ -57,7 +57,7 @@ def manhattan(fhs, columns, image_path, no_log, colors, sep, title, lines, ymax)
     data = sorted(_gen_data(fhs, columns, sep), key=cmp_to_key(chr_loc_cmp))
 
     for seqid, rlist in groupby(data, key=itemgetter(0)):
-        color = colors.next()
+        color = next(colors)
         rlist = list(rlist)
         region_xs = [last_x + r[1] for r in rlist]
         xs.extend(region_xs)
