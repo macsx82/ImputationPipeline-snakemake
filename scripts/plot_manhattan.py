@@ -20,8 +20,6 @@ def _gen_data(fhs, columns, sep):
         for line in fh:
             if line[0] == "#": continue
             toks = line.strip().split(sep)
-            print(toks)
-            print(list(columns))
             yield toks[columns[0]], int(toks[columns[1]]), float(toks[columns[2]])
 
 def chr_cmp(a, b):
@@ -123,7 +121,7 @@ def main():
     if (len(args) == 0):
         sys.exit(not p.print_help())
     fhs = get_filehandles(args)
-    columns = map(int, opts.cols.split(","))
+    columns = list(map(int, opts.cols.split(",")))
     manhattan(fhs, columns, opts.image, opts.no_log, opts.colors, opts.sep,
             opts.title, opts.lines, opts.ymax)
 
