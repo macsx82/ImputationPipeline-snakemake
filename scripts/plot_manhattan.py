@@ -11,6 +11,7 @@ from itertools import groupby, cycle
 from operator import itemgetter
 from matplotlib import pyplot as plt
 import numpy as np
+from functools import cmp_to_key
 
 def _gen_data(fhs, columns, sep):
     """
@@ -50,7 +51,7 @@ def manhattan(fhs, columns, image_path, no_log, colors, sep, title, lines, ymax)
     xs_by_chr = {}
 
     last_x = 0
-    data = sorted(_gen_data(fhs, columns, sep), cmp=chr_loc_cmp)
+    data = sorted(_gen_data(fhs, columns, sep), cmp=cmp_to_key(chr_loc_cmp))
 
     for seqid, rlist in groupby(data, key=itemgetter(0)):
         color = colors.next()
