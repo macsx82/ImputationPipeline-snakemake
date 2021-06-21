@@ -1,26 +1,4 @@
 # rules to generate a report to have a general feel of the imputation quality. By chromosome and by chunk
-rule infoStatsChrom:
-	output:
-		output_folder+"/07.stats/{chr}/{chr}_impute_summary_by_maf_by_info.csv",
-		output_folder+"/07.stats/{chr}/{chr}_impute_summary_by_maf.csv",
-		output_folder+"/07.stats/{chr}/{chr}_impute_summary.pdf",
-		output_folder+"/07.stats/{chr}/{chr}_impute_manhattan.png"
-	input:
-		output_folder+"/06.imputed/MERGED/{chr}/{chr}.vcf.gz"
-	params:
-		bcftools_bin=config['tools']['bcftools'],
-		scripts_folder=config['paths']['scripts'],
-		tab_prefix=output_folder+"/07.stats/{chr}/{chr}_impute_summary"
-	log:
-		stdout=log_folder+"/infoStatsChrom_{chr}.o",
-		stderr=log_folder+"/infoStatsChrom_{chr}.e"
-	shell:
-		"""
-		{params.bcftools_bin} query -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/INFO\n" {input} | {params.scripts_folder}/imputationStats.py --tab {params.tab_prefix} --fig {output[2]} > {log.stdout} 2> {log.stderr}
-		{params.bcftools_bin} query -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/INFO\n" {input} | {params.scripts_folder}/plot_manhattan.py --no-log --cols 0,1,6 --title 'Impute INFO score chr{wildcards.chr}' --image {output[3]} --ymax=1.2 - >> {log.stdout} 2>> {log.stderr}
-		"""
-
-
 rule infoStatsChunks:
 	output:
 		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary_by_maf_by_info.csv",
@@ -41,6 +19,32 @@ rule infoStatsChunks:
 		{params.bcftools_bin} query -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/INFO\n" {input} | {params.scripts_folder}/imputationStats.py --tab {params.tab_prefix} --fig {output[2]} > {log.stdout} 2> {log.stderr}
 		{params.bcftools_bin} query -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/INFO\n" {input} | {params.scripts_folder}/plot_manhattan.py --no-log --cols 0,1,6 --title 'Impute INFO score chr{wildcards.chr} chunk {wildcards.g_chunk}' --image {output[3]} --ymax=1.2 - >> {log.stdout} 2>> {log.stderr}
 		"""
+
+rule infoStatsChrom:
+	output:
+		output_folder+"/07.stats/{chr}/{chr}_impute_summary_by_maf_by_info.csv",
+		output_folder+"/07.stats/{chr}/{chr}_impute_summary_by_maf.csv",
+		output_folder+"/07.stats/{chr}/{chr}_impute_summary.pdf",
+		output_folder+"/07.stats/{chr}/{chr}_impute_manhattan.png"
+	input:
+		output_folder+"/06.imputed/MERGED/{chr}/{chr}.vcf.gz",
+		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary_by_maf_by_info.csv",
+		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary_by_maf.csv",
+		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary.pdf",
+		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_manhattan.png"
+	params:
+		bcftools_bin=config['tools']['bcftools'],
+		scripts_folder=config['paths']['scripts'],
+		tab_prefix=output_folder+"/07.stats/{chr}/{chr}_impute_summary"
+	log:
+		stdout=log_folder+"/infoStatsChrom_{chr}.o",
+		stderr=log_folder+"/infoStatsChrom_{chr}.e"
+	shell:
+		"""
+		{params.bcftools_bin} query -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/INFO\n" {input[0]} | {params.scripts_folder}/imputationStats.py --tab {params.tab_prefix} --fig {output[2]} > {log.stdout} 2> {log.stderr}
+		{params.bcftools_bin} query -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/INFO\n" {input[0]} | {params.scripts_folder}/plot_manhattan.py --no-log --cols 0,1,6 --title 'Impute INFO score chr{wildcards.chr}' --image {output[3]} --ymax=1.2 - >> {log.stdout} 2>> {log.stderr}
+		"""
+
 
 
 # convert VCF to BIMBAM format, to be used with GEMMA and other softwares for analyses
