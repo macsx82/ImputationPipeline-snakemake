@@ -5,10 +5,8 @@ import numpy as np
 import scipy
 import pandas as pd
 from matplotlib import pyplot as plt
-# import matplotlib.pyplot as plt
 import argparse
 from itertools import cycle
-from natsort import natsorted
 import os
 
 
