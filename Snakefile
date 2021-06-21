@@ -70,7 +70,7 @@ rule all:
         expand(output_folder+"/06.imputed/MERGED/{chr}/{chr}.{ext}", ext=["vcf.gz","vcf.gz.tbi"],chr=chrs),
         expand(output_folder+"/06.imputed/BIMBAM/{chr}/{chr}.{ext}", ext=["bimbam.gz","pos"],chr=chrs),
         expand(output_folder+"/07.stats/{chr}/{chr}_{ext}",chr=chrs,ext=['impute_summary_by_maf_by_info.csv','impute_summary_by_maf.csv','impute_summary.pdf','impute_manhattan.png']),
-        expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_{ext}",chr=chrs,ext=['impute_summary_by_maf_by_info.csv','impute_summary_by_maf.csv','impute_summary.pdf','impute_manhattan.png'],g_chunk=["{:02d}".format(chunk) for chunk in list(range(1,getChunkNumByChr))])
+        expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_{ext}",chr=chrs,ext=['impute_summary_by_maf_by_info.csv','impute_summary_by_maf.csv','impute_summary.pdf','impute_manhattan.png'],g_chunk=["{:02d}".format(chunk) for chunk in list(range(1,getChunkNumByChr.get()))])
         # expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{{g_chunk}}_{ext}",chr=chrs,ext=['impute_summary.csv','impute_summary.pdf','impute_manhattan.pdf'])
 
         # [ output_folder+"/04.impute_intervals/{key}/{key}.{value}.int" for key, value in chunked.items()]
