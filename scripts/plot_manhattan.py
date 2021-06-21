@@ -61,6 +61,7 @@ def manhattan(fhs, columns, image_path, no_log, colors, sep, title, lines, ymax,
         rlist = list(rlist)
         if chunk_mode :
             region_xs = [r[1] for r in rlist]
+            print(region_xs)
             # xs.extend(region_xs)
             # ys.extend([r[2] for r in rlist])
             # cs.extend([color] * len(rlist))
