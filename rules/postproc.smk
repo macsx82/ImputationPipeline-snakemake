@@ -1,10 +1,13 @@
 # rules to generate a report to have a general feel of the imputation quality. By chromosome and by chunk
 rule infoStatsChunks:
+	wildcard_constraints:
+		g_chunk='\d+',
+		chr='\d+'
 	output:
-		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary_by_maf_by_info.csv",
-		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary_by_maf.csv",
-		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary.pdf",
-		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_manhattan.png"
+		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{{g_chunk}}_impute_summary_by_maf_by_info.csv",
+		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{{g_chunk}}_impute_summary_by_maf.csv",
+		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{{g_chunk}}_impute_summary.pdf",
+		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{{g_chunk}}_impute_manhattan.png"
 	input:
 		output_folder+"/06.imputed/{chr}/{chr}.{g_chunk}.vcf.gz"
 	params:
@@ -21,6 +24,9 @@ rule infoStatsChunks:
 		"""
 
 rule infoStatsChrom:
+	wildcard_constraints:
+		g_chunk='\d+',
+		chr='\d+'
 	output:
 		output_folder+"/07.stats/{chr}/{chr}_impute_summary_by_maf_by_info.csv",
 		output_folder+"/07.stats/{chr}/{chr}_impute_summary_by_maf.csv",
@@ -28,10 +34,10 @@ rule infoStatsChrom:
 		output_folder+"/07.stats/{chr}/{chr}_impute_manhattan.png"
 	input:
 		output_folder+"/06.imputed/MERGED/{chr}/{chr}.vcf.gz",
-		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary_by_maf_by_info.csv",
-		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary_by_maf.csv",
-		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary.pdf",
-		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_manhattan.png"
+		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{{g_chunk}}_impute_summary_by_maf_by_info.csv",
+		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{{g_chunk}}_impute_summary_by_maf.csv",
+		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{{g_chunk}}_impute_summary.pdf",
+		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{{g_chunk}}_impute_manhattan.png"
 	params:
 		bcftools_bin=config['tools']['bcftools'],
 		scripts_folder=config['paths']['scripts'],
