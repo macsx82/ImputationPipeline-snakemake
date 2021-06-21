@@ -75,7 +75,7 @@ def manhattan(fhs, columns, image_path, no_log, colors, sep, title, lines, ymax)
     ys = np.array(ys) if no_log else -np.log10(ys)
 
     plt.close()
-    f = plt.figure()
+    f = plt.figure(figsize=(18, 8))
     ax = f.add_axes((0.1, 0.09, 0.88, 0.85))
 
     if title is not None:
