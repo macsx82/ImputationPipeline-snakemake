@@ -18,7 +18,8 @@ def getChunkNumByChr(wildcards):
     # imputed_folder="/home/cocca/analyses/test_imputation_20210604/06.imputed"
     checkpoint_output = checkpoints.chunkIntervalFileGenerator.get(**wildcards).output[0]
     # return expand(output_folder+"/06.imputed/{chr}/{chr}.{g_chunk}.{ext}",ext=["vcf.gz","log"],chr=wildcards.chr,g_chunk=glob_wildcards(os.path.join(checkpoint_output, "{chr}.{g_chunk}.vcf.gz")).g_chunk)
-    return len(list(expand(output_folder+"/06.imputed/{chr}/{chr}.{g_chunk}.vcf.gz",chr=wildcards.chr,g_chunk=glob_wildcards(os.path.join(checkpoint_output, "{chr}.{g_chunk}.int")).g_chunk)))
+    chr_chunk_size = len(expand(output_folder+"/06.imputed/{chr}/{chr}.{g_chunk}.vcf.gz",chr=wildcards.chr,g_chunk=glob_wildcards(os.path.join(checkpoint_output, "{chr}.{g_chunk}.int")).g_chunk))
+    return chr_chunk_size
 
 
 # extract snps to flip after strand check vs reference panel
