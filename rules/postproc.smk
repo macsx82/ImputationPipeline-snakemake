@@ -4,10 +4,10 @@ rule infoStatsChunks:
 		g_chunk='\d+',
 		chr='\d+'
 	output:
-		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{{g_chunk}}_impute_summary_by_maf_by_info.csv",
-		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{{g_chunk}}_impute_summary_by_maf.csv",
-		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{{g_chunk}}_impute_summary.pdf",
-		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{{g_chunk}}_impute_manhattan.png"
+		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary_by_maf_by_info.csv",
+		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary_by_maf.csv",
+		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary.pdf",
+		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_manhattan.png"
 	input:
 		output_folder+"/06.imputed/{chr}/{chr}.{g_chunk}.vcf.gz"
 	params:
