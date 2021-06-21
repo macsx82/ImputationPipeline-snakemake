@@ -71,7 +71,12 @@ rule all:
         expand(output_folder+"/06.imputed/BIMBAM/{chr}/{chr}.{ext}", ext=["bimbam.gz","pos"],chr=chrs),
         expand(output_folder+"/07.stats/{chr}/{chr}_{ext}",chr=chrs,ext=['impute_summary_by_maf_by_info.csv','impute_summary_by_maf.csv','impute_summary.pdf','impute_manhattan.png']),
         # expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_{ext}",chr=chrs,ext=['impute_summary_by_maf_by_info.csv','impute_summary_by_maf.csv','impute_summary.pdf','impute_manhattan.png'],g_chunk=["{:02d}".format(chunk) for chunk in list(range(1,lambda wildcards : getChunkNumByChr(wildcards)))])
-        expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_{ext}",chr=chrs,ext=['impute_summary_by_maf_by_info.csv','impute_summary_by_maf.csv','impute_summary.pdf','impute_manhattan.png'],g_chunk=glob_wildcards(os.path.join(output_folder+"/06.imputed/{chr}/", "{chr}.{g_chunk}.vcf.gz")).g_chunk)
+        # expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_{ext}",chr=chrs,ext=['impute_summary_by_maf_by_info.csv','impute_summary_by_maf.csv','impute_summary.pdf','impute_manhattan.png'],g_chunk=glob_wildcards(os.path.join(output_folder+"/06.imputed/{chr}/", "{chr}.{g_chunk}.vcf.gz")).g_chunk)
+        expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary_by_maf_by_info.csv",zip,**glob_wildcards(os.path.join(output_folder+"/06.imputed/{chr1}/", "{chr}.{g_chunk}.vcf.gz"))._asdict()),
+        expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary_by_maf.csv",zip,**glob_wildcards(os.path.join(output_folder+"/06.imputed/{chr1}/", "{chr}.{g_chunk}.vcf.gz"))._asdict()),
+        expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary.pdf",zip,**glob_wildcards(os.path.join(output_folder+"/06.imputed/{chr1}/", "{chr}.{g_chunk}.vcf.gz"))._asdict()),
+        expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_manhattan.png",zip,**glob_wildcards(os.path.join(output_folder+"/06.imputed/{chr1}/", "{chr}.{g_chunk}.vcf.gz"))._asdict())
+
         # expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{{g_chunk}}_{ext}",chr=chrs,ext=['impute_summary.csv','impute_summary.pdf','impute_manhattan.pdf'])
 
         # [ output_folder+"/04.impute_intervals/{key}/{key}.{value}.int" for key, value in chunked.items()]
