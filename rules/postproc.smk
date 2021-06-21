@@ -20,7 +20,7 @@ rule infoStatsChunks:
 	shell:
 		"""
 		{params.bcftools_bin} query -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/INFO\n" {input} | {params.scripts_folder}/imputationStats.py --tab {params.tab_prefix} --fig {output[2]} > {log.stdout} 2> {log.stderr}
-		{params.bcftools_bin} query -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/INFO\n" {input} | {params.scripts_folder}/plot_manhattan.py --no-log --cols 0,1,6 --title 'Impute INFO score chr{wildcards.chr} chunk {wildcards.g_chunk}' --image {output[3]} --ymax=1.2 - >> {log.stdout} 2>> {log.stderr}
+		{params.bcftools_bin} query -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/INFO\n" {input} | {params.scripts_folder}/plot_manhattan.py --chunk --no-log --cols 0,1,6 --title 'Impute INFO score chr{wildcards.chr} chunk {wildcards.g_chunk}' --image {output[3]} --ymax=1.2 - >> {log.stdout} 2>> {log.stderr}
 		"""
 
 rule infoStatsChrom:
@@ -34,7 +34,7 @@ rule infoStatsChrom:
 		output_folder+"/07.stats/{chr}/{chr}_impute_manhattan.png"
 	input:
 		output_folder+"/06.imputed/MERGED/{chr}/{chr}.vcf.gz",
-		
+
 	params:
 		bcftools_bin=config['tools']['bcftools'],
 		scripts_folder=config['paths']['scripts'],

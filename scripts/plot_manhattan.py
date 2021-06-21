@@ -45,7 +45,7 @@ def chr_loc_cmp(alocs, blocs):
 
 
 
-def manhattan(fhs, columns, image_path, no_log, colors, sep, title, lines, ymax):
+def manhattan(fhs, columns, image_path, no_log, colors, sep, title, lines, ymax,chunk_mode):
 
     xs = []
     ys = []
@@ -59,7 +59,17 @@ def manhattan(fhs, columns, image_path, no_log, colors, sep, title, lines, ymax)
     for seqid, rlist in groupby(data, key=itemgetter(0)):
         color = next(colors)
         rlist = list(rlist)
-        region_xs = [last_x + r[1] for r in rlist]
+        if chunk_mode :
+            region_xs = [r[1] for r in rlist]
+            # xs.extend(region_xs)
+            # ys.extend([r[2] for r in rlist])
+            # cs.extend([color] * len(rlist))
+            # xs_by_chr[seqid] = (region_xs[0] + region_xs[-1]) / 2
+            # keep track so that chrs don't overlap.
+            # last_x = xs[-1]
+        else :
+            region_xs = [last_x + r[1] for r in rlist]
+        
         xs.extend(region_xs)
         ys.extend([r[2] for r in rlist])
         cs.extend([color] * len(rlist))
@@ -108,6 +118,8 @@ def main():
     p = optparse.OptionParser(__doc__)
     p.add_option("--no-log", dest="no_log", help="don't do -log10(p) on the value",
             action='store_true', default=False)
+    p.add_option("--chunk", dest="chunk_mode", help="operating in chunk mode, we want to plot only the current region of a chromosome",
+            action='store_true', default=False)
     p.add_option("--cols", dest="cols", help="zero-based column indexes to get"
         " chr, position, p-value respectively e.g. %default", default="0,1,2")
     p.add_option("--colors", dest="colors", help="cycle through these colors",
@@ -128,7 +140,7 @@ def main():
     fhs = get_filehandles(args)
     columns = list(map(int, opts.cols.split(",")))
     manhattan(fhs, columns, opts.image, opts.no_log, opts.colors, opts.sep,
-            opts.title, opts.lines, opts.ymax)
+            opts.title, opts.lines, opts.ymax,opts.chunk_mode)
 
 
 if __name__ == "__main__":
