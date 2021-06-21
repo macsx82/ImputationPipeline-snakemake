@@ -33,7 +33,8 @@ rule infoStatsChrom:
 		output_folder+"/07.stats/{chr}/{chr}_impute_summary.pdf",
 		output_folder+"/07.stats/{chr}/{chr}_impute_manhattan.png"
 	input:
-		output_folder+"/06.imputed/MERGED/{chr}/{chr}.vcf.gz"
+		output_folder+"/06.imputed/MERGED/{chr}/{chr}.vcf.gz",
+		
 	params:
 		bcftools_bin=config['tools']['bcftools'],
 		scripts_folder=config['paths']['scripts'],

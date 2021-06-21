@@ -9,6 +9,18 @@ def createAndOpen(filename, mode):
 def generate_end_of_pipeline_files(key):
     return "%s/%s/chr%s.pipe.done" % (config["output_folder"],config["pop"],key)
 
+#function to retrieve chunk numbers by chromosome after imputation
+def getChunkNumByChr(wildcards):
+    from os import listdir
+    import re
+    from os.path import join, isfile
+    # chrom=22
+    # imputed_folder="/home/cocca/analyses/test_imputation_20210604/06.imputed"
+    checkpoint_output = checkpoints.chunkIntervalFileGenerator.get(**wildcards).output[0]
+    # return expand(output_folder+"/06.imputed/{chr}/{chr}.{g_chunk}.{ext}",ext=["vcf.gz","log"],chr=wildcards.chr,g_chunk=glob_wildcards(os.path.join(checkpoint_output, "{chr}.{g_chunk}.vcf.gz")).g_chunk)
+    return len(expand(output_folder+"/06.imputed/{chr}/{chr}.{g_chunk}.vcf.gz",chr=wildcards.chr,g_chunk=glob_wildcards(os.path.join(checkpoint_output, "{chr}.{g_chunk}.int")).g_chunk))
+
+
 # extract snps to flip after strand check vs reference panel
 def get_flippable(infile,outfile):
     import re 
@@ -48,50 +60,50 @@ def get_flippable(infile,outfile):
     # print(unique_flippable, file=open(outfile,"w"))
     open(outfile, 'a').close()
 
-def get_chunk_num(legend,chunk_size):
-    import gzip
-    import os
-    # get start and end of the chromosome
-    # legend='/home/cocca/analyses/test_imputation_20210604/04.phased_data/IGRPv1/Slo_POP_22_phased.vcf.gz'
-    # modified 06/06/2021, to read vcf file
-    # legend_file=gzip.open(legend) if legend.endswith('.gz') else open(legend)
-    # chrom=os.path.basename(legend).split('.')[0]
-    with gzip.open(legend) if legend.endswith('.gz') else open(legend) as legend_file:
-    # Skip initial comments that starts with #
-        while True:
-            line = legend_file.readline().decode()
-            # break while statement if it is not a comment line
-            # i.e. does not startwith #
-            if not line.startswith('#'):
-                # the first line withouth the comment char is the first line I want
-                first = line
-                break
-        # now we go to the end of the file
-        legend_file.seek(os.SEEK_END)
-        # go back to read the last line
-        last = legend_file.readlines()[-1].decode()
+# def get_chunk_num(legend,chunk_size):
+#     import gzip
+#     import os
+#     # get start and end of the chromosome
+#     # legend='/home/cocca/analyses/test_imputation_20210604/04.phased_data/IGRPv1/Slo_POP_22_phased.vcf.gz'
+#     # modified 06/06/2021, to read vcf file
+#     # legend_file=gzip.open(legend) if legend.endswith('.gz') else open(legend)
+#     # chrom=os.path.basename(legend).split('.')[0]
+#     with gzip.open(legend) if legend.endswith('.gz') else open(legend) as legend_file:
+#     # Skip initial comments that starts with #
+#         while True:
+#             line = legend_file.readline().decode()
+#             # break while statement if it is not a comment line
+#             # i.e. does not startwith #
+#             if not line.startswith('#'):
+#                 # the first line withouth the comment char is the first line I want
+#                 first = line
+#                 break
+#         # now we go to the end of the file
+#         legend_file.seek(os.SEEK_END)
+#         # go back to read the last line
+#         last = legend_file.readlines()[-1].decode()
 
-    # all_pos=legend_file.read().splitlines()
-    chrom=int(first.split("\t")[0])
-    start=int(first.split("\t")[1])
-    end=int(last.split("\t")[1])
-    chunk_num=round((end-start+1)/chunk_size)
-    # all_pos=legend_file.read().splitlines()    
-    # start=int(all_pos[1].decode().split(" ")[1])
-    # end=int(all_pos[-1].decode().split(" ")[1])
-    # chunk_num=round((end-start+1)/chunk_size)
+#     # all_pos=legend_file.read().splitlines()
+#     chrom=int(first.split("\t")[0])
+#     start=int(first.split("\t")[1])
+#     end=int(last.split("\t")[1])
+#     chunk_num=round((end-start+1)/chunk_size)
+#     # all_pos=legend_file.read().splitlines()    
+#     # start=int(all_pos[1].decode().split(" ")[1])
+#     # end=int(all_pos[-1].decode().split(" ")[1])
+#     # chunk_num=round((end-start+1)/chunk_size)
     
-    return chrom,start,end,chunk_num
+#     return chrom,start,end,chunk_num
 
 # create a dictionary with chroms and the relative chunk number extracted from the selected legend file for the imputation
-def get_chunk_by_chr(chr,legend,chunk_size):
-    import gzip
-    legend_file=gzip.open(legend) if legend.endswith('.gz') else open(legend)
-    all_pos=legend_file.read().splitlines()
-    start=int(all_pos[1].decode().split(" ")[1])
-    end=int(all_pos[-1].decode().split(" ")[1])
-    chunk_num=round((end-start+1)/chunk_size)
-    return chunk_num
+# def get_chunk_by_chr(chr,legend,chunk_size):
+#     import gzip
+#     legend_file=gzip.open(legend) if legend.endswith('.gz') else open(legend)
+#     all_pos=legend_file.read().splitlines()
+#     start=int(all_pos[1].decode().split(" ")[1])
+#     end=int(all_pos[-1].decode().split(" ")[1])
+#     chunk_num=round((end-start+1)/chunk_size)
+#     return chunk_num
 
 def get_imputation_interval(interval_file):
     import gzip
@@ -99,29 +111,29 @@ def get_imputation_interval(interval_file):
     interval_coord=interval.readlines()[0]
     return interval_coord
 
-def create_chunks(legend,chunk_size,chunk):
-    # import gzip
-    # get start and end of the chromosome
-    chrom,start,end,chunk_num=get_chunk_num(legend,chunk_size)
+# def create_chunks(legend,chunk_size,chunk):
+#     # import gzip
+#     # get start and end of the chromosome
+#     chrom,start,end,chunk_num=get_chunk_num(legend,chunk_size)
 
-    # legend_file=gzip.open(legend) if legend.endswith('.gz') else open(legend)
-    # all_pos=legend_file.read().splitlines()
-    # start=int(all_pos[1].decode().split(" ")[1])
-    # end=int(all_pos[-1].decode().split(" ")[1])
-    # chunk_num=round((end-start+1)/chunk_size)
+#     # legend_file=gzip.open(legend) if legend.endswith('.gz') else open(legend)
+#     # all_pos=legend_file.read().splitlines()
+#     # start=int(all_pos[1].decode().split(" ")[1])
+#     # end=int(all_pos[-1].decode().split(" ")[1])
+#     # chunk_num=round((end-start+1)/chunk_size)
 
-    # for chunk in list(range(1,chunk_num+1)):
-        # "{:02d}".format(chunk)
-    if chunk > 1 :
-        chunk_begin=start+(chunk-1)*chunk_size+1
-    else:
-        chunk_begin=start
-    if chunk == chunk_num:
-        chunk_end=end
-    else:
-        chunk_end=start+(chunk*chunk_size)
-    interval="%s %s" % (chunk_begin, chunk_end)
-    return interval
+#     # for chunk in list(range(1,chunk_num+1)):
+#         # "{:02d}".format(chunk)
+#     if chunk > 1 :
+#         chunk_begin=start+(chunk-1)*chunk_size+1
+#     else:
+#         chunk_begin=start
+#     if chunk == chunk_num:
+#         chunk_end=end
+#     else:
+#         chunk_end=start+(chunk*chunk_size)
+#     interval="%s %s" % (chunk_begin, chunk_end)
+#     return interval
 
 # function to get rsId of sites for which we couldn't assign alleles based on a refernce file
 def get_not_assigned_snps(outfile,*infile):
