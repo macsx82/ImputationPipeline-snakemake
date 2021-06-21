@@ -34,10 +34,11 @@ rule infoStatsChrom:
 		output_folder+"/07.stats/{chr}/{chr}_impute_manhattan.png"
 	input:
 		output_folder+"/06.imputed/MERGED/{chr}/{chr}.vcf.gz",
-		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{{g_chunk}}_impute_summary_by_maf_by_info.csv",
-		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{{g_chunk}}_impute_summary_by_maf.csv",
-		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{{g_chunk}}_impute_summary.pdf",
-		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{{g_chunk}}_impute_manhattan.png"
+		lambda wildcards: output_folder+"/07.stats/{wildcards.chr}/CHUNKS/{wildcards.chr}_{wildcards.g_chunk}_impute_summary_by_maf_by_info.csv",
+		lambda wildcards: output_folder+"/07.stats/{wildcards.chr}/CHUNKS/{wildcards.chr}_{wildcards.g_chunk}_impute_summary_by_maf.csv",
+		lambda wildcards: output_folder+"/07.stats/{wildcards.chr}/CHUNKS/{wildcards.chr}_{wildcards.g_chunk}_impute_summary.pdf",
+		lambda wildcards: output_folder+"/07.stats/{wildcards.chr}/CHUNKS/{wildcards.chr}_{wildcards.g_chunk}_impute_manhattan.png"
+		# tab_prefix=lambda wildcards: output_folder+"/07.stats/{wildcards.chr}/CHUNKS/{wildcards.chr}_{wildcards.g_chunk}_impute_summary"
 	params:
 		bcftools_bin=config['tools']['bcftools'],
 		scripts_folder=config['paths']['scripts'],
