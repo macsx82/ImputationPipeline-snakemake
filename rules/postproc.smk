@@ -6,7 +6,7 @@ rule infoStatsChunks:
 	output:
 		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary_by_maf_by_info.csv",
 		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary_by_maf.csv",
-		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary.pdf",
+		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary.png",
 		output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_manhattan.png"
 	input:
 		output_folder+"/06.imputed/{chr}/{chr}.{g_chunk}.vcf.gz"
@@ -30,7 +30,7 @@ rule infoStatsChrom:
 	output:
 		output_folder+"/07.stats/{chr}/{chr}_impute_summary_by_maf_by_info.csv",
 		output_folder+"/07.stats/{chr}/{chr}_impute_summary_by_maf.csv",
-		output_folder+"/07.stats/{chr}/{chr}_impute_summary.pdf",
+		output_folder+"/07.stats/{chr}/{chr}_impute_summary.png",
 		output_folder+"/07.stats/{chr}/{chr}_impute_manhattan.png"
 	input:
 		output_folder+"/06.imputed/MERGED/{chr}/{chr}.vcf.gz",
@@ -47,6 +47,11 @@ rule infoStatsChrom:
 		{params.bcftools_bin} query -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/INFO\n" {input[0]} | {params.scripts_folder}/imputationStats.py --tab {params.tab_prefix} --fig {output[2]} > {log.stdout} 2> {log.stderr}
 		{params.bcftools_bin} query -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/INFO\n" {input[0]} | {params.scripts_folder}/plot_manhattan.py --no-log --cols 0,1,6 --title 'Impute INFO score chr{wildcards.chr}' --image {output[3]} --ymax=1.2 - >> {log.stdout} 2>> {log.stderr}
 		"""
+
+
+# #aggregator rule to get all data from all chunks and generate a single pdf file
+# rule pdfReportCunks:
+
 
 
 

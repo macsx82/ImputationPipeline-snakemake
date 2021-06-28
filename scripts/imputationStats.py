@@ -33,7 +33,7 @@ def getInfoClass(info):
 #we will read from stdin, but we want to specify file names for table and pdf/figure output
 parser = argparse.ArgumentParser()
 parser.add_argument('--tab', type=str, help="MANDATORY: Provide full path to the output file for the table report, but only the name prefix.")
-parser.add_argument('--fig', type=str, help="MANDATORY: Provide full path to the output file for the plot (PDF) report.")
+parser.add_argument('--fig', type=str, help="MANDATORY: Provide full path to the output file for the plot (PNG) report.")
 
 args=parser.parse_args()
 # open files for writing
@@ -112,6 +112,6 @@ chrom_table[['MAF','INFO_SCORE']].plot.hist(alpha=0.5, bins=50,subplots=True)
 # chrom_table.INFO_SCORE.plot.hist(alpha=0.5, bins=50,ax=axes[1])
 plt.legend(loc='best')
 
-# plt.savefig('TEST4.pdf')
+# plt.savefig('TEST4.png')
 plt.savefig(args.fig)
 plt.close()

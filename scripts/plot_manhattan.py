@@ -3,6 +3,9 @@
     %prog [options] files
 
 plot a manhattan plot of the input file(s).
+ 
+Got it from https://github.com/brentp/bio-playground/tree/master/plots and added some customization to work with python3
+
 """
 
 import optparse
@@ -80,7 +83,8 @@ def manhattan(fhs, columns, image_path, no_log, colors, sep, title, lines, ymax,
 
     plt.close()
     f = plt.figure(figsize=(18, 8))
-    ax = f.add_axes((0.1, 0.09, 0.88, 0.85))
+    # ax = f.add_axes((0.1, 0.09, 0.88, 0.85))
+    ax = f.add_axes((0.05, 0.09, 0.88, 0.85))
 
     if title is not None:
         plt.title(title)
