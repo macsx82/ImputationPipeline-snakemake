@@ -34,7 +34,6 @@ rule infoStatsChrom:
 		output_folder+"/07.stats/{chr}/{chr}_impute_manhattan.png"
 	input:
 		output_folder+"/06.imputed/MERGED/{chr}/{chr}.vcf.gz",
-
 	params:
 		bcftools_bin=config['tools']['bcftools'],
 		scripts_folder=config['paths']['scripts'],
@@ -50,8 +49,25 @@ rule infoStatsChrom:
 
 
 # #aggregator rule to get all data from all chunks and generate a single pdf file
-# rule pdfReportCunks:
-
+rule pdfReportCunks:
+	wildcard_constraints:
+		g_chunk='\d+',
+		chr='\d+'
+	output:
+		output_folder+"/07.stats/{chr}/{chr}_impute_summary_report_by_chunk.pdf"
+	input:
+		chunk_stats_by_maf_by_info=expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary_by_maf_by_info.csv",zip,**glob_wildcards(os.path.join(output_folder+"/06.imputed/{chr1}/", "{chr}.{g_chunk}.vcf.gz"))._asdict()),
+		chunk_stats_by_maf=expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary_by_maf.csv",zip,**glob_wildcards(os.path.join(output_folder+"/06.imputed/{chr1}/", "{chr}.{g_chunk}.vcf.gz"))._asdict()),
+		info_af=expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary.png",zip,**glob_wildcards(os.path.join(output_folder+"/06.imputed/{chr1}/", "{chr}.{g_chunk}.vcf.gz"))._asdict()),
+		manhattan=expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_manhattan.png",zip,**glob_wildcards(os.path.join(output_folder+"/06.imputed/{chr1}/", "{chr}.{g_chunk}.vcf.gz"))._asdict())
+	params:
+		stat_base_folder=output_folder+"/07.stats/{chr}/CHUNKS"
+	log:
+		stdout=log_folder+"/pdfReportCunks_{chr}.o",
+		stderr=log_folder+"/pdfReportCunks_{chr}.e"	
+	run:
+		chunk_number=len(input.chunk_stats_by_maf_by_info)
+		pdf_report(wildcards.chr,params.stat_base_folder,chunk_number,output[0])
 
 
 

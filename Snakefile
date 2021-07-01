@@ -25,6 +25,8 @@ ref_panel_base_folder=config["paths"]["ref_panel_base_folder"]
 # MODULES
 include_prefix="rules"
 include:
+    "scripts/pdf_report.py"
+include:
     include_prefix + "/functions.py"
 
 # define a dictionary containing chromosomes and relative chuk size
@@ -75,8 +77,8 @@ rule all:
         expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary_by_maf_by_info.csv",zip,**glob_wildcards(os.path.join(output_folder+"/06.imputed/{chr1}/", "{chr}.{g_chunk}.vcf.gz"))._asdict()),
         expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary_by_maf.csv",zip,**glob_wildcards(os.path.join(output_folder+"/06.imputed/{chr1}/", "{chr}.{g_chunk}.vcf.gz"))._asdict()),
         expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary.png",zip,**glob_wildcards(os.path.join(output_folder+"/06.imputed/{chr1}/", "{chr}.{g_chunk}.vcf.gz"))._asdict()),
-        expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_manhattan.png",zip,**glob_wildcards(os.path.join(output_folder+"/06.imputed/{chr1}/", "{chr}.{g_chunk}.vcf.gz"))._asdict())
-
+        expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_manhattan.png",zip,**glob_wildcards(os.path.join(output_folder+"/06.imputed/{chr1}/", "{chr}.{g_chunk}.vcf.gz"))._asdict()),
+        expand(output_folder+"/07.stats/{chr}/{chr}_impute_summary_report_by_chunk.pdf",chr=chrs)
         # expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{{g_chunk}}_{ext}",chr=chrs,ext=['impute_summary.csv','impute_summary.pdf','impute_manhattan.pdf'])
 
         # [ output_folder+"/04.impute_intervals/{key}/{key}.{value}.int" for key, value in chunked.items()]
