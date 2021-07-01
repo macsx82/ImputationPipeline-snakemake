@@ -56,10 +56,14 @@ rule pdfReportCunks:
 	output:
 		output_folder+"/07.stats/{chr}/{chr}_impute_summary_report_by_chunk.pdf"
 	input:
-		chunk_stats_by_maf_by_info=expand(output_folder+"/07.stats/{{chr}}/CHUNKS/{{chr}}_{g_chunk}_impute_summary_by_maf_by_info.csv",zip,**glob_wildcards(os.path.join(output_folder+"/06.imputed/{chr}/", "{chr}.{g_chunk}.vcf.gz"))._asdict()),
-		chunk_stats_by_maf=expand(output_folder+"/07.stats/{{chr}}/CHUNKS/{{chr}}_{g_chunk}_impute_summary_by_maf.csv",zip,**glob_wildcards(os.path.join(output_folder+"/06.imputed/{chr}/", "{chr}.{g_chunk}.vcf.gz"))._asdict()),
-		info_af=expand(output_folder+"/07.stats/{{chr}}/CHUNKS/{{chr}}_{g_chunk}_impute_summary.png",zip,**glob_wildcards(os.path.join(output_folder+"/06.imputed/{chr}/", "{chr}.{g_chunk}.vcf.gz"))._asdict()),
-		manhattan=expand(output_folder+"/07.stats/{{chr}}/CHUNKS/{{chr}}_{g_chunk}_impute_manhattan.png",zip,**glob_wildcards(os.path.join(output_folder+"/06.imputed/{chr}/", "{chr}.{g_chunk}.vcf.gz"))._asdict())
+		# chunk_stats_by_maf_by_info=expand(output_folder+"/07.stats/{{chr}}/CHUNKS/{{chr}}_{g_chunk}_impute_summary_by_maf_by_info.csv",zip,**glob_wildcards(os.path.join(output_folder+"/06.imputed/{chr}/", "{chr}.{g_chunk}.vcf.gz"))._asdict()),
+		# chunk_stats_by_maf=expand(output_folder+"/07.stats/{{chr}}/CHUNKS/{{chr}}_{g_chunk}_impute_summary_by_maf.csv",zip,**glob_wildcards(os.path.join(output_folder+"/06.imputed/{chr}/", "{chr}.{g_chunk}.vcf.gz"))._asdict()),
+		# info_af=expand(output_folder+"/07.stats/{{chr}}/CHUNKS/{{chr}}_{g_chunk}_impute_summary.png",zip,**glob_wildcards(os.path.join(output_folder+"/06.imputed/{chr}/", "{chr}.{g_chunk}.vcf.gz"))._asdict()),
+		# manhattan=expand(output_folder+"/07.stats/{{chr}}/CHUNKS/{{chr}}_{g_chunk}_impute_manhattan.png",zip,**glob_wildcards(os.path.join(output_folder+"/06.imputed/{chr}/", "{chr}.{g_chunk}.vcf.gz"))._asdict())
+		chunk_stats_by_maf_by_info=expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary_by_maf_by_info.csv",chr=wildcards.chr,g_chunk=glob_wildcards(os.path.join(checkpoint_output, "{chr}.{g_chunk}.int")).g_chunk),
+		chunk_stats_by_maf=expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary_by_maf.csv",chr=wildcards.chr,g_chunk=glob_wildcards(os.path.join(checkpoint_output, "{chr}.{g_chunk}.int")).g_chunk),
+		info_af=expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary.png",chr=wildcards.chr,g_chunk=glob_wildcards(os.path.join(checkpoint_output, "{chr}.{g_chunk}.int")).g_chunk),
+		manhattan=expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_manhattan.png",chr=wildcards.chr,g_chunk=glob_wildcards(os.path.join(checkpoint_output, "{chr}.{g_chunk}.int")).g_chunk)
 	params:
 		stat_base_folder=output_folder+"/07.stats/{chr}/CHUNKS"
 	log:
