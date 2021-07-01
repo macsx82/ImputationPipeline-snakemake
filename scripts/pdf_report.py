@@ -19,8 +19,8 @@ def pdf_report(current_chr,stat_base_folder,chunk_n,outfile):
 
     #we need to build the template for the single chunk, than collect all chunks data together
     # define the current page elements
-    current_chr='2' # this is something we need to pass as arguments of our function
-    stat_base_folder="/home/cocca/analyses/imputation/20210613/MOLISANI/07.stats/2/CHUNKS" #this is another argument needed to get the rest of the data
+    # current_chr='2' # this is something we need to pass as arguments of our function
+    # stat_base_folder="/home/cocca/analyses/imputation/20210613/MOLISANI/07.stats/2/CHUNKS" #this is another argument needed to get the rest of the data
 
     #open the PDF documents and start the page numbering
     pdf = PDF()
