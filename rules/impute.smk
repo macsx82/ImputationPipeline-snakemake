@@ -105,7 +105,7 @@ rule concatImputed:
 		g_chunk='\d+',
 		chr='\d+'
 	output:
-		expand(output_folder+"/06.imputed/MERGED/{{chr}}/{{chr}}.{ext}", ext=["vcf.gz","vcf.gz.tbi"])
+		expand(output_folder+"/06.imputed/MERGED/{{chr}}/{{chr}}.{ext}", ext=["vcf.gz","vcf.gz.tbi","stats"])
 	input:
 		collect_imputed_chunks
 	params:
@@ -118,4 +118,5 @@ rule concatImputed:
 		"""
 		{params.bcftools_bin} concat {input}| {params.bcftools_bin} sort -T {params.temp} -O z -o {output[0]} > {log.stdout} 2> {log.stderr}
 		tabix -p vcf {output[0]} >> {log.stdout} 2>> {log.stderr}
+		{params.bcftools_bin} stats {output[0]} > {output[2]} 2>> {log.stderr}
 		"""
