@@ -52,8 +52,7 @@ rule infoStatsChrom:
 rule pdfReportCunks:
 	wildcard_constraints:
 		g_chunk='\d+',
-		chr='\d+',
-		chr1='\d+'
+		chr='\d+'
 	output:
 		output_folder+"/07.stats/{chr}/{chr}_impute_summary_report_by_chunk.pdf"
 	input:
