@@ -24,7 +24,7 @@ def pdf_report(current_chr,stat_base_folder,chunk_n,outfile):
 
     #open the PDF documents and start the page numbering
     pdf = PDF()
-    pdf.alias_nb_pages()
+    # pdf.alias_nb_pages()
 
     for chunk in list(range(1,int(chunk_n)+1)):
         current_chunk="{:02d}".format(chunk)
