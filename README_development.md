@@ -245,8 +245,9 @@ done
 
 Test fixref plugin
 
+```bash
 bcftools +fixref /home/cocca/analyses/test_imputation_20210604/03.flipped_input/IGRPv1/VCF/Slo_POP_22_allFix_flipped.vcf.gz -O z -o /home/cocca/analyses/test_imputation_20210604/03.flipped_input/IGRPv1/VCF/Slo_POP_22_allFix_flipped_REFFIX.vcf.gz -- -f /shared/resources/hgRef/hg19/hg19_nochr.fasta -i /netapp/nfs/resources/dbSNP/human_9606_b154_GRCh37p13/GCF_000001405.25.vcf.gz
-
+```
 ---
 #12/06/2021
 

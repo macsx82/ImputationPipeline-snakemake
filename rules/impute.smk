@@ -116,7 +116,7 @@ rule concatImputed:
 		stderr=log_folder+"/concatImputed_{chr}.e"
 	shell:
 		"""
-		temp=$(mktemp -u -d -p {params.tmp})
+		temp=$(mktemp -u -d -p {params.temp})
 		{params.bcftools_bin} concat {input}| {params.bcftools_bin} sort -T ${{temp}} -O z -o {output[0]} > {log.stdout} 2> {log.stderr}
 		tabix -p vcf {output[0]} >> {log.stdout} 2>> {log.stderr}
 		{params.bcftools_bin} stats {output[0]} > {output[2]} 2>> {log.stderr}
