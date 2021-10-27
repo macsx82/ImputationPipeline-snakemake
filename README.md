@@ -18,3 +18,5 @@ The following software has to be installed system wide or in a user defined Cond
 * shapeit v4
 * impute v5
 * plink v1.9
+
+

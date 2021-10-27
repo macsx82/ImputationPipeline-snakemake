@@ -397,9 +397,10 @@ rule vcfFixRef:
         stderr=log_folder+"/vcfFixRef_{chr}.e",
     shell:
         """
+        temp=$(mktemp -u -d -p {params.tmp})
         # conda activate gatk4170
         {params.bcftools_bin} +fixref {input[0]} -O z -o {output[0]} -- -i {params.ext_ref_file} -f {params.ref_fasta} > {log.stdout} 2> {log.stderr}
-        {params.bcftools_bin} sort -T {params.temp} {output[0]} -O z -o {output[1]} >> {log.stdout} 2>> {log.stderr}
+        {params.bcftools_bin} sort -T ${{temp}} {output[0]} -O z -o {output[1]} >> {log.stdout} 2>> {log.stderr}
         tabix -p vcf {output[1]}
         """
 
