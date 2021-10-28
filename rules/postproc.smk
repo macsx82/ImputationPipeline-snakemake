@@ -17,6 +17,7 @@ rule infoStatsChunks:
 	log:
 		stdout=log_folder+"/infoStatsChunks_{chr}_{g_chunk}.o",
 		stderr=log_folder+"/infoStatsChunks_{chr}_{g_chunk}.e"
+	priority: 50
 	shell:
 		"""
 		{params.bcftools_bin} query -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/INFO\n" {input} | {params.scripts_folder}/imputationStats.py --tab {params.tab_prefix} --fig {output[2]} > {log.stdout} 2> {log.stderr}
@@ -41,6 +42,7 @@ rule infoStatsChrom:
 	log:
 		stdout=log_folder+"/infoStatsChrom_{chr}.o",
 		stderr=log_folder+"/infoStatsChrom_{chr}.e"
+	priority: 49
 	shell:
 		"""
 		{params.bcftools_bin} query -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/INFO\n" {input[0]} | {params.scripts_folder}/imputationStats.py --tab {params.tab_prefix} --fig {output[2]} > {log.stdout} 2> {log.stderr}
@@ -70,6 +72,7 @@ rule pdfReportCunks:
 	log:
 		stdout=log_folder+"/pdfReportCunks_{chr}.o",
 		stderr=log_folder+"/pdfReportCunks_{chr}.e"	
+	priority: 48
 	run:
 		chunk_number=len(input.chunk_stats_by_maf_by_info)
 		pdf_report(wildcards.chr,params.stat_base_folder,chunk_number,output[0])
