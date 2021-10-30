@@ -53,8 +53,9 @@ rules:
   vcfFixRef:
     temp: "temp folder path" #in case we need to sort the concatenated vcf files 
   phase:
-    mcmc_iterations: '10b,1p,1b,1p,1b,1p,1b,1p,10m' #maxed out parameteres according to SHAPEIT4 manual. Default setting are : 5b,1p,1b,1p,1b,1p,5m
-    pbwt_depth: 8 #maxed out parameteres according to SHAPEIT4 manual. Default setting are : 4
+    mcmc_iterations: "--mcmc-iterations 10b,1p,1b,1p,1b,1p,1b,1p,10m" #maxed out parameteres according to SHAPEIT4 manual. Default setting are : 5b,1p,1b,1p,1b,1p,5m
+    pbwt_depth: "--pbwt-depth 8" #maxed out parameteres according to SHAPEIT4 manual. Default setting are : 4
+    additional_args: ""
   
 
 tools:

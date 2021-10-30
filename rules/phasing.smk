@@ -36,6 +36,7 @@ rule phase:
         g_map=config['paths']['genetic_map_path']+"/chr{chr}.b37.gmap.gz",
         mcmc_iterations=config['rules']['phase']['mcmc_iterations'],
         pbwt_depth=config['rules']['phase']['pbwt_depth'],
+        additional_args=config['rules']['phase']['additional_args'],
         phasing_tool=config['tools']['phasing_tool']
     threads: 16
     log:
@@ -46,7 +47,7 @@ rule phase:
         output_folder+"/benchmarks/{chr}.phase_rule.tsv"
     shell:
         """
-        {params.phasing_tool} --input {input[0]} --map {params.g_map} --region {wildcards.chr} --output {output[0]} --thread {threads} --log {log[0]} --mcmc-iterations {params.mcmc_iterations} --pbwt-depth {params.pbwt_depth} 2> {log.stderr}
+        {params.phasing_tool} --input {input[0]} --map {params.g_map} --region {wildcards.chr} --output {output[0]} --thread {threads} --log {log[0]} {params.mcmc_iterations} {params.pbwt_depth} {params.additional_args} 2> {log.stderr}
         tabix -p vcf {output[0]}
         """
 

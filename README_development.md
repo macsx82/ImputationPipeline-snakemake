@@ -269,3 +269,35 @@ snakemake -s ~/scripts/pipelines/ImputationPipeline-snakemake/Snakefile -p -r --
 
 Added pylatex and texlive-core to the installed packages in the conda env to generate the imputation report
 
+---
+
+#29/10/2021
+
+Convert also chrX from 1000G to the correct format, splitting par and non par regions
+
+```bash
+basepath=/shared/resources/references
+
+infile=/netapp/nfs/resources/1000GP_phase3/vcf/ALL.chrX.phase3_shapeit2_mvncall_integrated_v1b.20130502.genotypes.vcf.gz
+chr="X"
+
+mkdir -p ${basepath}/IMP5/TGP3/${chr}_NONPAR
+mkdir -p ${basepath}/IMP5/TGP3/${chr}_PAR1
+mkdir -p ${basepath}/IMP5/TGP3/${chr}_PAR2
+# echo "/shared/software/impute5_v1.1.4/imp5Converter_1.1.4_static --h ${basepath}/VCF/${chr}/${chr}.IGRPv1.vcf.gz --r ${chr} --o ${basepath}/IMP5/${chr}/${chr}.IGRPv1.imp5" |qsub -N convert_${chr}_imp5 -V -cwd -l h_vmem=15G -q fast
+# echo "/shared/software/impute5_v1.1.5/imp5Converter_1.1.5_static --h ${basepath}/VCF/${chr}/${chr}.IGRPv1.vcf.gz --r ${chr} --o ${basepath}/IMP5/${chr}/${chr}.IGRPv1.imp5" |qsub -N convert_${chr}_imp5 -V -cwd -l h_vmem=15G -q fast
+echo "/shared/software/impute5_v1.1.5/imp5Converter_1.1.5_static --h ${infile} --r ${chr}:2699521-154931043 --o ${basepath}/IMP5/TGP3/${chr}_NONPAR/${chr}_NONPAR.TGP3.imp5" |qsub -N convert_${chr}_NONPAR_imp5 -V -cwd -l h_vmem=15G -q all.q
+echo "/shared/software/impute5_v1.1.5/imp5Converter_1.1.5_static --h ${infile} --r ${chr}:60001-2699520 --o ${basepath}/IMP5/TGP3/${chr}_PAR1/${chr}_PAR1.TGP3.imp5" |qsub -N convert_${chr}_PAR1_imp5 -V -cwd -l h_vmem=15G -q all.q
+echo "/shared/software/impute5_v1.1.5/imp5Converter_1.1.5_static --h ${infile} --r ${chr}:154931044-155260560 --o ${basepath}/IMP5/TGP3/${chr}_PAR2/${chr}_PAR2.TGP3.imp5" |qsub -N convert_${chr}_PAR2_imp5 -V -cwd -l h_vmem=15G -q all.q
+
+basepath=/shared/resources/references
+chr="X"
+invcf=/netapp/nfs/resources/1000GP_phase3/vcf/ALL.chrX.phase3_shapeit2_mvncall_integrated_v1b.20130502.genotypes.vcf.gz
+echo "bcftools view -r ${chr}:2699521-154931043 ${invcf} -O z -o ${basepath}/VCF/TGP3/${chr}/${chr}.TGP3.vcf.gz" |qsub -N convert_${chr}_NONPAR -V -cwd -l h_vmem=15G -q all.q
+echo "bcftools view -r ${chr}:60001-2699520 ${invcf} -O z -o ${basepath}/VCF/TGP3/${chr}_par1/${chr}_par1.TGP3.vcf.gz" |qsub -N convert_${chr}_PAR1 -V -cwd -l h_vmem=15G -q all.q
+echo "bcftools view -r ${chr}:154931044-155260560 ${invcf} -O z -o ${basepath}/VCF/TGP3/${chr}_par2/${chr}_par2.TGP3.vcf.gz" |qsub -N convert_${chr}_PAR2 -V -cwd -l h_vmem=15G -q all.q
+
+# chrX:60001-2699520 and chrX:154931044-155260560 -> PAR regions for b37
+```
+
+X.TGP3.vcf.gz
