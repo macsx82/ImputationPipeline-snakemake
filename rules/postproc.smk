@@ -76,7 +76,7 @@ rule pdfReportCunks:
 	log:
 		stdout=log_folder+"/pdfReportCunks_{chr}.o",
 		stderr=log_folder+"/pdfReportCunks_{chr}.e"	
-	# priority: 1
+	priority: 1
 	run:
 		chunk_number=len(input.chunk_stats_by_maf_by_info)
 		pdf_report(wildcards.chr,params.stat_base_folder,chunk_number,output[0])
