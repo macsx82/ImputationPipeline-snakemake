@@ -24,11 +24,11 @@ def getChunkNumByChr(wildcards):
 #define a conversion table to work on chrX different regions
 def getChrForPhasing(wildcards):
     current_chr=wildcards.chr
-    if current_chr == 23 :
+    if current_chr == "23" :
         converted_chr="X"
-    elif current_chr == 24:
+    elif current_chr == "24":
         converted_chr="X"
-    elif current_chr == 25:
+    elif current_chr == "25":
         converted_chr="X"
     else :
         converted_chr=current_chr
