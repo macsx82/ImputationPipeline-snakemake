@@ -20,3 +20,8 @@ The following software has to be installed system wide or in a user defined Cond
 * plink v1.9
 
 
+Some reference panel formatting needed for chrX imputation correct handling:
+
+chrX non par regions -> 23
+chrX PAR1 -> 24
+chrX PAR2 -> 25

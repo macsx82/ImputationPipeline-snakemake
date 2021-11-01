@@ -21,6 +21,19 @@ def getChunkNumByChr(wildcards):
     chr_chunk_size = len(expand(output_folder+"/06.imputed/{chr}/{chr}.{g_chunk}.vcf.gz",chr=wildcards.chr,g_chunk=glob_wildcards(os.path.join(checkpoint_output, "{chr}.{g_chunk}.int")).g_chunk))
     return chr_chunk_size
 
+#define a conversion table to work on chrX different regions
+def getChrForPhasing(wildcards)
+    current_chr=wildcards.chr
+    if current_chr == 23 :
+        converted_chr="X"
+    elif current_chr == 24:
+        converted_chr="X"
+    elif current_chr == 25:
+        converted_chr="X"
+    else :
+        converted_chr=current_chr
+    return converted_chr
+
 
 # extract snps to flip after strand check vs reference panel
 def get_flippable(infile,outfile):
