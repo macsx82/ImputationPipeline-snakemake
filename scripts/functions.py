@@ -22,7 +22,7 @@ def getChunkNumByChr(wildcards):
     return chr_chunk_size
 
 #define a conversion table to work on chrX different regions
-def getChrForPhasing(wildcards)
+def getChrForPhasing(wildcards):
     current_chr=wildcards.chr
     if current_chr == 23 :
         converted_chr="X"
