@@ -3,7 +3,7 @@
     {
         "mem": "5G",
         "queue" : "fast",
-        "parall_env": "smp",
+        "parall_env": "make",
         "user_mail": "massimiliano.cocca@burlo.trieste.it"
     },
     "phase":
