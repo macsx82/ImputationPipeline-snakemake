@@ -8,7 +8,7 @@
     },
     "phase":
     {
-        "mem": "8G"
+        "mem": "100G"
     },
     "impute":
     {
