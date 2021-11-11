@@ -16,7 +16,7 @@ rule chunkGenerator:
 		study_geno=rules.phase.output[0]
 	params:
 		chunker_tool=config['tools']['chunker_tool'],
-		win_size=config['rules']['chunkGenerator']['window-size']
+		win_size=config['rules']['chunkGenerator']['window-size'],
 		win_count=config['rules']['chunkGenerator']['window-count']
 		# coord_by_chunker=lambda wildcards: output_folder+"/05.impute_intervals/{chr}/{chr}.coordinates.txt".format(chr=wildcards.chr)
 	log:
