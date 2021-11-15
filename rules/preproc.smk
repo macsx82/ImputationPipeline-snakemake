@@ -401,7 +401,7 @@ rule vcfFixRef:
         # conda activate gatk4170
         {params.bcftools_bin} +fixref {input[0]} -O z -o {output[0]} -- -i {params.ext_ref_file} -f {params.ref_fasta} > {log.stdout} 2> {log.stderr}
         {params.bcftools_bin} sort -T ${{temp}} {output[0]} -O z -o {output[1]} >> {log.stdout} 2>> {log.stderr}
-        tabix -p vcf {output[1]}
+        {params.bcftools_bin} index -t {output[1]}
         """
 
 # Annotate with rsIds according to external resource
@@ -423,8 +423,8 @@ rule vcfAnnotate:
     shell:
         """
         {params.bcftools_bin} annotate --set-id '%CHROM:%POS\_%REF\_%FIRST_ALT' {input[0]} -O z -o {output[0]} > {log.stdout} 2> {log.stderr}
-        tabix -p vcf {output[0]}
+        {params.bcftools_bin} index -t {output[0]}
         {params.bcftools_bin} annotate -a {params.ext_ref_file} -c ID {output[0]} -O z -o {output[2]} >> {log.stdout} 2>> {log.stderr}
-        tabix -p vcf {output[2]}
+        {params.bcftools_bin} index -t {output[2]}
         """
 

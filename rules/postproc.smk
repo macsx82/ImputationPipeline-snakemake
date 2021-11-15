@@ -104,3 +104,24 @@ rule convertBimbam:
 		{params.bcftools_bin} query -f'%ID,%POS,%CHROM\\n' {input} -o {output[1]} >> {log.stdout} 2>> {log.stderr}
 		"""
 
+#Add the correct annotation name for the impute info score. Impute5 creates a INFO/INFO tag, in the VCf, but this tag is not read correctly by SAIGE and probably other softwares
+# we will add a R2 INFO tag, so we can use that information.
+rule convertInfoToR2:
+	output:
+		output_folder+"/06.imputed/R2/{chr}/{chr}.vcf.gz",
+		output_folder+"/06.imputed/R2/{chr}/{chr}.vcf.gz.csi",
+		output_folder+"/06.imputed/R2/{chr}/{chr}.vcf.gz.tbi"
+	input:
+		output_folder+"/06.imputed/MERGED/{chr}/{chr}.vcf.gz"
+	params:
+		bcftools_bin=config['tools']['bcftools']
+	log:
+		stdout=log_folder+"/convertInfoToR2_{chr}.o",
+		stderr=log_folder+"/convertInfoToR2_{chr}.e"
+	shell:
+		"""
+		#We need to add the correct annotation name for the impute info score score. We will cal it R2, so other softwares can use this field (SAIGE in primis)
+		{params.bcftools_bin} annotate -c INFO/R2:=INFO/INFO -a {input} {input}| {params.bcftools_bin} view -O z -o {output[1]} 1> {output[0]} 2> {log.stderr}
+		{params.bcftools_bin} index -t {output[1]}
+		{params.bcftools_bin} index -c {output[1]}
+		"""
