@@ -163,7 +163,7 @@ rule plinkSplit:
         rules.chrXSplit.output[2]
     params:
         output_prefix=output_folder+"/01.splitted_input/"+cohort_name,
-        i_prefix=output_folder+"/00.cleaned_input/"+ cohort_name+"_snps_only_mapUpdateExt_flipped",
+        i_prefix=output_folder+"/00.cleaned_input/"+ cohort_name+"_snps_only_mapUpdateExt_flipped_chrXsplit",
         plink=config['tools']['plink']
     log:
         stdout=log_folder+"/plinkSplit.o",
