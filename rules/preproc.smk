@@ -150,7 +150,7 @@ rule chrXSplit:
         stderr=log_folder+"/chrXSplit.e"
     shell:
         """
-        {params.plink} --bfile {params.bfiles_prefix} --split-x {params.split_x_args} --make-bed --out {params.output_prefix} > {log.stdout} 2> {log.stderr}
+        {params.plink} --bfile {params.i_prefix} --split-x {params.split_x_args} --make-bed --out {params.output_prefix} > {log.stdout} 2> {log.stderr}
         """
 
 # After the flipping and chrX splitting, we can continue as before, performing the allele fixing on the splitted dataset
