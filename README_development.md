@@ -354,6 +354,23 @@ cat 1000GP_Phase3_chrX_PAR1.legend.gz 1000GP_Phase3_chrX_PAR2.legend.gz > 1000GP
 ```
 
 
+Test run for the preproc set of rules
+
+```bash
+basefolder=/home/cocca/analyses/imputation/20211116_TEST
+err_name=${basefolder}/Logs/test_chrX_imputation.err
+stdout_name=${basefolder}/Logs/test_chrX_imputation.log
+config_file=/home/cocca/analyses/imputation/20211116_TEST/test_imputation_20211116.yaml
+
+mkdir -p ${basefolder}/Logs
+
+snakemake -s ~/scripts/pipelines/ImputationPipeline-snakemake/Snakefile -p -r --jobs 100 --configfile ${config_file} --omit-from vcfAnnotate --cluster-config ~/scripts/pipelines/ImputationPipeline-snakemake/SGE_cluster.json --cluster "qsub -N {config[cohort_name]}_{rule} -V -cwd -m ea -M {cluster.user_mail} -pe {cluster.parall_env} {threads} -o {log.stdout} -e {log.stderr} -l h_vmem={cluster.mem} -q {cluster.queue}" 1> ${stdout_name} 2> ${err_name}
+
+```
+
+
+
+
 X.TGP3.vcf.gz
 
 

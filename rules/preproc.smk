@@ -158,9 +158,9 @@ rule plinkSplit:
     output:
         expand(output_folder+"/01.splitted_input/"+cohort_name+"_{chr}.{ext}", ext=['bed','bim','fam'],chr=chrs)
     input:
-        rules.allFixSnpFlip.output[0],
-        rules.allFixSnpFlip.output[1],
-        rules.allFixSnpFlip.output[2]
+        rules.chrXSplit.output[0],
+        rules.chrXSplit.output[1],
+        rules.chrXSplit.output[2]
     params:
         output_prefix=output_folder+"/01.splitted_input/"+cohort_name,
         i_prefix=output_folder+"/00.cleaned_input/"+ cohort_name+"_snps_only_mapUpdateExt_flipped",
