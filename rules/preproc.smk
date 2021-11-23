@@ -8,7 +8,7 @@
 # Input files will be the plink genotypes. We will get them from a config file
 ###############################################################################################
 
-# We want to remove indels from plink files, since we cannot update alleles in a consistent way, at the mment (will be a feature for next release)
+# We want to remove indels from plink files, since we cannot update alleles in a consistent way, at the moment (will be a feature for next release)
 rule indelsRemove:
     output:
         o_ped=output_folder+"/00.cleaned_input/"+cohort_name+"_snps_only.ped",
@@ -130,7 +130,30 @@ rule allFixSnpFlip:
         fi
         """
 
-# After the flipping, we can continue as before, performing the allele fixing on the splitted dataset
+# Before splitting by chromosome we need to split chrX to par and non par regions
+rule chrXSplit:
+    output:
+        output_folder+"/00.cleaned_input/"+ cohort_name+"_snps_only_mapUpdateExt_flipped_chrXsplit.bim",
+        output_folder+"/00.cleaned_input/"+ cohort_name+"_snps_only_mapUpdateExt_flipped_chrXsplit.bed",
+        output_folder+"/00.cleaned_input/"+ cohort_name+"_snps_only_mapUpdateExt_flipped_chrXsplit.fam"
+    input:
+        rules.allFixSnpFlip.output[0],
+        rules.allFixSnpFlip.output[1],
+        rules.allFixSnpFlip.output[2]
+    params:
+        output_prefix=output_folder+"/00.cleaned_input/"+ cohort_name+"_snps_only_mapUpdateExt_flipped_chrXsplit",
+        i_prefix=output_folder+"/00.cleaned_input/"+ cohort_name+"_snps_only_mapUpdateExt_flipped",
+        split_x_args=config['rules']['chrXSplit']['args']
+        plink=config['tools']['plink']
+    log:
+        stdout=log_folder+"/chrXSplit.o",
+        stderr=log_folder+"/chrXSplit.e"
+    shell:
+        """
+        {params.plink} --bfile {params.bfiles_prefix} --split-x {params.split_x_args} --make-bed --out {params.output_prefix} > {log.stdout} 2> {log.stderr}
+        """
+
+# After the flipping and chrX splitting, we can continue as before, performing the allele fixing on the splitted dataset
 rule plinkSplit:
     output:
         expand(output_folder+"/01.splitted_input/"+cohort_name+"_{chr}.{ext}", ext=['bed','bim','fam'],chr=chrs)
@@ -219,7 +242,7 @@ rule removeDupSnpsByID:
         {params.plink} --bfile {params.bfiles_prefix} --keep-allele-order --exclude {input[0]} --make-bed --out {params.bfiles_allFixCleaned_prefix} > {log.stdout} 2> {log.stderr}
         """    
 
-#check alele orientation with the genetic map provided
+#check alele orientation with the genetic map provided.
 rule snpCheck:
     output:
         # expand("{{output_folder}}/01.refAlign/{{ref_panel}}/{chr}_shapeit_refpanel.alignments.snp.{ext}", ext=['strand','strand.exclude'])

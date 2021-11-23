@@ -17,9 +17,9 @@ paths:
   input_file_prefix: "input file prefix" #this is the prefix with the complete path of the PLINK file to be used.
   output_folder: "output_folder" #base folder for output
   log_folder: "log_folder" #base folder for output
-  genetic_map_path: "/netapp/nfs/resources/1000GP_phase3/impute/" #path containing genetic maps for IMPUTATION and PHASING (SHAPEIT4 and IMPUTE5 version)
-  ref_panel_base_folder: "ref_panel_base_dir" #folder path containing reference panel files
-  allele_recode_file: "allele_recode_file" #folder path containing an allele recode file
+  genetic_map_path: "/netapp/nfs/resources/gen_map/shapeit4" #path containing genetic maps for IMPUTATION and PHASING (SHAPEIT4 and IMPUTE5 version)
+  ref_panel_base_folder: "/shared/resources/references/VCF" #folder path containing reference panel files
+  allele_recode_file: "/netapp/nfs/resources/dbSNP/human_9606_b154_GRCh37p13/GCF_000001405.25.SNPS.dbSNP154.tab" #folder path containing an allele recode file
   ext_ref_annot_file: "/netapp/nfs/resources/dbSNP/human_9606_b154_GRCh37p13/GCF_000001405.25.vcf.gz" #external reference file to perform annotation on VCF files
   ref_fasta: "/shared/resources/hgRef/hg19/hg19_nochr.fasta" #reference fasta file
   snp_array_update_allele_file: "snp_array_update_allele_file" #absolute path containing the update allele file specific for the snp array used
@@ -45,9 +45,10 @@ rules:
   indelsRemove:
   plinkSplit:
   snpCheck:
-        ref_panel_base_folder: "ref_panel_base_dir" #shapeit2 ref panel format path for this rule ONLY
-        genetic_map_path: "/netapp/nfs/resources/1000GP_phase3/impute" #shapeit2 genetic map format path, to be used in this rule ONLY
-  snpFlipFile:
+    ref_panel_base_folder: "ref_panel_base_dir" #shapeit2 ref panel format path for this rule ONLY
+    genetic_map_path: "/netapp/nfs/resources/1000GP_phase3/impute" #shapeit2 genetic map format path, to be used in this rule ONLY
+  chrXSplit:
+    args: "hg19 'no-fail'"
   snpFlip:
   allFix:
   plink2vcf:

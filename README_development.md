@@ -300,4 +300,60 @@ echo "bcftools view -r ${chr}:154931044-155260560 ${invcf} -O z -o ${basepath}/V
 # chrX:60001-2699520 and chrX:154931044-155260560 -> PAR regions for b37
 ```
 
+
+---
+#15/11/2021
+
+We need to take care consistently of the X chromosome for the imputation
+
+We will need the sex information, since we are going to split our dataset in MALES and FEMALES, to perform phasing and imputation. Phasing will not be performed for hapoid males samples.
+
+We need to check the sex cromosome coding in plink files. The genotyping QC pipeline we created should produce a set of genotypes including sex chromosomes:
+
+* chrX -> 23
+* chrY -> 24
+* chrM -> 26
+
+We shouldn't have any 25, in the coding, meaning that the chr X data is merged.
+We will not impute chrY and chrM.
+
+We will need to split the data for par and nonpar regions, at some point.
+
+Since in all the reference data used chrX is coded as X and not as 23, we will need to perform a fix on the input file, as a first rule, so we can have a consistent naming.
+
+
+```bash
+infile=/home/cocca/analyses/imputation/20211116/00.cleaned_input/MOLISANI_chrXrenamed
+outfile=/home/cocca/analyses/imputation/20211116/00.cleaned_input/MOLISANI_chrXsplitted
+plink --file ${infile} --split-x hg19 'no-fail' --recode --out ${outfile}
+
+infile=/home/cocca/analyses/imputation/20211116/00.cleaned_input/MOLISANI_chrXrenamed
+outfile=/home/cocca/analyses/imputation/20211116/00.cleaned_input/MOLISANI_snps_only
+
+plink --file ${infile} --snps-only 'just-acgt' --recode --out ${outfile}
+
+
+
+snakemake -s ~/scripts/pipelines/ImputationPipeline-snakemake/Snakefile -n -p -r --jobs 100 --configfile /home/cocca/analyses/imputation/20211116_TEST/test_imputation_20211116.yaml --omit-from vcfAnnotate --cluster-config ~/scripts/pipelines/ImputationPipeline-snakemake/SGE_cluster.json --cluster "qsub -N {config[cohort_name]}_{rule} -V -cwd -m ea -M {cluster.user_mail} -pe {cluster.parall_env} {threads} -o {log.stdout} -e {log.stderr} -l h_vmem={cluster.mem} -q {cluster.queue}"
+snakemake -s ~/scripts/pipelines/ImputationPipeline-snakemake/Snakefile -n -p -r --jobs 100 --configfile /home/cocca/analyses/imputation/20211116_TEST/test_imputation_20211116.yaml 
+```
+
+---
+#23/11/2021
+
+Fixing the genotype input file, it seems is not feasible, since plink keeps reverting the chromosome coding from chrX to 23 and 25.
+So we will need to create the reference panels and relevant files accordingly. It will be enough to generate input files with the correct naming.
+
+It is not the best choice, IMHO, but we can try merging the par regions for the hap/legend/samples
+
+```bash
+cat 1000GP_Phase3_chrX_PAR1.hap.gz 1000GP_Phase3_chrX_PAR2.hap.gz > 1000GP_Phase3_25.hap.gz
+cat 1000GP_Phase3_chrX_PAR1.legend.gz 1000GP_Phase3_chrX_PAR2.legend.gz > 1000GP_Phase3_25.legend.gz
+
+```
+
+
 X.TGP3.vcf.gz
+
+
+155260560
