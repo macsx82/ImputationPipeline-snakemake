@@ -143,7 +143,7 @@ rule chrXSplit:
     params:
         output_prefix=output_folder+"/00.cleaned_input/"+ cohort_name+"_snps_only_mapUpdateExt_flipped_chrXsplit",
         i_prefix=output_folder+"/00.cleaned_input/"+ cohort_name+"_snps_only_mapUpdateExt_flipped",
-        split_x_args=config['rules']['chrXSplit']['args']
+        split_x_args=config['rules']['chrXSplit']['args'],
         plink=config['tools']['plink']
     log:
         stdout=log_folder+"/chrXSplit.o",

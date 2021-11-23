@@ -335,7 +335,8 @@ plink --file ${infile} --snps-only 'just-acgt' --recode --out ${outfile}
 
 
 snakemake -s ~/scripts/pipelines/ImputationPipeline-snakemake/Snakefile -n -p -r --jobs 100 --configfile /home/cocca/analyses/imputation/20211116_TEST/test_imputation_20211116.yaml --omit-from vcfAnnotate --cluster-config ~/scripts/pipelines/ImputationPipeline-snakemake/SGE_cluster.json --cluster "qsub -N {config[cohort_name]}_{rule} -V -cwd -m ea -M {cluster.user_mail} -pe {cluster.parall_env} {threads} -o {log.stdout} -e {log.stderr} -l h_vmem={cluster.mem} -q {cluster.queue}"
-snakemake -s ~/scripts/pipelines/ImputationPipeline-snakemake/Snakefile -n -p -r --jobs 100 --configfile /home/cocca/analyses/imputation/20211116_TEST/test_imputation_20211116.yaml 
+
+snakemake -s ~/scripts/pipelines/ImputationPipeline-snakemake/Snakefile -n -p -r --jobs 100 --configfile /home/cocca/analyses/imputation/20211116_TEST/test_imputation_20211116.yaml --omit-from vcfAnnotate 
 ```
 
 ---
