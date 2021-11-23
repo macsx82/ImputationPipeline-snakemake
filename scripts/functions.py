@@ -187,7 +187,10 @@ def update_mono_snps(allele_update,plink_bim,outfile):
     for bim_line in plink_bim_file:
         # read line
         # now check if we have a monomorphic site for wich we have to update the allele name 
-        if bim_line.strip().split('\t')[4]=='0':
+        if bim_line.strip().split('\t')[4]!='0':
+            # print line as it is in the output file
+            _ = output_file.write(bim_line)
+        else:
             # do stuff to get the correct name
             c_line=bim_line.strip().split('\t')
             c_chr=c_line[0]
@@ -198,18 +201,19 @@ def update_mono_snps(allele_update,plink_bim,outfile):
             c_a2=c_line[5]
             # since we have a cleaned rsID, we need first to get the right one among update_alleles keys
             rs_key=[x for x in all_update.keys() if re.search(re.escape(c_rsID)+'$',x)]
-            # now we have to get the alleles from the update allele dict
-            # and check which one we have. Easy case is if there is no flipping
-            if c_a2 in all_update[rs_key[0]]:
-                new_a1=list(set(all_update[rs_key[0]]) - set(list(c_a2)))[0]
-            else:
-                # here it could be that we have flipped data, so we need to use the complement for both a2 lookup and a1 retrieve
-                new_a1=complement[list(set(all_update[rs_key[0]]) - set(list(complement[c_a2])))[0]]
-            _ = output_file.write('%s\t%s\t%s\t%s\t%s\t%s\n' %(c_chr,c_rsID,c_cm,c_pos,new_a1,c_a2))
+            #this object could be empty (it happens for sure for chrX). In this case we need to print the line as we find it
+            if rs_key:
+                # now we have to get the alleles from the update allele dict
+                # and check which one we have. Easy case is if there is no flipping
+                if c_a2 in all_update[rs_key[0]]:
+                    new_a1=list(set(all_update[rs_key[0]]) - set(list(c_a2)))[0]
+                else:
+                    # here it could be that we have flipped data, so we need to use the complement for both a2 lookup and a1 retrieve
+                    new_a1=complement[list(set(all_update[rs_key[0]]) - set(list(complement[c_a2])))[0]]
+                _ = output_file.write('%s\t%s\t%s\t%s\t%s\t%s\n' %(c_chr,c_rsID,c_cm,c_pos,new_a1,c_a2))
+            else :
+                _ = output_file.write(bim_line)
             # new_bim.append('%s\t%s\t%s\t%s\t%s\t%s\n' %(c_chr,c_rsID,c_cm,c_pos,new_a1,c_a2))
-        else:
-            # print line as it is in the output file
-            _ = output_file.write(bim_line)
             # new_bim.append(bim_line)
         # if len(new_bim) % 5000 == 0:
         #     print(len(new_bim))
