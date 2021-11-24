@@ -372,7 +372,9 @@ rule recoverMono:
 rule plink2vcf:
     output:
         output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_allFix_flipped.vcf.gz",
-        output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_allFix_flipped.vcf.gz.tbi"
+        output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_allFix_flipped.vcf.gz.tbi",
+        output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_allFix_flipped_chrRenamed.vcf.gz",
+        output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_allFix_flipped_chrRenamed.vcf.gz.tbi"
     input:
         rules.recoverMono.output[0],
         rules.recoverMono.output[1],
@@ -380,16 +382,19 @@ rule plink2vcf:
     params:
         bfiles_allFix_prefix=output_folder + "/03.flipped_input/" + ref_panel + "/ReMo/"+ cohort_name+"_{chr}_allFix_flipped_ReMo",
         vcf_flipped_prefix=output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_allFix_flipped",
-        plink=config['tools']['plink']
+        plink=config['tools']['plink'],
+        bcftools=config['tools']['bcftools'],
+        chr_rename_arg=config['rules']['plink2vcf']['chr_rename']
     log:
         stdout=log_folder+"/plink2vcf_{chr}.o",
         stderr=log_folder+"/plink2vcf_{chr}.e"
     shell:
         """
         set +e
-        #we need this file and it could be empty, so we will touch it!
         {params.plink} --bfile {params.bfiles_allFix_prefix} --keep-allele-order --recode vcf-iid bgz --out {params.vcf_flipped_prefix} > {log.stdout} 2> {log.stderr}
         tabix -p vcf {output[0]}
+        {params.bcftools} annotate --rename-chrs {params.chr_rename_arg} {output[0]} -O z -o {output[2]}
+        {params.bcftools} index -t {output[2]}
         exitcode=$?
         if [ $exitcode -eq 0 ]
         then
@@ -408,8 +413,8 @@ rule vcfFixRef:
         output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_fixRef_sorted.vcf.gz",
         output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_fixRef_sorted.vcf.gz.tbi"
     input:
-        rules.plink2vcf.output[0],
-        rules.plink2vcf.output[1]
+        rules.plink2vcf.output[2],
+        rules.plink2vcf.output[3]
     params:
         ext_ref_file=config['paths']['ext_ref_annot_file'],
         ref_fasta=config['paths']['ref_fasta'],

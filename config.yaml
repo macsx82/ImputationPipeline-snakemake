@@ -52,6 +52,7 @@ rules:
   snpFlip:
   allFix:
   plink2vcf:
+    chr_rename: "support_files/rename_chr_hg19.txt" #refer here to the correct file to be used to rename chromosmes based on the reference genome build used
   vcfFixRef:
     temp: "temp folder path" #in case we need to sort the concatenated vcf files 
   phase:
