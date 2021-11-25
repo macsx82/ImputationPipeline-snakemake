@@ -364,7 +364,8 @@ config_file=/home/cocca/analyses/imputation/20211116_TEST/test_imputation_202111
 
 mkdir -p ${basefolder}/Logs
 
-snakemake -s ~/scripts/pipelines/ImputationPipeline-snakemake/Snakefile -p -r --jobs 100 --configfile ${config_file} --omit-from vcfAnnotate --keep-going --cluster-config ~/scripts/pipelines/ImputationPipeline-snakemake/SGE_cluster.json --cluster "qsub -N {rule}_{config[cohort_name]} -V -cwd -m ea -M {cluster.user_mail} -pe {cluster.parall_env} {threads} -o {log.stdout} -e {log.stderr} -l h_vmem={cluster.mem} -q {cluster.queue}" 1> ${stdout_name} 2> ${err_name}
+# snakemake -s ~/scripts/pipelines/ImputationPipeline-snakemake/Snakefile -p -r --jobs 100 --configfile ${config_file} --omit-from vcfAnnotate --keep-going --cluster-config ~/scripts/pipelines/ImputationPipeline-snakemake/SGE_cluster.json --cluster "qsub -N {rule}_{config[cohort_name]} -V -cwd -m ea -M {cluster.user_mail} -pe {cluster.parall_env} {threads} -o {log.stdout} -e {log.stderr} -l h_vmem={cluster.mem} -q {cluster.queue}" 1> ${stdout_name} 2> ${err_name}
+snakemake -s ~/scripts/pipelines/ImputationPipeline-snakemake/Snakefile -p -r --jobs 100 --configfile ${config_file} --omit-from phase --keep-going --cluster-config ~/scripts/pipelines/ImputationPipeline-snakemake/SGE_cluster.json --cluster "qsub -N {rule}_{config[cohort_name]} -V -cwd -m ea -M {cluster.user_mail} -pe {cluster.parall_env} {threads} -o {log.stdout} -e {log.stderr} -l h_vmem={cluster.mem} -q {cluster.queue}" 1> ${stdout_name} 2> ${err_name}
 
 ```
 

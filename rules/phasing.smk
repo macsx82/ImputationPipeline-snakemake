@@ -63,7 +63,7 @@ rule phase:
         output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_fixRef_sorted_rsID.vcf.gz"
         # rules.vcfAnnotate.output[0]
     params:
-        g_map=config['rules']['phaseEagle']['genetic_map'],
+        g_map=config['rules']['phase']['genetic_map'],
         additional_args=config['rules']['phase']['additional_args'],
         out_prefix=output_folder+ "/04.phased_data/" + ref_panel + "/"+ cohort_name +"_{chr}_phased",
         phasing_tool=config['tools']['phasing_tool'],
