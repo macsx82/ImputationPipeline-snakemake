@@ -25,14 +25,6 @@ rule chunkGenerator:
 	run:
 		chunk_cmd="%s --h %s --r %s --g %s --window-size %s --window-count %s --o %s --l %s 2> %s" %(params.chunker_tool,input.ref_panel, wildcards.chr, input.study_geno,params.win_size,params.win_count,output.coord_by_chunker,log.stdout,log.stderr)
 		shell(chunk_cmd)
-		# read the generated file and proceed as we did before
-		# with open(params.coord_by_chunker) as chunk_file:
-		# 	for line in chunk_file:
-		# 		chunk=int(line.strip().split("\t")[0])+1
-		# 		chrom=line.strip().split("\t")[1]
-		# 		interval=line.strip().split("\t")[3]
-		# 		out_file=output_folder+"/05.impute_intervals/"+chrom+"/"+chrom+"."+"{:02d}".format(chunk) +".int"
-		# 		open(out_file,"w").write(interval)
 
 checkpoint chunkIntervalFileGenerator:
 	wildcard_constraints:

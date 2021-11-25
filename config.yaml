@@ -55,10 +55,13 @@ rules:
     chr_rename: "support_files/rename_chr_hg19.txt" #refer here to the correct file to be used to rename chromosmes based on the reference genome build used
   vcfFixRef:
     temp: "temp folder path" #in case we need to sort the concatenated vcf files 
-  phase:
+  phaseShapeit:
     mcmc_iterations: "--mcmc-iterations 10b,1p,1b,1p,1b,1p,1b,1p,10m" #maxed out parameteres according to SHAPEIT4 manual. Default setting are : 5b,1p,1b,1p,1b,1p,5m
     pbwt_depth: "--pbwt-depth 8" #maxed out parameteres according to SHAPEIT4 manual. Default setting are : 4
     additional_args: ""
+  phase: #the following parameters are for the phasing rule using Eagle only
+    genetic_map: "/home/cocca/softwares/eagle/Eagle_v2.4.1/tables/genetic_map_hg19_withX.txt.gz"
+    additional_args: "--vcfOutFormat z --noImpMissing"
   
 
 tools:

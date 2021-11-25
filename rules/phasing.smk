@@ -23,7 +23,37 @@
 #     shell:
 #         "{params.shapeit} -B {params.input_prefix} -M {params.g_map} -O {output[0]} {output[1]} -T {threads}"
 
-# Phasing rule tailored to use SHAPEIT4
+# # Phasing rule tailored to use SHAPEIT4
+# rule phaseShapeit:
+#     output:
+#         output_folder+ "/04.phased_data/" + ref_panel + "/"+ cohort_name +"_{chr}_phased.vcf.gz",
+#         output_folder+ "/04.phased_data/" + ref_panel + "/"+ cohort_name +"_{chr}_phased.vcf.gz.tbi"
+#     input:
+#         # rules.plink2vcf.output[0]
+#         output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_fixRef_sorted_rsID.vcf.gz"
+#         # rules.vcfAnnotate.output[0]
+#     params:
+#         g_map=config['paths']['genetic_map_path']+"/chr{chr}.b37.gmap.gz",
+#         mcmc_iterations=config['rules']['phase']['mcmc_iterations'],
+#         pbwt_depth=config['rules']['phase']['pbwt_depth'],
+#         additional_args=config['rules']['phase']['additional_args'],
+#         phasing_tool=config['tools']['phasing_tool'],
+#         region_chr=getChrForPhasing
+#     threads: 16
+#     log:
+#         output_folder+ "/04.phased_data/" + ref_panel + "/"+ cohort_name +"_{chr}_phase.log",
+#         stdout=log_folder+"/phase_{chr}.o",
+#         stderr=log_folder+"/phase_{chr}.e"
+#     benchmark:
+#         output_folder+"/benchmarks/{chr}.phase_rule.tsv"
+#     shell:
+#         """
+#         {params.phasing_tool} --input {input[0]} --map {params.g_map} --region {params.region_chr} --output {output[0]} --thread {threads} --log {log[0]} {params.mcmc_iterations} {params.pbwt_depth} {params.additional_args} 1> {log.stdout} 2> {log.stderr}
+#         tabix -p vcf {output[0]}
+#         """
+
+
+# Phasing rule tailored to use EAGLE
 rule phase:
     output:
         output_folder+ "/04.phased_data/" + ref_panel + "/"+ cohort_name +"_{chr}_phased.vcf.gz",
@@ -33,22 +63,19 @@ rule phase:
         output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_fixRef_sorted_rsID.vcf.gz"
         # rules.vcfAnnotate.output[0]
     params:
-        g_map=config['paths']['genetic_map_path']+"/chr{chr}.b37.gmap.gz",
-        mcmc_iterations=config['rules']['phase']['mcmc_iterations'],
-        pbwt_depth=config['rules']['phase']['pbwt_depth'],
+        g_map=config['rules']['phaseEagle']['genetic_map'],
         additional_args=config['rules']['phase']['additional_args'],
+        out_prefix=output_folder+ "/04.phased_data/" + ref_panel + "/"+ cohort_name +"_{chr}_phased",
         phasing_tool=config['tools']['phasing_tool'],
-        region_chr=getChrForPhasing
+        bcftools=config['tools']['bcftools']
     threads: 16
     log:
-        output_folder+ "/04.phased_data/" + ref_panel + "/"+ cohort_name +"_{chr}_phase.log",
         stdout=log_folder+"/phase_{chr}.o",
         stderr=log_folder+"/phase_{chr}.e"
     benchmark:
         output_folder+"/benchmarks/{chr}.phase_rule.tsv"
     shell:
         """
-        {params.phasing_tool} --input {input[0]} --map {params.g_map} --region {params.region_chr} --output {output[0]} --thread {threads} --log {log[0]} {params.mcmc_iterations} {params.pbwt_depth} {params.additional_args} 1> {log.stdout} 2> {log.stderr}
-        tabix -p vcf {output[0]}
+        {params.phasing_tool} {params.additional_args} --geneticMapFile {params.g_map} --outPrefix {params.out_prefix} --numThreads {threads} --vcf {input[0]} 1> {log.stdout} 2> {log.stderr}
+        {params.bcftools} index -t {output[0]}
         """
-
