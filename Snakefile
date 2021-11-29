@@ -91,7 +91,18 @@ include:
 include:
     include_prefix + "/phasing.smk"
 include:
-    include_prefix + "/impute.smk"
+    include_prefix + "/chunker.smk"
+include:
+    include_prefix + "/impute_auto.smk"
+
+try:
+    x_chr=chrs.index(23)
+except ValueError:
+    print("Running only imputation for autosomes")
+else:
+    include:
+        include_prefix + "/impute_x.smk"
+
 include:
     include_prefix + "/postproc.smk"
 
