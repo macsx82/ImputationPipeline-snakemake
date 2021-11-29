@@ -55,7 +55,7 @@
 # 				createAndOpen(out_file,"w").write(interval)
 
 # rule to run imputation for each chunk
-rule impute:
+rule impute_x:
 	wildcard_constraints:
 		g_chunk='\d+',
 		chr='\d+'
@@ -93,7 +93,7 @@ rule impute:
 
 
 # # rule to concat back data imputed by chromosome
-rule concatImputed:
+rule concatImputed_x:
 	wildcard_constraints:
 		g_chunk='\d+',
 		chr='\d+'
