@@ -230,6 +230,19 @@ def collect_imputed_chunks(wildcards):
     # return expand(output_folder+"/06.imputed/{chr}/{chr}.{g_chunk}.{ext}",ext=["vcf.gz","log"],chr=wildcards.chr,g_chunk=glob_wildcards(os.path.join(checkpoint_output, "{chr}.{g_chunk}.vcf.gz")).g_chunk)
     return expand(output_folder+"/06.imputed/{chr}/{chr}.{g_chunk}.vcf.gz",chr=wildcards.chr,g_chunk=glob_wildcards(os.path.join(checkpoint_output, "{chr}.{g_chunk}.int")).g_chunk)
 
+# define a function to collect all chunks for a chromosome
+def collect_splitted_bim(wildcards):
+    from os import listdir
+    import re
+    from os.path import join, isfile
+    # chrom=22
+    # imputed_folder="/home/cocca/analyses/test_imputation_20210604/06.imputed"
+    checkpoint_output = checkpoints.splitBim.get(**wildcards).output[0]
+    # return expand(output_folder+"/06.imputed/{chr}/{chr}.{g_chunk}.{ext}",ext=["vcf.gz","log"],chr=wildcards.chr,g_chunk=glob_wildcards(os.path.join(checkpoint_output, "{chr}.{g_chunk}.vcf.gz")).g_chunk)
+    return expand(output_folder + "/03.flipped_input/" + ref_panel + "/ReMo/"+ cohort_name+"_{chr}_allFix_flipped_{bim_chunk}_splitBIM_ReMo.bim",chr=wildcards.chr,bim_chunk=glob_wildcards(os.path.join(checkpoint_output, cohort_name+"_{chr}_allFix_flipped_{bim_chunk}_splitBIM.bim")).bim_chunk )
+    # return expand(output_folder+"/06.imputed/{chr}/{chr}.{g_chunk}.vcf.gz",chr=wildcards.chr,g_chunk=glob_wildcards(os.path.join(checkpoint_output, "{chr}.{g_chunk}.int")).g_chunk)
+
+
 # function to define memory requirement based on job rerun attempt, after the fist one
 def get_mem_mb(def_mem, attempt):
     import math
