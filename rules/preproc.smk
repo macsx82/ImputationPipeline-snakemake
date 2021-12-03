@@ -348,7 +348,7 @@ checkpoint splitBim:
         stderr=log_folder+"/splitBim_{chr}.e"
     shell:
         """
-        split -a 4 --additional-suffix "_splitBIM.bim" -d -l 1000 {input.bim_file} {output.intervals}/{params.bim_prefix}_
+        split -a 4 --additional-suffix "_splitBIM.bim" -d -l 1000 {input.bim_file} {output.intervals}/{params.bim_prefix}_ 1> {log.stdout} 2> {log.stderr}
         """
 
 rule recoverMono:
@@ -414,7 +414,7 @@ rule concatBimRecoveredMono:
         cp {input.bed_file} {output[1]}
         cp {input.fam_file} {output[2]}
 
-        cat {input.chunked_bims} > {output[0]}
+        cat {input.chunked_bims} > {output[0]} 2> {log.stderr}
         """
 
 
