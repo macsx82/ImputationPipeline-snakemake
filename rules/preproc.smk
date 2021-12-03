@@ -446,9 +446,9 @@ rule plink2vcf:
         """
         set +e
         {params.plink} --bfile {params.bfiles_allFix_prefix} --keep-allele-order --recode vcf-iid bgz --out {params.vcf_flipped_prefix} > {log.stdout} 2> {log.stderr}
-        tabix -p vcf {output[0]}
-        {params.bcftools} annotate --rename-chrs {params.chr_rename_arg} {output[0]} -O z -o {output[2]}
-        {params.bcftools} index -t {output[2]}
+        {params.bcftools} index -t {output[0]} 2>> {log.stderr}
+        {params.bcftools} annotate --rename-chrs {params.chr_rename_arg} {output[0]} -O z -o {output[2]} 2>> {log.stderr}
+        {params.bcftools} index -t {output[2]} 2>> {log.stderr}
         exitcode=$?
         if [ $exitcode -eq 0 ]
         then
