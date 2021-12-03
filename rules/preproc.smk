@@ -348,7 +348,7 @@ checkpoint splitBim:
         stderr=log_folder+"/splitBim_{chr}.e"
     shell:
         """
-        # mkdir -p {output.intervals}
+        mkdir -p {output.intervals}
         split -a 4 --additional-suffix "_splitBIM.bim" -d -l 1000 {input.bim_file} {output.intervals}/{params.bim_prefix}_ 1> {log.stdout} 2> {log.stderr}
         """
 
