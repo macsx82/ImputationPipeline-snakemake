@@ -415,7 +415,7 @@ rule concatBimRecoveredMono:
         cp {input.bed_file} {output[1]}
         cp {input.fam_file} {output[2]}
 
-        cat {input.chunked_bims} > {output[0]} 2> {log.stderr}
+        cat {input.chunked_bims}| sort -n -k4,4 > {output[0]} 2> {log.stderr}
         """
 
 
