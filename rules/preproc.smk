@@ -356,21 +356,23 @@ rule recoverMono:
         bim_chunk='\d+',
         chr='\d+'
     output:
-        output_folder + "/03.flipped_input/" + ref_panel + "/ReMo/"+ cohort_name+"_{chr}_allFix_flipped_ReMo.bim",
-        output_folder + "/03.flipped_input/" + ref_panel + "/ReMo/"+ cohort_name+"_{chr}_allFix_flipped_ReMo.bed",
-        output_folder + "/03.flipped_input/" + ref_panel + "/ReMo/"+ cohort_name+"_{chr}_allFix_flipped_ReMo.fam"
+        output_folder + "/03.flipped_input/" + ref_panel + "/ReMo/"+ cohort_name+"_{chr}_allFix_flipped_{bim_chunk}_splitBIM_ReMo.bim"
+        # output_folder + "/03.flipped_input/" + ref_panel + "/ReMo/"+ cohort_name+"_{chr}_allFix_flipped_ReMo.bim",
+        # output_folder + "/03.flipped_input/" + ref_panel + "/ReMo/"+ cohort_name+"_{chr}_allFix_flipped_ReMo.bed",
+        # output_folder + "/03.flipped_input/" + ref_panel + "/ReMo/"+ cohort_name+"_{chr}_allFix_flipped_ReMo.fam"
     input:
         chip_update_allele_file=config['paths']['snp_array_update_allele_file'],
-        bim_file=rules.snpFlip.output[0],
-        bed_file=rules.snpFlip.output[1],
-        fam_file=rules.snpFlip.output[2]
+        bim_file=output_folder+"/03.flipped_input/" + ref_panel + "/splitBIM/"+cohort_name+"_{chr}_allFix_flipped_{bim_chunk}_splitBIM.bim"
+        # bim_file=rules.snpFlip.output[0],
+        # bed_file=rules.snpFlip.output[1],
+        # fam_file=rules.snpFlip.output[2]
     params:
-        bfiles_allFix_prefix=output_folder + "/03.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix_flipped",
-        vcf_flipped_prefix=output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_allFix_flipped",
-        plink=config['tools']['plink']
+        # bfiles_allFix_prefix=output_folder + "/03.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix_flipped",
+        # vcf_flipped_prefix=output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_allFix_flipped",
+        # plink=config['tools']['plink']
     log:
-        stdout=log_folder+"/recoverMono_{chr}.o",
-        stderr=log_folder+"/recoverMono_{chr}.e"
+        stdout=log_folder+"/recoverMono_{chr}_{bim_chunk}.o",
+        stderr=log_folder+"/recoverMono_{chr}_{bim_chunk}.e"
     run:
         logger = logging.getLogger('logging_test')
         fh = logging.FileHandler(str(log.stdout))
@@ -382,13 +384,37 @@ rule recoverMono:
             logger.info('Starting operation!')
             # do something
             update_mono_snps(input.chip_update_allele_file,input.bim_file,output[0])
-            cp_bed_cmd="cp %s %s" %(input.bed_file,output[1])
-            cp_fam_cmd="cp %s %s" %(input.fam_file,output[2])
-            shell(cp_bed_cmd)
-            shell(cp_fam_cmd)
+            # cp_bed_cmd="cp %s %s" %(input.bed_file,output[1])
+            # cp_fam_cmd="cp %s %s" %(input.fam_file,output[2])
+            # shell(cp_bed_cmd)
+            # shell(cp_fam_cmd)
             logger.info('Ended!')
         except Exception as e: 
             logger.error(e, exc_info=True)
+
+#concat back processed bim files in the previous rule
+rule concatBimRecoveredMono:
+    wildcard_constraints:
+        bim_chunk='\d+',
+        chr='\d+'
+    output:
+        output_folder + "/03.flipped_input/" + ref_panel + "/ReMo/"+ cohort_name+"_{chr}_allFix_flipped_ReMo.bim",
+        output_folder + "/03.flipped_input/" + ref_panel + "/ReMo/"+ cohort_name+"_{chr}_allFix_flipped_ReMo.bed",
+        output_folder + "/03.flipped_input/" + ref_panel + "/ReMo/"+ cohort_name+"_{chr}_allFix_flipped_ReMo.fam"
+    input:
+        bed_file=rules.snpFlip.output[1],
+        fam_file=rules.snpFlip.output[2],
+        chunked_bims=expand(output_folder + "/03.flipped_input/" + ref_panel + "/ReMo/"+ cohort_name+"_{{chr}}_allFix_flipped_{bim_chunk}_splitBIM_ReMo.bim")
+    log:
+        stdout=log_folder+"/concatBimRecoveredMono_{chr}.o",
+        stderr=log_folder+"/concatBimRecoveredMono_{chr}.e"
+    shell:
+        """
+        cp {input.bed_file} {output[1]}
+        cp {input.fam_file} {output[2]}
+
+        cat {input.chunked_bims} > {output[0]}
+        """
 
 
 # convert to vcf file format to use SHAPEIT4
@@ -399,9 +425,12 @@ rule plink2vcf:
         output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_allFix_flipped_chrRenamed.vcf.gz",
         output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_allFix_flipped_chrRenamed.vcf.gz.tbi"
     input:
-        rules.recoverMono.output[0],
-        rules.recoverMono.output[1],
-        rules.recoverMono.output[2]
+        rules.concatBimRecoveredMono.output[0],
+        rules.concatBimRecoveredMono.output[1],
+        rules.concatBimRecoveredMono.output[2]
+        # rules.recoverMono.output[0],
+        # rules.recoverMono.output[1],
+        # rules.recoverMono.output[2]
     params:
         bfiles_allFix_prefix=output_folder + "/03.flipped_input/" + ref_panel + "/ReMo/"+ cohort_name+"_{chr}_allFix_flipped_ReMo",
         vcf_flipped_prefix=output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_allFix_flipped",
