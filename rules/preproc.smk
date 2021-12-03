@@ -337,7 +337,7 @@ checkpoint splitBim:
         # bim_chunk='\d+',
         chr='\d+'
     output:
-        intervals=directory(output_folder+"/03.flipped_input/" + ref_panel + "/splitBIM/")
+        intervals=directory(output_folder+"/03.flipped_input/" + ref_panel + "/splitBIM/{chr}/")
         # output_folder + "/03.flipped_input/" + ref_panel + "/splitBIM/"+ cohort_name+"_{chr}_allFix_flipped_ReMo.bim",
     input:
         bim_file=rules.snpFlip.output[0]
@@ -362,7 +362,7 @@ rule recoverMono:
         # output_folder + "/03.flipped_input/" + ref_panel + "/ReMo/"+ cohort_name+"_{chr}_allFix_flipped_ReMo.fam"
     input:
         chip_update_allele_file=config['paths']['snp_array_update_allele_file'],
-        bim_file=output_folder+"/03.flipped_input/" + ref_panel + "/splitBIM/"+cohort_name+"_{chr}_allFix_flipped_{bim_chunk}_splitBIM.bim"
+        bim_file=output_folder+"/03.flipped_input/" + ref_panel + "/splitBIM/{chr}/"+cohort_name+"_{chr}_allFix_flipped_{bim_chunk}_splitBIM.bim"
         # bim_file=rules.snpFlip.output[0],
         # bed_file=rules.snpFlip.output[1],
         # fam_file=rules.snpFlip.output[2]
