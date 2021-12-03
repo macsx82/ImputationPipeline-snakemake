@@ -331,7 +331,30 @@ rule snpFlip:
 # rule to fix the missing alt alleles in plink files before vcf conversion
 #here we just need to update the BIM file, no need to generate a new genotype set using plink
 #to keep things organised we still will create a copy of the genotypes in the monoRecovered folder
+#since this rule thakes a while to run, we need to use a checkpoint rule to split the bim files and merge them back
+checkpoint splitBim:
+    wildcard_constraints:
+        # bim_chunk='\d+',
+        chr='\d+'
+    output:
+        intervals=directory(output_folder+"/03.flipped_input/" + ref_panel + "/splitBIM/")
+        # output_folder + "/03.flipped_input/" + ref_panel + "/splitBIM/"+ cohort_name+"_{chr}_allFix_flipped_ReMo.bim",
+    input:
+        bim_file=rules.snpFlip.output[0]
+    params:
+        bim_prefix=cohort_name+"_{chr}_allFix_flipped"
+    log:
+        stdout=log_folder+"/splitBim_{chr}.o",
+        stderr=log_folder+"/splitBim_{chr}.e"
+    shell:
+        """
+        split -a 4 --additional-suffix "_splitBIM.bim" -d -l 1000 {input.bim_file} {output.intervals}/{params.bim_prefix}_
+        """
+
 rule recoverMono:
+    wildcard_constraints:
+        bim_chunk='\d+',
+        chr='\d+'
     output:
         output_folder + "/03.flipped_input/" + ref_panel + "/ReMo/"+ cohort_name+"_{chr}_allFix_flipped_ReMo.bim",
         output_folder + "/03.flipped_input/" + ref_panel + "/ReMo/"+ cohort_name+"_{chr}_allFix_flipped_ReMo.bed",
