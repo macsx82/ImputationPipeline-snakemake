@@ -404,7 +404,7 @@ rule concatBimRecoveredMono:
     input:
         bed_file=rules.snpFlip.output[1],
         fam_file=rules.snpFlip.output[2],
-        chunked_bims=expand(output_folder + "/03.flipped_input/" + ref_panel + "/ReMo/"+ cohort_name+"_{{chr}}_allFix_flipped_{bim_chunk}_splitBIM_ReMo.bim")
+        chunked_bims=expand(output_folder + "/03.flipped_input/" + ref_panel + "/ReMo/"+ cohort_name+"_{{chr}}_allFix_flipped_{{bim_chunk}}_splitBIM_ReMo.bim")
     log:
         stdout=log_folder+"/concatBimRecoveredMono_{chr}.o",
         stderr=log_folder+"/concatBimRecoveredMono_{chr}.e"
