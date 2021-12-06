@@ -122,6 +122,6 @@ rule convertInfoToR2:
 		"""
 		#We need to add the correct annotation name for the impute info score. We will call it R2, so other softwares can use this field (e.g. SAIGE and others)
 		{params.bcftools_bin} annotate -c INFO/R2:=INFO/INFO -a {input} {input}| {params.bcftools_bin} view -O z -o {output[0]} 1> {log.stdout} 2> {log.stderr}
-		{params.bcftools_bin} index -t {output[1]}
-		{params.bcftools_bin} index -c {output[1]}
+		{params.bcftools_bin} index -t {output[0]}
+		{params.bcftools_bin} index -c {output[0]}
 		"""
