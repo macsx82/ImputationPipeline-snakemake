@@ -34,7 +34,7 @@ rule infoStatsChrom:
 		output_folder+"/07.stats/{chr}/{chr}_impute_summary.png",
 		output_folder+"/07.stats/{chr}/{chr}_impute_manhattan.png"
 	input:
-		output_folder+"/06.imputed/MERGED/{chr}/{chr}.vcf.gz",
+		output_folder+"/06.imputed/MERGED/{chr}/{chr}.vcf.gz"
 	params:
 		bcftools_bin=config['tools']['bcftools'],
 		scripts_folder=config['paths']['scripts'],
@@ -120,7 +120,7 @@ rule convertInfoToR2:
 		stderr=log_folder+"/convertInfoToR2_{chr}.e"
 	shell:
 		"""
-		#We need to add the correct annotation name for the impute info score score. We will cal it R2, so other softwares can use this field (SAIGE in primis)
+		#We need to add the correct annotation name for the impute info score. We will call it R2, so other softwares can use this field (e.g. SAIGE and others)
 		{params.bcftools_bin} annotate -c INFO/R2:=INFO/INFO -a {input} {input}| {params.bcftools_bin} view -O z -o {output[1]} 1> {output[0]} 2> {log.stderr}
 		{params.bcftools_bin} index -t {output[1]}
 		{params.bcftools_bin} index -c {output[1]}

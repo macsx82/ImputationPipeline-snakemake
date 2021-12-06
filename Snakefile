@@ -69,8 +69,11 @@ rule all:
         # [ expand(output_folder+"/06.imputed/{chr}/{chr}.{g_chunk}.{ext}", ext=["vcf.gz","log"], chr=chrs, g_chunk=["{:02d}".format(chunk) for chunk in list(range(1,5))])] 
         # expand(output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_fixRef_sorted_rsID.vcf.gz", chr=chrs),
         # expand(output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_fixRef_sorted_rsID.vcf.gz.tbi", chr=chrs)
+        #generate main imputation results and file conversion
         expand(output_folder+"/06.imputed/MERGED/{chr}/{chr}.{ext}", ext=["vcf.gz","vcf.gz.tbi","stats"],chr=chrs),
         expand(output_folder+"/06.imputed/BIMBAM/{chr}/{chr}.{ext}", ext=["bimbam.gz","pos"],chr=chrs),
+        expand(output_folder+"/06.imputed/R2/{chr}/{chr}.{ext}", ext=["vcf.gz","vcf.gz.csi","vcf.gz.tbi"],chr=chrs)
+        #generate stats
         expand(output_folder+"/07.stats/{chr}/{chr}_{ext}",chr=chrs,ext=['impute_summary_by_maf_by_info.csv','impute_summary_by_maf.csv','impute_summary.png','impute_manhattan.png']),
         # expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_{ext}",chr=chrs,ext=['impute_summary_by_maf_by_info.csv','impute_summary_by_maf.csv','impute_summary.pdf','impute_manhattan.png'],g_chunk=["{:02d}".format(chunk) for chunk in list(range(1,lambda wildcards : getChunkNumByChr(wildcards)))])
         # expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_{ext}",chr=chrs,ext=['impute_summary_by_maf_by_info.csv','impute_summary_by_maf.csv','impute_summary.pdf','impute_manhattan.png'],g_chunk=glob_wildcards(os.path.join(output_folder+"/06.imputed/{chr}/", "{chr}.{g_chunk}.vcf.gz")).g_chunk)

@@ -9,6 +9,7 @@ Inizialization of the snakemake imputation pipeline!
 * Finally we will submit the imputation
 
 test command for rules 1-3:
+
 ```bash
 snakemake --configfile config_chr_18.yaml --cores 8 
 snakemake --configfile config_chr_21_22.yaml --cores 8 
@@ -372,6 +373,34 @@ snakemake -s ~/scripts/pipelines/ImputationPipeline-snakemake/Snakefile -n -p -r
 ```
 
 
+---
+#3/12/2121
+
+We have another problem, in the recoverMono rule. If we use a SNP array bigger than 600K, it takes forever to finish this step.
+We can split in chunks and parallelize this, and we should get a boost in performances, since we have to use a reference file for allele update that is not splittable by chromosome.
+
+Cehck prefix/suffix for splitted files 
+
+```bash
+
+```
+
+
+Test new committed rules/fixes, on recmonfix test branch
+
+```bash
+source activate snakemake_g
+
+basefolder=/home/cocca/analyses/imputation/20211116_TEST
+err_name=${basefolder}/Logs/test_BIMSPLIT_imputation_20211203_1.err
+stdout_name=${basefolder}/Logs/test_BIMSPLIT_imputation_20211203_1.log
+config_file=/home/cocca/analyses/imputation/20211116_TEST/test_imputation_20211116.yaml
+
+mkdir -p ${basefolder}/Logs
+
+snakemake -s /home/cocca/scripts/pipelines/test_branches/ImputationPipeline-snakemake/Snakefile -p -r --jobs 100 --configfile ${config_file} --omit-from vcfFixRef --keep-going --cluster-config ~/scripts/pipelines/ImputationPipeline-snakemake/SGE_cluster.json --cluster "qsub -N {rule}_{config[cohort_name]} -V -cwd -m ea -M {cluster.user_mail} -pe {cluster.parall_env} {threads} -o {log.stdout} -e {log.stderr} -l h_vmem={cluster.mem} -q {cluster.queue}" 1> ${stdout_name} 2> ${err_name}
+
+```
 
 
 X.TGP3.vcf.gz
