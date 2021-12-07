@@ -49,7 +49,7 @@ rule concatImputed:
 		bcftools_bin=config['tools']['bcftools'],
 		temp=define_tmp(config['rules']['concatImputed']['temp'])
 	resources:
-        mem_mb=10000
+		mem_mb=10000
 	log:
 		stdout=log_folder+"/concatImputed_{chr}.o",
 		stderr=log_folder+"/concatImputed_{chr}.e"

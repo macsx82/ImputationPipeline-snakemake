@@ -4,6 +4,5 @@
         "mem": "5G",
         "queue" : "fast",
         "parall_env": "smp"
-    },
-
+    }
 }

@@ -14,8 +14,8 @@ rule infoStatsChunks:
 		bcftools_bin=config['tools']['bcftools'],
 		scripts_folder=config['paths']['scripts'],
 		tab_prefix=output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary"
-    resources:
-        mem_mb=10000	
+	resources:
+		mem_mb=10000
 	log:
 		stdout=log_folder+"/infoStatsChunks_{chr}_{g_chunk}.o",
 		stderr=log_folder+"/infoStatsChunks_{chr}_{g_chunk}.e"
@@ -41,8 +41,8 @@ rule infoStatsChrom:
 		bcftools_bin=config['tools']['bcftools'],
 		scripts_folder=config['paths']['scripts'],
 		tab_prefix=output_folder+"/07.stats/{chr}/{chr}_impute_summary"
-    resources:
-        mem_mb=10000
+	resources:
+		mem_mb=10000
 	log:
 		stdout=log_folder+"/infoStatsChrom_{chr}.o",
 		stderr=log_folder+"/infoStatsChrom_{chr}.e"
@@ -100,7 +100,7 @@ rule convertBimbam:
 		stdout=log_folder+"/convertBimbam_{chr}.o",
 		stderr=log_folder+"/convertBimbam_{chr}.e"
 	resources:
-        mem_mb=10000
+		mem_mb=10000
 	shell:
 		"""
 		#We just need to format the vcf file and extract the DS field already present in the VCF, for the main bimbam
@@ -120,8 +120,8 @@ rule convertInfoToR2:
 		output_folder+"/06.imputed/MERGED/{chr}/{chr}.vcf.gz"
 	params:
 		bcftools_bin=config['tools']['bcftools']
-    resources:
-        mem_mb=10000
+	resources:
+		mem_mb=10000
 	log:
 		stdout=log_folder+"/convertInfoToR2_{chr}.o",
 		stderr=log_folder+"/convertInfoToR2_{chr}.e"
@@ -142,7 +142,7 @@ rule imputeTabStat:
 	params:
 		bcftools_bin=config['tools']['bcftools']
 	resources:
-        mem_mb=5000
+		mem_mb=5000
 	log:
 		stdout=log_folder+ "imputeTabStat_{chr}.o",
 		stderr=log_folder+ "imputeTabStat_{chr}.e"

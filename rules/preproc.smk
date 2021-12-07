@@ -119,7 +119,7 @@ rule allFixSnpFlip:
         bfiles_flipped_prefix=output_folder+"/00.cleaned_input/"+ cohort_name+"_snps_only_mapUpdateExt_flipped",
         plink=config['tools']['plink']
     resources:
-        mem_mb=10000    
+        mem_mb=10000
     log:
         stdout=log_folder+"/allFixSnpFlip.o",
         stderr=log_folder+"/allFixSnpFlip.e"
@@ -156,7 +156,7 @@ rule chrXSplit:
         split_x_args=config['rules']['chrXSplit']['args'],
         plink=config['tools']['plink']
     resources:
-        mem_mb=10000    
+        mem_mb=10000
     log:
         stdout=log_folder+"/chrXSplit.o",
         stderr=log_folder+"/chrXSplit.e"
