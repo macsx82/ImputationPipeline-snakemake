@@ -99,7 +99,6 @@ rule convertBimbam:
 		"""
 		#We just need to format the vcf file and extract the DS field already present in the VCF, for the main bimbam
 		{params.bcftools_bin} query -f'%ID,%REF,%ALT[,%DS]\\n' {input} | gzip --best -c > {output[0]} 2> {log.stderr}
-		
 		#We just need to format the vcf file and extract the position
 		{params.bcftools_bin} query -f'%ID,%POS,%CHROM\\n' {input} -o {output[1]} >> {log.stdout} 2>> {log.stderr}
 		"""
@@ -124,4 +123,20 @@ rule convertInfoToR2:
 		{params.bcftools_bin} annotate -c INFO/R2:=INFO/INFO -a {input} {input}| {params.bcftools_bin} view -O z -o {output[0]} 1> {log.stdout} 2> {log.stderr}
 		{params.bcftools_bin} index -t {output[0]}
 		{params.bcftools_bin} index -c {output[0]}
+		"""
+
+#add a rule to generate also a table similar to the info_score table from impute, with stats from the imputed vcf
+rule imputeTabStat:
+	output:
+		output_folder+"/07.stats/{chr}/{chr}.info_stats.gz"
+	input:
+		output_folder+"/06.imputed/MERGED/{chr}/{chr}.vcf.gz"
+	params:
+		bcftools_bin=config['tools']['bcftools'],
+	log:
+		stdout=log_folder+ "imputeTabStat_{chr}.o"
+		stderr=log_folder+ "imputeTabStat_{chr}.e"
+	shell:
+		"""
+		{params.bcftools_bin} query -H -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/INFO\n" {input} | gzip -c > {output}
 		"""
