@@ -21,6 +21,8 @@ rule indelsRemove:
         output_prefix=output_folder+"/00.cleaned_input/"+cohort_name+"_snps_only",
         i_prefix=input_prefix,
         plink=config['tools']['plink']
+    resources:
+        mem_mb=10000
     log:
         stdout=log_folder+"/indelsRemove.o",
         stderr=log_folder+"/indelsRemove.e"
@@ -43,6 +45,8 @@ rule mapUpdateExt:
         plink=config['tools']['plink'],
         update_chr_str=config['paths']['allele_recode_file']+" 1 3 '#'",
         update_map_str=config['paths']['allele_recode_file']+" 2 3 '#'"
+    resources:
+        mem_mb=10000
     log:
         stdout=log_folder+"/mapUpdateExt.o",
         stderr=log_folder+"/mapUpdateExt.e"
@@ -73,6 +77,8 @@ rule allFix:
         plink=config['tools']['plink'],
         update_a1_str=config['paths']['allele_recode_file']+" 5 3 '#'",
         update_a2_str=config['paths']['allele_recode_file']+" 4 3 '#'"
+    resources:
+        mem_mb=10000
     log:
         stdout=log_folder+"/allFix.o",
         stderr=log_folder+"/allFix.e"
@@ -89,6 +95,8 @@ rule impossibleAllAssignmentFile:
     input:
         rules.allFix.output[3],
         rules.allFix.output[7]
+    resources:
+        mem_mb=10000
     log:
         stdout=log_folder+"/impossibleAllAssignmentFile.o",
         stderr=log_folder+"/impossibleAllAssignmentFile.e"
@@ -110,6 +118,8 @@ rule allFixSnpFlip:
         bfiles_prefix=output_folder+"/00.cleaned_input/"+cohort_name+"_snps_only_mapUpdateExt",
         bfiles_flipped_prefix=output_folder+"/00.cleaned_input/"+ cohort_name+"_snps_only_mapUpdateExt_flipped",
         plink=config['tools']['plink']
+    resources:
+        mem_mb=10000    
     log:
         stdout=log_folder+"/allFixSnpFlip.o",
         stderr=log_folder+"/allFixSnpFlip.e"
@@ -145,6 +155,8 @@ rule chrXSplit:
         i_prefix=output_folder+"/00.cleaned_input/"+ cohort_name+"_snps_only_mapUpdateExt_flipped",
         split_x_args=config['rules']['chrXSplit']['args'],
         plink=config['tools']['plink']
+    resources:
+        mem_mb=10000    
     log:
         stdout=log_folder+"/chrXSplit.o",
         stderr=log_folder+"/chrXSplit.e"
@@ -165,6 +177,8 @@ rule plinkSplit:
         output_prefix=output_folder+"/01.splitted_input/"+cohort_name,
         i_prefix=output_folder+"/00.cleaned_input/"+ cohort_name+"_snps_only_mapUpdateExt_flipped_chrXsplit",
         plink=config['tools']['plink']
+    resources:
+        mem_mb=10000
     log:
         stdout=log_folder+"/plinkSplit.o",
         stderr=log_folder+"/plinkSplit.e"
@@ -195,6 +209,8 @@ rule allFixSplitted:
         plink=config['tools']['plink'],
         update_a1_str=config['paths']['allele_recode_file']+" 5 3 '#'",
         update_a2_str=config['paths']['allele_recode_file']+" 4 3 '#'"
+    resources:
+        mem_mb=10000
     log:
         stdout=log_folder+"/allFixSplitted_{chr}.o",
         stderr=log_folder+"/allFixSplitted_{chr}.e"
@@ -212,7 +228,8 @@ rule getDupeByPos:
         output_folder + "/01.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_DupeByPos.list"
     input:
         rules.allFixSplitted.output[0]
-    params:
+    resources:
+        mem_mb=10000
     log:
         stdout=log_folder+"/getDupeByPos_{chr}.o",
         stderr=log_folder+"/getDupeByPos_{chr}.e"    
@@ -230,6 +247,8 @@ rule removeDupSnpsByID:
         ug_bed=output_folder + "/01.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix.bed",
         ug_bim=output_folder + "/01.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix.bim",
         ug_fam=output_folder + "/01.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix.fam"
+    resources:
+        mem_mb=10000
     params:
         bfiles_prefix=output_folder + "/01.splitted_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix",
         bfiles_allFixCleaned_prefix=output_folder+"/01.splitted_input/"+ ref_panel + "/" + cohort_name+"_{chr}_allFixCleaned",
@@ -261,6 +280,8 @@ rule snpCheck:
     params:
         output_prefix=output_folder+"/02.refAlign/"+ref_panel+"/{chr}_shapeit_"+ref_panel+".alignments",
         shapeit=config['tools']['shapeit']
+    resources:
+        mem_mb=10000
     log:
         stdout=log_folder+"/snpCheck_{chr}.o",
         stderr=log_folder+"/snpCheck_{chr}.e"
@@ -287,6 +308,8 @@ rule snpFlipFile:
         strand_rsid=output_folder+"/02.refAlign/"+ref_panel+"/{chr}_shapeit_rsids.to_flip"
     input:
         rules.snpCheck.output[0]
+    resources:
+        mem_mb=10000
     log:
         stdout=log_folder+"/snpFlipFile_{chr}.o",
         stderr=log_folder+"/snpFlipFile_{chr}.e"
@@ -304,6 +327,8 @@ rule snpFlip:
         rules.removeDupSnpsByID.output[0],
         rules.removeDupSnpsByID.output[1],
         rules.removeDupSnpsByID.output[2]
+    resources:
+        mem_mb=10000
     params:
         bfiles_prefix=output_folder+"/01.splitted_input/"+ ref_panel + "/" + cohort_name+"_{chr}_allFixCleaned",
         bfiles_flipped_prefix=output_folder+"/03.flipped_input/"+ ref_panel + "/" + cohort_name+"_{chr}_allFix_flipped",
@@ -341,6 +366,8 @@ checkpoint splitBim:
         # output_folder + "/03.flipped_input/" + ref_panel + "/splitBIM/"+ cohort_name+"_{chr}_allFix_flipped_ReMo.bim",
     input:
         bim_file=rules.snpFlip.output[0]
+    resources:
+        mem_mb=1000
     params:
         bim_prefix=cohort_name+"_{chr}_allFix_flipped"
     log:
@@ -367,10 +394,8 @@ rule recoverMono:
         # bim_file=rules.snpFlip.output[0],
         # bed_file=rules.snpFlip.output[1],
         # fam_file=rules.snpFlip.output[2]
-    params:
-        # bfiles_allFix_prefix=output_folder + "/03.flipped_input/" + ref_panel + "/"+ cohort_name+"_{chr}_allFix_flipped",
-        # vcf_flipped_prefix=output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_allFix_flipped",
-        # plink=config['tools']['plink']
+    resources:
+        mem_mb=10000
     log:
         stdout=log_folder+"/recoverMono_{chr}_{bim_chunk}.o",
         stderr=log_folder+"/recoverMono_{chr}_{bim_chunk}.e"
@@ -407,6 +432,8 @@ rule concatBimRecoveredMono:
         fam_file=rules.snpFlip.output[2],
         # chunked_bims=expand(output_folder + "/03.flipped_input/" + ref_panel + "/ReMo/"+ cohort_name+"_{{chr}}_allFix_flipped_{{bim_chunk}}_splitBIM_ReMo.bim")
         chunked_bims=collect_splitted_bim
+    resources:
+        mem_mb=1000
     log:
         stdout=log_folder+"/concatBimRecoveredMono_{chr}.o",
         stderr=log_folder+"/concatBimRecoveredMono_{chr}.e"
@@ -433,6 +460,8 @@ rule plink2vcf:
         # rules.recoverMono.output[0],
         # rules.recoverMono.output[1],
         # rules.recoverMono.output[2]
+    resources:
+        mem_mb=10000
     params:
         bfiles_allFix_prefix=output_folder + "/03.flipped_input/" + ref_panel + "/ReMo/"+ cohort_name+"_{chr}_allFix_flipped_ReMo",
         vcf_flipped_prefix=output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_allFix_flipped",
@@ -474,6 +503,8 @@ rule vcfFixRef:
         ref_fasta=config['paths']['ref_fasta'],
         temp=define_tmp(config['rules']['vcfFixRef']['temp']),
         bcftools_bin=config['tools']['bcftools']
+    resources:
+        mem_mb=10000
     log:
         stdout=log_folder+"/vcfFixRef_{chr}.o",
         stderr=log_folder+"/vcfFixRef_{chr}.e",
@@ -499,6 +530,8 @@ rule vcfAnnotate:
     params:
         ext_ref_file=config['paths']['ext_ref_annot_file'],
         bcftools_bin=config['tools']['bcftools']
+    resources:
+        mem_mb=10000
     log:
         stdout=log_folder+"/vcfAnnotate_{chr}.o",
         stderr=log_folder+"/vcfAnnotate_{chr}.e"

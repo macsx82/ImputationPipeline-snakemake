@@ -69,6 +69,8 @@ rule phase:
         phasing_tool=config['tools']['phasing_tool'],
         bcftools=config['tools']['bcftools']
     threads: 16
+    resources:
+        mem_mb=lambda wildcards, attempt: get_mem_mb(config["rules"]["phase"]["mem"], attempt)
     log:
         stdout=log_folder+"/phase_{chr}.o",
         stderr=log_folder+"/phase_{chr}.e"
