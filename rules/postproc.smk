@@ -138,15 +138,53 @@ rule imputeTabStat:
 	output:
 		output_folder+"/07.stats/{chr}/{chr}.info_stats.gz"
 	input:
-		output_folder+"/06.imputed/MERGED/{chr}/{chr}.vcf.gz"
+		output_folder+"/06.imputed/R2/{chr}/{chr}.vcf.gz"
 	params:
 		bcftools_bin=config['tools']['bcftools']
 	resources:
 		mem_mb=5000
 	log:
-		stdout=log_folder+ "imputeTabStat_{chr}.o",
-		stderr=log_folder+ "imputeTabStat_{chr}.e"
+		stdout=log_folder+ "/imputeTabStat_{chr}.o",
+		stderr=log_folder+ "/imputeTabStat_{chr}.e"
 	shell:
 		"""
-		{params.bcftools_bin} query -H -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/INFO\t%INFO/IMP\n" {input} | gzip -c > {output}
+		# {params.bcftools_bin} query -H -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/R2\t%INFO/IMP\n" {input} | gzip -c > {output}
+		{params.bcftools_bin} query -H -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/R2\t%INFO/IMP\n" {input} | awk 'BEGIN{FS="\t";OFS="\t"}{if($8==".") print $1,$2,$3,$4,$5,$6,$7,0;else print $0}' | gzip -c > {output}
+		"""
+
+#add a release rule
+rule release:
+	output:
+		directory(output_folder+"/08.release/00.CLEANED_INPUT"),
+		directory(output_folder+"/08.release/01.FLIPPED_INPUT"),
+		directory(output_folder+"/08.release/02.PHASED"),
+		directory(output_folder+"/08.release/03.IMPUTED"),
+		directory(output_folder+"/08.release/04.STATS")
+	input:
+		cleaned_input_1=rules.indelsRemove.output,
+		cleaned_input_2=rules.plinkSplit.output,
+		flipped_input=expand(output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_fixRef_sorted_rsID.{ext}", chr=chrs, ext=["vcf.gz","vcf.gz.tbi"]),
+		phased_input=expand(output_folder+ "/04.phased_data/" + ref_panel + "/"+ cohort_name +"_{chr}_phased.{ext}",chr=chrs, ext=["vcf.gz","vcf.gz.tbi"]),
+		imputed_1=expand(output_folder+"/06.imputed/R2/{chr}/{chr}.{ext}", ext=["vcf.gz","vcf.gz.tbi","vcf.gz.csi"],chr=chrs),
+		imputed_2=expand(output_folder+"/06.imputed/BIMBAM/{chr}/{chr}.{ext}",ext=["bimbam.gz","pos"],chr=chrs),
+		stats=expand(output_folder+"/07.stats/{chr}/{chr}.info_stats.gz", chr=chrs)
+	resources:
+		mem_mb=3000
+	log:
+		stdout=log_folder+ "/data_release.o",
+		stderr=log_folder+ "/data_release.e"
+	shell:
+		"""
+		#1) cp cleaned input files, only the first and the last
+		rsync -avP {input.cleaned_input_1} {output[0]}/.
+		rsync -avP {input.cleaned_input_2} {output[0]}/.
+		#2) cp flipped input files, only the rs annotated
+		rsync -avP {input.flipped_input} {output[1]}/.
+		#3) cp phased data
+		rsync -avP {input.phased_input} {output[2]}/.
+		#4) cp Imputed results: BIMBAM and IMPUTE/R2 folder, that will be renamed as VCF
+		rsync -avP {input.imputed_1} {output[3]}/.
+		rsync -avP {input.imputed_2} {output[3]}/.
+		#5) cp info stats in tab format
+		rsync -avP {input.stats} {output[4]}/.
 		"""
