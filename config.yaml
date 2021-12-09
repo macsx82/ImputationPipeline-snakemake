@@ -16,6 +16,7 @@ paths:
   input_folder: "input_folder" #base folder containing input data
   input_file_prefix: "input file prefix" #this is the prefix with the complete path of the PLINK file to be used.
   output_folder: "output_folder" #base folder for output
+  release_folder: "release_folder" #base folder for data release. This can be the same as the output folder
   log_folder: "log_folder" #base folder for output
   genetic_map_path: "/netapp/nfs/resources/gen_map/shapeit4" #path containing genetic maps for IMPUTATION and PHASING (SHAPEIT4 and IMPUTE5 version)
   ref_panel_base_folder: "/shared/resources/references/VCF" #folder path containing reference panel files

@@ -10,6 +10,7 @@ import logging
 
 # recover some fixed variables from config file
 output_folder = config['paths']["output_folder"]
+release_folder = config['paths']["release_folder"]
 log_folder = config['paths']["log_folder"]
 cohort_name = config["cohort_name"]
 input_prefix = config['paths']["input_file_prefix"]
@@ -83,11 +84,11 @@ rule all:
         expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary.png",zip,**glob_wildcards(os.path.join(output_folder+"/06.imputed/{chr1}/", "{chr}.{g_chunk}.vcf.gz"))._asdict()),
         expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_manhattan.png",zip,**glob_wildcards(os.path.join(output_folder+"/06.imputed/{chr1}/", "{chr}.{g_chunk}.vcf.gz"))._asdict()),
         #generate release folders
-        output_folder+"/08.release/00.CLEANED_INPUT",
-        output_folder+"/08.release/01.FLIPPED_INPUT",
-        output_folder+"/08.release/02.PHASED",
-        output_folder+"/08.release/03.IMPUTED",
-        output_folder+"/08.release/04.STATS"
+        release_folder+"/08.release/00.CLEANED_INPUT",
+        release_folder+"/08.release/01.FLIPPED_INPUT",
+        release_folder+"/08.release/02.PHASED",
+        release_folder+"/08.release/03.IMPUTED",
+        release_folder+"/08.release/04.STATS"
 
         # expand(output_folder+"/07.stats/{chr}/{chr}_impute_summary_report_by_chunk.pdf",chr=chrs)
         # expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{{g_chunk}}_{ext}",chr=chrs,ext=['impute_summary.csv','impute_summary.pdf','impute_manhattan.pdf'])

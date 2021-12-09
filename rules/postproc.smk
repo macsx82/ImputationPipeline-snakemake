@@ -154,11 +154,11 @@ rule imputeTabStat:
 #add a release rule
 rule release:
 	output:
-		directory(output_folder+"/08.release/00.CLEANED_INPUT"),
-		directory(output_folder+"/08.release/01.FLIPPED_INPUT"),
-		directory(output_folder+"/08.release/02.PHASED"),
-		directory(output_folder+"/08.release/03.IMPUTED"),
-		directory(output_folder+"/08.release/04.STATS")
+		directory(release_folder+"/08.release/00.CLEANED_INPUT"),
+		directory(release_folder+"/08.release/01.FLIPPED_INPUT"),
+		directory(release_folder+"/08.release/02.PHASED"),
+		directory(release_folder+"/08.release/03.IMPUTED"),
+		directory(release_folder+"/08.release/04.STATS")
 	input:
 		cleaned_input_1=rules.indelsRemove.output,
 		cleaned_input_2=rules.plinkSplit.output,
