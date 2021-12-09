@@ -174,6 +174,9 @@ rule release:
 		stderr=log_folder+ "/data_release.e"
 	shell:
 		"""
+		#0) create the folders needed
+		mkdir -p {output[0]}
+
 		#1) cp cleaned input files, only the first and the last
 		for o_file in {input.cleaned_input_1}
 		do
