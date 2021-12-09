@@ -148,7 +148,6 @@ rule imputeTabStat:
 		stderr=log_folder+ "/imputeTabStat_{chr}.e"
 	shell:
 		"""
-		# {params.bcftools_bin} query -H -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/R2\t%INFO/IMP\n" {input} | gzip -c > {output}
 		{params.bcftools_bin} query -H -f"%CHROM\t%POS\t%ID\t%REF\t%ALT\t%AF\t%INFO/R2\t%INFO/IMP\n" {input} | awk 'BEGIN{FS="\t";OFS="\t"}{if($8==".") print $1,$2,$3,$4,$5,$6,$7,0;else print $0}' | gzip -c > {output}
 		"""
 
