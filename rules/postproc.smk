@@ -162,7 +162,7 @@ rule release:
 		directory(release_folder+"/08.release/04.STATS")
 	input:
 		cleaned_input_1=rules.indelsRemove.output,
-		cleaned_input_2=rules.plinkSplit.output,
+		cleaned_input_2=rules.chrXSplit.output,
 		flipped_input=expand(output_folder + "/03.flipped_input/" + ref_panel + "/VCF/"+ cohort_name+"_{chr}_fixRef_sorted_rsID.{ext}", chr=chrs, ext=["vcf.gz","vcf.gz.tbi"]),
 		phased_input=expand(output_folder+ "/04.phased_data/" + ref_panel + "/"+ cohort_name +"_{chr}_phased.{ext}",chr=chrs, ext=["vcf.gz","vcf.gz.tbi"]),
 		imputed_1=expand(output_folder+"/06.imputed/R2/{chr}/{chr}.{ext}", ext=["vcf.gz","vcf.gz.tbi","vcf.gz.csi"],chr=chrs),
