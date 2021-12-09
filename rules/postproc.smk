@@ -157,7 +157,8 @@ rule release:
 		directory(release_folder+"/08.release/00.CLEANED_INPUT"),
 		directory(release_folder+"/08.release/01.FLIPPED_INPUT"),
 		directory(release_folder+"/08.release/02.PHASED"),
-		directory(release_folder+"/08.release/03.IMPUTED"),
+		directory(release_folder+"/08.release/03.IMPUTED/VCF"),
+		directory(release_folder+"/08.release/03.IMPUTED/BIMBAM"),
 		directory(release_folder+"/08.release/04.STATS")
 	input:
 		cleaned_input_1=rules.indelsRemove.output,
@@ -174,22 +175,50 @@ rule release:
 		stderr=log_folder+ "/data_release.e"
 	shell:
 		"""
-		#0) create the folders needed
-		mkdir -p {output}
 
 		#1) cp cleaned input files, only the first and the last
+		mkdir -p {output[0]}
 		for o_file in {input.cleaned_input_1}
 		do
 			rsync -avP ${{o_file}} {output[0]}/.
 		done 1> {log.stdout} 2> {log.stderr}
+
+		for o_file in {input.cleaned_input_2}
+		do
+			rsync -avP ${{o_file}} {output[0]}/.
+		done 1>> {log.stdout} 2>> {log.stderr}
+		
+		#2) cp flipped input files, only the rs annotated vcf files
+		mkdir -p {output[1]}
+		for o_file in {input.flipped_input}
+		do
+			rsync -avP ${{o_file}} {output[1]}/.
+		done 1>> {log.stdout} 2>> {log.stderr}
+		
+		#3) cp phased data
+		mkdir -p {output[2]}
+		for o_file in {input.phased_input}
+		do
+			rsync -avP ${{o_file}} {output[2]}/.
+		done 1>> {log.stdout} 2>> {log.stderr}
+		
+		#4) cp Imputed results: IMPUTE/R2 folder (that will be renamed as VCF) and BIMBAM formatted files
+		mkdir -p {output[3]}
+		for o_file in {input.imputed_1}
+		do
+			rsync -avP ${{o_file}} {output[3]}/.
+		done 1>> {log.stdout} 2>> {log.stderr}
+		
+		mkdir -p {output[4]}
+		for o_file in {input.imputed_2}
+		do
+			rsync -avP ${{o_file}} {output[4]}/.
+		done 1>> {log.stdout} 2>> {log.stderr}
+		
+		#5) cp info stats in tab format
+		mkdir -p {output[5]}
+		for o_file in {input.stats}
+		do
+			rsync -avP ${{o_file}} {output[5]}/.
+		done 1>> {log.stdout} 2>> {log.stderr}
 		"""
-		# rsync -avP {input.cleaned_input_2} {output[0]}/.
-		# #2) cp flipped input files, only the rs annotated
-		# rsync -avP {input.flipped_input} {output[1]}/.
-		# #3) cp phased data
-		# rsync -avP {input.phased_input} {output[2]}/.
-		# #4) cp Imputed results: BIMBAM and IMPUTE/R2 folder, that will be renamed as VCF
-		# rsync -avP {input.imputed_1} {output[3]}/.
-		# rsync -avP {input.imputed_2} {output[3]}/.
-		# #5) cp info stats in tab format
-		# rsync -avP {input.stats} {output[4]}/.

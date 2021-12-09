@@ -84,11 +84,12 @@ rule all:
         expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_summary.png",zip,**glob_wildcards(os.path.join(output_folder+"/06.imputed/{chr1}/", "{chr}.{g_chunk}.vcf.gz"))._asdict()),
         expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{g_chunk}_impute_manhattan.png",zip,**glob_wildcards(os.path.join(output_folder+"/06.imputed/{chr1}/", "{chr}.{g_chunk}.vcf.gz"))._asdict()),
         #generate release folders
-        release_folder+"/08.release/00.CLEANED_INPUT",
-        release_folder+"/08.release/01.FLIPPED_INPUT",
-        release_folder+"/08.release/02.PHASED",
-        release_folder+"/08.release/03.IMPUTED",
-        release_folder+"/08.release/04.STATS"
+        directory(release_folder+"/08.release/00.CLEANED_INPUT"),
+        directory(release_folder+"/08.release/01.FLIPPED_INPUT"),
+        directory(release_folder+"/08.release/02.PHASED"),
+        directory(release_folder+"/08.release/03.IMPUTED/VCF"),
+        directory(release_folder+"/08.release/03.IMPUTED/BIMBAM"),
+        directory(release_folder+"/08.release/04.STATS")
 
         # expand(output_folder+"/07.stats/{chr}/{chr}_impute_summary_report_by_chunk.pdf",chr=chrs)
         # expand(output_folder+"/07.stats/{chr}/CHUNKS/{chr}_{{g_chunk}}_{ext}",chr=chrs,ext=['impute_summary.csv','impute_summary.pdf','impute_manhattan.pdf'])
