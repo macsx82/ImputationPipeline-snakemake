@@ -178,8 +178,9 @@ rule release:
 		for o_file in {input.cleaned_input_1}
 		do
 			rsync -avP ${{o_file}} {output[0]}/.
-		done
-			# rsync -avP {input.cleaned_input_2} {output[0]}/.
+		done 1> {log.stdout} 2> {log.stderr}
+		"""
+		# rsync -avP {input.cleaned_input_2} {output[0]}/.
 		# #2) cp flipped input files, only the rs annotated
 		# rsync -avP {input.flipped_input} {output[1]}/.
 		# #3) cp phased data
@@ -189,4 +190,3 @@ rule release:
 		# rsync -avP {input.imputed_2} {output[3]}/.
 		# #5) cp info stats in tab format
 		# rsync -avP {input.stats} {output[4]}/.
-		"""
