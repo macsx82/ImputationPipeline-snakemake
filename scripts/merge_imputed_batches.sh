@@ -34,6 +34,8 @@ echo "Filtering done"
 
 #Generate info stats with qctools: calculate the impute info scores
 echo "Calculate stats and index"
+qctool -g ${outfolder}/CALLRATE95/${prefix}_${chr}.vcf.gz -filetype vcf -vcf-genotype-field GP -snp-stats -osnp ${outfolder}/CALLRATE95/${prefix}_${chr}.info_stats
+
 #we need to reformat a little bit the resulting table
 (echo -e "#CHROM\tPOS\tID\tREF\tALT\tR2";fgrep -v "#" ${outfolder}/CALLRATE95/${prefix}_${chr}.info_stats| fgrep -v "alternate_ids" | cut -f 2-6,18 | awk 'BEGIN{FS=" ";OFS="\t"}{if($6=="NA") print $2,$3,$1,$4,$5,1;else print $2,$3,$1,$4,$5,sprintf("%.3f",$6)}') | bgzip -c > ${outfolder}/CALLRATE95/${prefix}_${chr}.info.tab.gz
 tabix -f -s 1 -b 2 -e 2 ${outfolder}/CALLRATE95/${prefix}_${chr}.info.tab.gz
