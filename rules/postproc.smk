@@ -218,7 +218,7 @@ rule release:
 		
 		for o_file in {input.imputed_stats}
 		do
-			rsync -avP ${{o_file}} {output[4]}/.
+			rsync -avP ${{o_file}} {output[3]}/.
 		done 1>> {log.stdout} 2>> {log.stderr}
 
 		#5) cp info stats in tab format
