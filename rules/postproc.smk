@@ -167,6 +167,7 @@ rule release:
 		phased_input=expand(output_folder+ "/04.phased_data/" + ref_panel + "/"+ cohort_name +"_{chr}_phased.{ext}",chr=chrs, ext=["vcf.gz","vcf.gz.tbi"]),
 		imputed_1=expand(output_folder+"/06.imputed/R2/{chr}/{chr}.{ext}", ext=["vcf.gz","vcf.gz.tbi","vcf.gz.csi"],chr=chrs),
 		imputed_2=expand(output_folder+"/06.imputed/BIMBAM/{chr}/{chr}.{ext}",ext=["bimbam.gz","pos"],chr=chrs),
+		imputed_stats=expand(output_folder+"/06.imputed/MERGED/{chr}/{chr}.stats",chr=chrs),
 		stats=expand(output_folder+"/07.stats/{chr}/{chr}.info_stats.gz", chr=chrs)
 	resources:
 		mem_mb=3000
@@ -215,6 +216,11 @@ rule release:
 			rsync -avP ${{o_file}} {output[4]}/.
 		done 1>> {log.stdout} 2>> {log.stderr}
 		
+		for o_file in {input.imputed_stats}
+		do
+			rsync -avP ${{o_file}} {output[4]}/.
+		done 1>> {log.stdout} 2>> {log.stderr}
+
 		#5) cp info stats in tab format
 		mkdir -p {output[5]}
 		for o_file in {input.stats}
