@@ -118,7 +118,8 @@ include:
 
 include:
     include_prefix + "/postproc.smk"
-
+include:
+    include_prefix + "/stats.smk"
 
 onsuccess:
     print("The workflow finished without errors!")
