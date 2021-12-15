@@ -98,7 +98,7 @@ rule pdfReportChr:
 		manhattan=rules.infoStatsChrom.output[3]
 		
 	params:
-		stat_base_folder=output_folder+"/07.stats/{chr}/CHUNKS"
+		stat_base_folder=output_folder+"/07.stats/{chr}"
 	log:
 		stdout=log_folder+"/pdfReportChr_{chr}.o",
 		stderr=log_folder+"/pdfReportChr_{chr}.e"	
