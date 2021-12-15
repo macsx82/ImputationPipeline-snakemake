@@ -92,16 +92,16 @@ rule pdfReportChr:
 	output:
 		output_folder+"/07.stats/{chr}/{chr}_impute_summary_report.pdf"
 	input:
-		chunk_stats_by_maf_by_info=rules.infoStatsChrom.output[0]
-		chunk_stats_by_maf=rules.infoStatsChrom.output[1]
-		info_af=rules.infoStatsChrom.output[2]
+		chunk_stats_by_maf_by_info=rules.infoStatsChrom.output[0],
+		chunk_stats_by_maf=rules.infoStatsChrom.output[1],
+		info_af=rules.infoStatsChrom.output[2],
 		manhattan=rules.infoStatsChrom.output[3]
 		
 	params:
 		stat_base_folder=output_folder+"/07.stats/{chr}/CHUNKS"
 	log:
-		stdout=log_folder+"/pdfReportChunks_{chr}.o",
-		stderr=log_folder+"/pdfReportChunks_{chr}.e"	
+		stdout=log_folder+"/pdfReportChr_{chr}.o",
+		stderr=log_folder+"/pdfReportChr_{chr}.e"	
 	priority: 1
 	run:
 		pdf_report_chr(wildcards.chr,params.stat_base_folder,output[0])
