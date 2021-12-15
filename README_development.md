@@ -415,7 +415,8 @@ config_file=/home/cocca/analyses/imputation/20211215_TEST/test_collstats_2021121
 
 mkdir -p ${basefolder}/Logs
 
-snakemake -s /home/cocca/scripts/pipelines/test_branches/ImputationPipeline-snakemake/Snakefile -p -r --jobs 100 --configfile ${config_file} --omit-from vcfFixRef --keep-going --cluster-config ~/scripts/pipelines/ImputationPipeline-snakemake/SGE_cluster.json --cluster "qsub -N {rule}_{config[cohort_name]} -V -cwd -m ea -M {cluster.user_mail} -pe {cluster.parall_env} {threads} -o {log.stdout} -e {log.stderr} -l h_vmem={cluster.mem} -q {cluster.queue}" 1> ${stdout_name} 2> ${err_name}
+# snakemake -n -s /home/cocca/scripts/pipelines/test_branches/ImputationPipeline-snakemake/Snakefile -p -r --jobs 100 --configfile ${config_file} --keep-going 
+snakemake -s /home/cocca/scripts/pipelines/test_branches/ImputationPipeline-snakemake/Snakefile -p -r --jobs 100 --configfile ${config_file} --keep-going --cluster-config ~/scripts/pipelines/ImputationPipeline-snakemake/SGE_cluster.json --cluster "qsub -N {rule}_{config[cohort_name]} -V -cwd -pe {cluster.parall_env} {threads} -o {log.stdout} -e {log.stderr} -l h_vmem={cluster.mem} -q {cluster.queue}" 1> ${stdout_name} 2> ${err_name}
 
 ```
 

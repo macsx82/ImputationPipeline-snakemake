@@ -74,7 +74,7 @@ rule pdfReportChunks:
 		chunk_stats_by_maf=lambda wildcards: expand(rules.infoStatsChunks.output[1],chr=wildcards.chr,g_chunk=glob_wildcards(os.path.join(output_folder+"/06.imputed/"+wildcards.chr+"/", wildcards.chr+".{g_chunk}.vcf.gz")).g_chunk),
 		info_af=lambda wildcards: expand(rules.infoStatsChunks.output[2],chr=wildcards.chr,g_chunk=glob_wildcards(os.path.join(output_folder+"/06.imputed/"+wildcards.chr+"/", wildcards.chr+".{g_chunk}.vcf.gz")).g_chunk),
 		manhattan=lambda wildcards: expand(rules.infoStatsChunks.output[3],chr=wildcards.chr,g_chunk=glob_wildcards(os.path.join(output_folder+"/06.imputed/"+wildcards.chr+"/", wildcards.chr+".{g_chunk}.vcf.gz")).g_chunk)
-	
+		
 	params:
 		stat_base_folder=output_folder+"/07.stats/{chr}/CHUNKS"
 	log:
@@ -85,3 +85,23 @@ rule pdfReportChunks:
 		chunk_number=len(input.chunk_stats_by_maf_by_info)
 		pdf_report(wildcards.chr,params.stat_base_folder,chunk_number,output[0])
 
+#aggregator rule to get all data from all chunks and generate a single pdf file
+rule pdfReportChr:
+	wildcard_constraints:
+		chr='\d+'
+	output:
+		output_folder+"/07.stats/{chr}/{chr}_impute_summary_report.pdf"
+	input:
+		chunk_stats_by_maf_by_info=rules.infoStatsChrom.output[0]
+		chunk_stats_by_maf=rules.infoStatsChrom.output[1]
+		info_af=rules.infoStatsChrom.output[2]
+		manhattan=rules.infoStatsChrom.output[3]
+		
+	params:
+		stat_base_folder=output_folder+"/07.stats/{chr}/CHUNKS"
+	log:
+		stdout=log_folder+"/pdfReportChunks_{chr}.o",
+		stderr=log_folder+"/pdfReportChunks_{chr}.e"	
+	priority: 1
+	run:
+		pdf_report_chr(wildcards.chr,params.stat_base_folder,output[0])
