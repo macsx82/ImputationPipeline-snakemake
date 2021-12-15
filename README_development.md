@@ -420,7 +420,22 @@ snakemake -s /home/cocca/scripts/pipelines/test_branches/ImputationPipeline-snak
 
 ```
 
+For future reference, here is the latency error we get on netapp05
 
+```
+Submitted job 510 with external jobid 'Your job 503352 ("infoStatsChunks_NUTRIACT") has been submitted'.
+MissingOutputException in line 2 of /home/cocca/scripts/pipelines/ImputationPipeline-snakemake/rules/postproc.smk:
+Job Missing files after 40 seconds:
+/netapp05/imputation/IGRPv1/NUTRIACT/07.stats/7/CHUNKS/7_08_impute_summary_by_maf_by_info.csv
+/netapp05/imputation/IGRPv1/NUTRIACT/07.stats/7/CHUNKS/7_08_impute_summary_by_maf.csv
+/netapp05/imputation/IGRPv1/NUTRIACT/07.stats/7/CHUNKS/7_08_impute_summary.png
+/netapp05/imputation/IGRPv1/NUTRIACT/07.stats/7/CHUNKS/7_08_impute_manhattan.png
+This might be due to filesystem latency. If that is the case, consider to increase the wait time with --latency-wait.
+Job id: 934 completed successfully, but some output files are missing. 934
+  File "/shared/software/conda/envs/snakemake_g/lib/python3.9/site-packages/snakemake/executors/__init__.py", line 824, in handle_job_success
+  File "/shared/software/conda/envs/snakemake_g/lib/python3.9/site-packages/snakemake/executors/__init__.py", line 252, in handle_job_success
+Job failed, going on with independent jobs.
+```
 
 
 X.TGP3.vcf.gz

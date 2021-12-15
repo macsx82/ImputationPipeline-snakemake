@@ -79,7 +79,9 @@ rule release:
 		imputed_1=expand(output_folder+"/06.imputed/R2/{chr}/{chr}.{ext}", ext=["vcf.gz","vcf.gz.tbi","vcf.gz.csi"],chr=chrs),
 		imputed_2=expand(output_folder+"/06.imputed/BIMBAM/{chr}/{chr}.{ext}",ext=["bimbam.gz","pos"],chr=chrs),
 		imputed_stats=expand(output_folder+"/06.imputed/MERGED/{chr}/{chr}.stats",chr=chrs),
-		stats=expand(output_folder+"/07.stats/{chr}/{chr}.info_stats.gz", chr=chrs)
+		# stats=expand(output_folder+"/07.stats/{chr}/{chr}.info_stats.gz", chr=chrs),
+		stats=expand(output_folder+"/07.stats/{chr}/{chr}{suffix}", chr=chrs, suffix=[".info_stats.gz","_impute_summary_report_by_chunk.pdf","_impute_summary_report.pdf"])
+
 	resources:
 		mem_mb=3000
 	log:
