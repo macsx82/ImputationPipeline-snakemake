@@ -381,11 +381,6 @@ We can split in chunks and parallelize this, and we should get a boost in perfor
 
 Cehck prefix/suffix for splitted files 
 
-```bash
-
-```
-
-
 Test new committed rules/fixes, on recmonfix test branch
 
 ```bash
@@ -401,6 +396,30 @@ mkdir -p ${basefolder}/Logs
 snakemake -s /home/cocca/scripts/pipelines/test_branches/ImputationPipeline-snakemake/Snakefile -p -r --jobs 100 --configfile ${config_file} --omit-from vcfFixRef --keep-going --cluster-config ~/scripts/pipelines/ImputationPipeline-snakemake/SGE_cluster.json --cluster "qsub -N {rule}_{config[cohort_name]} -V -cwd -m ea -M {cluster.user_mail} -pe {cluster.parall_env} {threads} -o {log.stdout} -e {log.stderr} -l h_vmem={cluster.mem} -q {cluster.queue}" 1> ${stdout_name} 2> ${err_name}
 
 ```
+
+---
+
+#15/12/2021
+
+We need to fix the aggregator rule to generate a single pdf for at-a-glance QC of each chromosome
+
+Test the error we were getting on one test dataset
+
+```bash
+source activate snakemake_g
+
+basefolder=/home/cocca/analyses/imputation/20211215_TEST
+err_name=${basefolder}/Logs/test_collstats_imputation_20211215_1.err
+stdout_name=${basefolder}/Logs/test_collstats_imputation_20211215_1.log
+config_file=/home/cocca/analyses/imputation/20211215_TEST/test_collstats_20211215.yml
+
+mkdir -p ${basefolder}/Logs
+
+snakemake -s /home/cocca/scripts/pipelines/test_branches/ImputationPipeline-snakemake/Snakefile -p -r --jobs 100 --configfile ${config_file} --omit-from vcfFixRef --keep-going --cluster-config ~/scripts/pipelines/ImputationPipeline-snakemake/SGE_cluster.json --cluster "qsub -N {rule}_{config[cohort_name]} -V -cwd -m ea -M {cluster.user_mail} -pe {cluster.parall_env} {threads} -o {log.stdout} -e {log.stderr} -l h_vmem={cluster.mem} -q {cluster.queue}" 1> ${stdout_name} 2> ${err_name}
+
+```
+
+
 
 
 X.TGP3.vcf.gz
