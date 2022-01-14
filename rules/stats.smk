@@ -73,7 +73,6 @@ rule pdfReportChunks:
 		stderr=log_folder+"/pdfReportChunks_{chr}.e"	
 	priority: 1
 	run:
-		print(input[0])
 		logger = logging.getLogger('logging_test')
 		fh = logging.FileHandler(str(log[1]))
 		fh.setLevel(logging.DEBUG)
@@ -83,11 +82,12 @@ rule pdfReportChunks:
 		try: 
 			logger.info('Starting operation!')
 			# do something
-			print(input[0])
-			chunk_number=len(input.chunk_stats_by_maf_by_info)
+			# chunk_number=len(input.chunk_stats_by_maf_by_info)
+			chunk_number=len(input[0])
 			pdf_report(wildcards.chr,params.stat_base_folder,chunk_number,output[0])
 			logger.info('Ended!')
 		except Exception as e: 
+			# print(input[0])
 			logger.error(e, exc_info=True)
 
 
