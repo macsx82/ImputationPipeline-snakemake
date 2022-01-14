@@ -62,10 +62,15 @@ rule pdfReportChunks:
 	output:
 		output_folder+"/07.stats/{chr}/{chr}_impute_summary_report_by_chunk.pdf"
 	input:
+		# chunk_stats_by_maf_by_info=lambda wildcards: expand(rules.infoStatsChunks.output[0],chr=wildcards.chr,g_chunk=glob_wildcards(os.path.join(output_folder+"/06.imputed/"+wildcards.chr+"/", wildcards.chr+".{g_chunk}.vcf.gz")).g_chunk),
+		# chunk_stats_by_maf=lambda wildcards: expand(rules.infoStatsChunks.output[1],chr=wildcards.chr,g_chunk=glob_wildcards(os.path.join(output_folder+"/06.imputed/"+wildcards.chr+"/", wildcards.chr+".{g_chunk}.vcf.gz")).g_chunk),
+		# info_af=lambda wildcards: expand(rules.infoStatsChunks.output[2],chr=wildcards.chr,g_chunk=glob_wildcards(os.path.join(output_folder+"/06.imputed/"+wildcards.chr+"/", wildcards.chr+".{g_chunk}.vcf.gz")).g_chunk),
+		# manhattan=lambda wildcards: expand(rules.infoStatsChunks.output[3],chr=wildcards.chr,g_chunk=glob_wildcards(os.path.join(output_folder+"/06.imputed/"+wildcards.chr+"/", wildcards.chr+".{g_chunk}.vcf.gz")).g_chunk)
 		chunk_stats_by_maf_by_info=lambda wildcards: expand(rules.infoStatsChunks.output[0],chr=wildcards.chr,g_chunk=glob_wildcards(os.path.join(output_folder+"/06.imputed/"+wildcards.chr+"/", wildcards.chr+".{g_chunk}.vcf.gz")).g_chunk),
 		chunk_stats_by_maf=lambda wildcards: expand(rules.infoStatsChunks.output[1],chr=wildcards.chr,g_chunk=glob_wildcards(os.path.join(output_folder+"/06.imputed/"+wildcards.chr+"/", wildcards.chr+".{g_chunk}.vcf.gz")).g_chunk),
 		info_af=lambda wildcards: expand(rules.infoStatsChunks.output[2],chr=wildcards.chr,g_chunk=glob_wildcards(os.path.join(output_folder+"/06.imputed/"+wildcards.chr+"/", wildcards.chr+".{g_chunk}.vcf.gz")).g_chunk),
-		manhattan=lambda wildcards: expand(rules.infoStatsChunks.output[3],chr=wildcards.chr,g_chunk=glob_wildcards(os.path.join(output_folder+"/06.imputed/"+wildcards.chr+"/", wildcards.chr+".{g_chunk}.vcf.gz")).g_chunk)		
+		manhattan=lambda wildcards: expand(rules.infoStatsChunks.output[3],chr=wildcards.chr,g_chunk=glob_wildcards(os.path.join(output_folder+"/06.imputed/"+wildcards.chr+"/", wildcards.chr+".{g_chunk}.vcf.gz")).g_chunk)
+		
 	params:
 		stat_base_folder=output_folder+"/07.stats/{chr}/CHUNKS"
 	log:
@@ -82,6 +87,7 @@ rule pdfReportChunks:
 		try: 
 			logger.info('Starting operation!')
 			# do something
+			print(chunk_stats_by_maf_by_info)
 			chunk_number=len(input.chunk_stats_by_maf_by_info)
 			pdf_report(wildcards.chr,params.stat_base_folder,chunk_number,output[0])
 			logger.info('Ended!')
