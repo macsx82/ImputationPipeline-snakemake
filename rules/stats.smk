@@ -73,6 +73,7 @@ rule pdfReportChunks:
 		stderr=log_folder+"/pdfReportChunks_{chr}.e"	
 	priority: 1
 	run:
+		print(input[0])
 		logger = logging.getLogger('logging_test')
 		fh = logging.FileHandler(str(log[1]))
 		fh.setLevel(logging.DEBUG)
