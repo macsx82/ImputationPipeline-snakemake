@@ -28,7 +28,7 @@ def pdf_report(current_chr,stat_base_folder,chunk_n,outfile):
 
     for chunk in list(range(1,int(chunk_n)+1)):
         current_chunk="{:02d}".format(chunk)
-
+        #define files needed for the pdf generation
         current_info_af=stat_base_folder+'/'+current_chr+'_'+ current_chunk +'_impute_summary.png'
         current_manhattan=stat_base_folder+'/'+current_chr+'_'+ current_chunk +'_impute_manhattan.png'
         current_chunk_stats_by_maf=stat_base_folder+'/'+current_chr+'_'+ current_chunk +'_impute_summary_by_maf.csv'

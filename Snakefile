@@ -30,12 +30,6 @@ include:
 include:
     "scripts/functions.py"
 
-# define a dictionary containing chromosomes and relative chuk size
-# chunked={}
-# for chrom in chrs:
-#     legend_file="%s/%s/%s/%s.%s.legend.gz" % (ref_panel_base_folder,ref_panel,chrom,chrom,ref_panel)
-#     chunked[chrom]=get_chunk_by_chr(chrom,legend_file,chunk_size)
-# print(chunked)
 #define parameter useful to cluster job submission
 localrules: all
 
