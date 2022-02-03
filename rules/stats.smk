@@ -71,7 +71,7 @@ rule pdfReportChunks:
 	log:
 		stdout=log_folder+"/pdfReportChunks_{chr}.o",
 		stderr=log_folder+"/pdfReportChunks_{chr}.e"	
-	priority: 1
+	# priority: 1
 	run:
 		logger = logging.getLogger('logging_test')
 		fh = logging.FileHandler(str(log[1]))
@@ -87,7 +87,6 @@ rule pdfReportChunks:
 			pdf_report(wildcards.chr,params.stat_base_folder,chunk_number,output[0])
 			logger.info('Ended!')
 		except Exception as e: 
-			# print(input[0])
 			logger.error(e, exc_info=True)
 
 
@@ -107,7 +106,7 @@ rule pdfReportChr:
 	log:
 		stdout=log_folder+"/pdfReportChr_{chr}.o",
 		stderr=log_folder+"/pdfReportChr_{chr}.e"	
-	priority: 1
+	# priority: 1
 	run:
 		logger = logging.getLogger('logging_test')
 		fh = logging.FileHandler(str(log[1]))

@@ -241,4 +241,3 @@ def getDupeByPos(infile,outlist):
     unique_rs=list(set(flattenNestedList(to_rem)))
     open(outlist,"w").write("\n".join(unique_rs))
     open(outlist, 'a').close()
-

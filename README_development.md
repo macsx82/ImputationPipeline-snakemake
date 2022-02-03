@@ -442,3 +442,20 @@ X.TGP3.vcf.gz
 
 
 155260560
+
+
+
+```bash
+source activate snakemake_g
+
+basefolder=/home/cocca/analyses/imputation/20220203_TEST
+err_name=${basefolder}/Logs/test_collstats_imputation_20211215_1.err
+stdout_name=${basefolder}/Logs/test_collstats_imputation_20211215_1.log
+config_file=/home/cocca/analyses/imputation/20220203_TEST/test_collstats_20220203.yml
+
+mkdir -p ${basefolder}/Logs
+
+# snakemake -n -s /home/cocca/scripts/pipelines/test_branches/ImputationPipeline-snakemake/Snakefile -p -r --jobs 100 --configfile ${config_file} --keep-going 
+snakemake -s /home/cocca/scripts/pipelines/test_branches/ImputationPipeline-snakemake/Snakefile -p -r --jobs 100 --configfile ${config_file} --keep-going --cluster-config ~/scripts/pipelines/ImputationPipeline-snakemake/SGE_cluster.json --cluster "qsub -N {rule}_{config[cohort_name]} -V -cwd -pe {cluster.parall_env} {threads} -o {log.stdout} -e {log.stderr} -l h_vmem={cluster.mem} -q {cluster.queue}" 1> ${stdout_name} 2> ${err_name}
+
+```
