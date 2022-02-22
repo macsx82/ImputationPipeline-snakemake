@@ -288,4 +288,4 @@ At the moment, this pipeline covers only imputation of autosomal chromosomes. In
 
 At the moment, the creation of the PDF reports is triggered at the beginning of the pipeline execution, resulting in rules exiting with error status. This issue will happen as long as the pipeline generates the files needed for the PDF report creation (all imputation results for all chromosomes) .
 
-Untill this issue is fixed, it is advisable to perform a final re-run of the pipeline after removing the folder **07.stats** .
+Until this issue is fixed, it is advisable to perform a final re-run of the pipeline after removing the folder **07.stats** .
