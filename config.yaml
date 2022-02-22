@@ -36,27 +36,19 @@ rules:
     window-size: 5000000
     window-count: 3000
   impute:
-    # k_hap: 10000
     ne : 20000
     pbwt_depth: 8
-    # iter: 60
-    # burnin: 20
     buffer_size: 250
-    # chunk_size: 3000000
     options: '--out-gp-field'
     mem: 15000 #default to 15Gb
     threads: 4 #in impute2 this parameter is not used, maybe in following versions
   concatImputed:
     temp: "temp folder path" #in case we need to sort the concatenated vcf files 
-  indelsRemove:
-  plinkSplit:
   snpCheck:
-    ref_panel_base_folder: "ref_panel_base_dir" #shapeit2 ref panel format path for this rule ONLY
+    ref_panel_base_folder: "/shared/resources/references/HAP_LEGEND_SAMPLES" #shapeit2 ref panel format path for this rule ONLY
     genetic_map_path: "/netapp/nfs/resources/1000GP_phase3/impute" #shapeit2 genetic map format path, to be used in this rule ONLY
   chrXSplit:
     args: "hg19 'no-fail'"
-  snpFlip:
-  allFix:
   plink2vcf:
     chr_rename: "support_files/rename_chr_hg19.txt" #refer here to the correct file to be used to rename chromosmes based on the reference genome build used
   vcfFixRef:
@@ -74,8 +66,8 @@ rules:
 #################### TOOLS ####################
 tools:
   shapeit: "/share/apps/bio/bin/shapeit"
-  phasing_tool: "eagle_path"
-  impute: "impute_path"
-  chunker_tool: "chunker_path"
-  plink: "plink_path"
-  bcftools: "bcftools_path"
+  phasing_tool: "/shared/software/eagle/Eagle_v2.4.1/eagle"
+  impute: "/shared/software/impute5_v1.1.5/impute5_1.1.5_static"
+  chunker_tool: "/shared/software/impute5_v1.1.5/imp5Chunker_1.1.5_static"
+  plink: "plink"
+  bcftools: "/share/apps/bio/bin/bcftools"

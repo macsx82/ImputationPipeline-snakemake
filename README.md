@@ -137,7 +137,7 @@ Since the main input files are required to be in **PLINK MAP and PED format**, i
   log_folder: "log_folder" #base folder for output
 ```
 
-In teh second section, the user has to specify the path for some resources needed for the pipeline to run:
+In the second section, the user has to specify the path for some resources needed for the pipeline to run:
 
 ```
   genetic_map_path: "/netapp/nfs/resources/gen_map/shapeit4" #path containing genetic maps for IMPUTATION and PHASING (SHAPEIT4 and IMPUTE5 version)
@@ -149,19 +149,143 @@ In teh second section, the user has to specify the path for some resources neede
   scripts: "scripts_folder_path" #folder containing scripts needed in the workflow
 ```
 
+It is important to specify the correct SNP array update allele file, with the parameter *snp_array_update_allele_file*, using the absolute path.
+Resources for most of the SNP arrays used are located, on the APOLLO cluster, in :
+
+```
+/shared/resources/genotyping/
+```
+
+The **scripts** parameter has to be filled by the user, and it should be the absolute path of the "scripts" folder available in the pipeline main folder.
+This parameter is needed to run some external scripts from the pipeline.
+
+
 ### RULES section
 
 In this section are defined rules specific parameters. Most of the parameters are set to default values according to each software documentation.
 
+The user should define absolute paths for the **temp** folders for rules **concatImputed** and **vcfFixRef**, while all other resources are already set to default values on the Apollo cluster.
 
 
 ### TOOLS section
 
 Here the user can define the path of each binary used, if it is not present in the $PATH.
 
+At the moment, the template config file contains path specific for the usage on Apollo cluster.
+
+```
+tools:
+  shapeit: "/share/apps/bio/bin/shapeit"
+  phasing_tool: "/shared/software/eagle/Eagle_v2.4.1/eagle"
+  impute: "/shared/software/impute5_v1.1.5/impute5_1.1.5_static"
+  chunker_tool: "/shared/software/impute5_v1.1.5/imp5Chunker_1.1.5_static"
+  plink: "plink"
+  bcftools: "/share/apps/bio/bin/bcftools"
+```
+
 ---
+## Running the pipeline
+
+There are different ways to run the pipeline: **Local mode**, **Cluster mode** or **Single node mode**
+
+**ALL THE EXAMPLES BELOW ARE TAILORED TO THE APOLLO CLUSTER SUBMISSION SYSTEM, FOR WHICH YOU HAVE TO SPECIFY THE NAME OF THE PARALLEL ENVIRONMENT AVAILABLE FOR A SELECTED QUEUE**
+
+On the **Apollo cluster**, due to latency problems witht the NetApp storages, it is advisable to add the option **--latency-wait 100** to the snakemake command, to avoid incurring in random execution errors.
+
+### Local mode
+
+
+In Local mode, the pipeline is executed in an interactive shell session (locally or on a cluster) and all the rules are treated as processes that can be run sequentially or in parallel, depending on the resources provided. One example of a Local execution is:
+
+```bash
+conda activate snakemake
+
+base_cwd=/<USER_DEFINED_PATH>/Imputation_run
+log_folder=${base_cwd}/Log
+mkdir -p ${log_folder}
+cd ${base_cwd}
+
+snakefile=/<USER_DEFINED_PATH>/ImputationPipeline-snakemake/Snakefile
+configfile=/<USER_DEFINED_PATH>/Imputation_run/ImputationPipeline_pipeline.yaml
+cores=24
+
+snakemake -p -r -s ${snakefile} --configfile ${configfile} --keep-going --cores ${cores} --latency-wait 100
+
+```
+
+In this example we assumed we had 24 CPU available for our calculation
+
+
+
+### Cluster mode
+
+In cluster mode, the pipeline runs on a interactive shell (**screen or tmux**) and each rule is submitted as a job on the cluster.
+One example of a Cluster execution, on the **APOLLO cluster**, is:
+
+```bash
+conda source snakemake
+
+base_cwd=/<USER_DEFINED_PATH>/Imputation_run
+log_folder=${base_cwd}/Log
+mkdir -p ${log_folder}
+cd ${base_cwd}
+
+snakefile=/<USER_DEFINED_PATH>/ImputationPipeline-snakemake/Snakefile
+configfile=/<USER_DEFINED_PATH>/Imputation_run/ImputationPipeline_pipeline.yaml
+
+log_name=Imputation_pipeline_r01.log
+stderr_name=Imputation_pipeline_r01.err
+cores=24
+queue=fast
+parall_env=smp
+
+snakemake -p -r -s ${snakefile} --configfile ${configfile} --keep-going --cluster "qsub -N {rule}_{config[cohort_name]} -V -cwd -pe ${parall_env} {threads} -o {log.stdout} -e {log.stderr} -l h_vmem={resources.mem_mb} -q ${queue}" --latency-wait 100 -j ${cores} 1> ${log_name} 2> ${stderr_name}
+
+```
+
+In this example we defined also the name for two additional log files, which will help to keep track of the pipeline execution. In this case, the **-j** option will define how many concurrent jobs are submitted on the cluster.
+
+Since the cluster used for this example is the Apollo cluster (SGE queue manager), the user has also to define the name of the parallel environment available. In this specific case, for the queue **fast** the parallel environment name to be specified with the **-pe** option, is **"smp"**
+
+### Single node mode
+
+In Single node mode, the pipeline runs as a job on the cluster and all rules are treated as processes that can be run sequentially or in parallel, depending on the resources provided. Similar to the Local execution mode.
+One example of a single node mode execution, on the **APOLLO cluster**, is:
+
+```bash
+conda source snakemake
+
+base_cwd=/<USER_DEFINED_PATH>/Imputation_run
+log_folder=${base_cwd}/Log
+mkdir -p ${log_folder}
+cd ${base_cwd}
+
+snakefile=/<USER_DEFINED_PATH>/ImputationPipeline-snakemake/Snakefile
+configfile=/<USER_DEFINED_PATH>/Imputation_run/ImputationPipeline_pipeline.yaml
+
+log_name=Imputation_pipeline_r01.log
+stderr_name=Imputation_pipeline_r01.err
+
+cores=32
+queue=fast
+mem=250G
+parall_env=smp
+
+echo "cd ${base_cwd};conda source snakemake; snakemake -p -r -s ${snakefile} --configfile ${configfile} --cores ${cores} --keep-going --latency-wait 100" | qsub -N {rule}_{config[cohort_name]} -V -cwd -pe ${parall_env} ${cores} -o {log_name} -e {stderr_name} -l h_vmem=${mem} -q ${queue}
+```
+
+In this example we selected an entire cluster node on the "fast" queue of the Apollo cluster, defining the number of CPU (32), the parallel environment (smp) and the total amount of RAM required to run the pipeline (250G). We defined also the name for the two additional log files, to keep track of the pipeline execution.
+
+---
+
 ## Known issues
 
 ### Chromosome X imputation
 
 At the moment, this pipeline covers only imputation of autosomal chromosomes. In order to perform imputation on chrX it is advisable to use one of the imputation server available from [Michighan](https://imputationserver.sph.umich.edu/index.html#!) or [Sanger](https://imputation.sanger.ac.uk/). 
+
+### PDF report creation
+
+At the moment, the creation of the PDF reports is triggered at the beginning of the pipeline execution, resulting in rules exiting with error status. This issue will happen as long as the pipeline generates the files needed for the PDF report creation (all imputation results for all chromosomes) .
+
+Untill this issue is fixed, it is advisable to perform a final re-run of the pipeline after removing the folder **07.stats** .

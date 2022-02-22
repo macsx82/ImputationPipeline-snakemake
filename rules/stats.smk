@@ -68,6 +68,8 @@ rule pdfReportChunks:
 		manhattan=lambda wildcards: expand(rules.infoStatsChunks.output[3],chr=wildcards.chr,g_chunk=glob_wildcards(os.path.join(output_folder+"/06.imputed/"+wildcards.chr+"/", wildcards.chr+".{g_chunk}.vcf.gz")).g_chunk)
 	params:
 		stat_base_folder=output_folder+"/07.stats/{chr}/CHUNKS"
+	resources:
+		mem_mb=10000
 	log:
 		stdout=log_folder+"/pdfReportChunks_{chr}.o",
 		stderr=log_folder+"/pdfReportChunks_{chr}.e"	
@@ -103,6 +105,8 @@ rule pdfReportChr:
 		manhattan=rules.infoStatsChrom.output[3]
 	params:
 		stat_base_folder=output_folder+"/07.stats/{chr}"
+	resources:
+		mem_mb=10000
 	log:
 		stdout=log_folder+"/pdfReportChr_{chr}.o",
 		stderr=log_folder+"/pdfReportChr_{chr}.e"	
