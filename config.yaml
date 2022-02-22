@@ -5,13 +5,15 @@
 #config file in yaml format for the IPF pipeline
 #
 #
+#################### GENERAL INFO ####################
 cohort_name: "Sample_POP" #study population name
 pop_group: "Pop_group" #population ancestry [can be one of EUR, AFR, ASN, EAS, SAS]
-ref_panel: "ref_pane_name" #name of the reference panel. Can be one of [IGRPv1, TGP3, ....]
+ref_panel: "ref_pane_name" #name of the reference panel. Can be one of [IGRPv1, TGP3]
 
+#################### CHROMOSOMES ####################
 chromosomes: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23] #cromosomes to work with
 
-# genetic_map_chr: "/netapp/nfs/resources/1000GP_phase3/impute/"
+#################### PATHS ####################
 paths:
   input_folder: "input_folder" #base folder containing input data
   input_file_prefix: "input file prefix" #this is the prefix with the complete path of the PLINK file to be used.
@@ -24,8 +26,11 @@ paths:
   ext_ref_annot_file: "/netapp/nfs/resources/dbSNP/human_9606_b154_GRCh37p13/GCF_000001405.25.vcf.gz" #external reference file to perform annotation on VCF files
   ref_fasta: "/shared/resources/hgRef/hg19/hg19_nochr.fasta" #reference fasta file
   snp_array_update_allele_file: "snp_array_update_allele_file" #absolute path containing the update allele file specific for the snp array used
-  scripts: "scripts_folder_path" #folder containing scripts needed in the workflo
+  scripts: "scripts_folder_path" #folder containing scripts needed in the workflow
 
+
+
+#################### RULES ####################
 rules:
   chunkGenerator:
     window-size: 5000000
@@ -40,7 +45,7 @@ rules:
     # chunk_size: 3000000
     options: '--out-gp-field'
     mem: 15000 #default to 15Gb
-    threads: 4 #in impute2 his parameter is not used, maybe in following versions
+    threads: 4 #in impute2 this parameter is not used, maybe in following versions
   concatImputed:
     temp: "temp folder path" #in case we need to sort the concatenated vcf files 
   indelsRemove:
@@ -62,13 +67,14 @@ rules:
     additional_args: ""
   phase: #the following parameters are for the phasing rule using Eagle only
     mem: 50000 #default to 50Gb
-    genetic_map: "/home/cocca/softwares/eagle/Eagle_v2.4.1/tables/genetic_map_hg19_withX.txt.gz"
+    genetic_map: "/shared/software/eagle/Eagle_v2.4.1/tables/genetic_map_hg19_withX.txt.gz"
     additional_args: "--vcfOutFormat z --noImpMissing"
   
 
+#################### TOOLS ####################
 tools:
   shapeit: "/share/apps/bio/bin/shapeit"
-  phasing_tool: "shapeit4_path"
+  phasing_tool: "eagle_path"
   impute: "impute_path"
   chunker_tool: "chunker_path"
   plink: "plink_path"
