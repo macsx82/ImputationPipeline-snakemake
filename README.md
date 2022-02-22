@@ -188,7 +188,7 @@ tools:
 
 There are different ways to run the pipeline: **Local mode**, **Cluster mode** or **Single node mode**
 
-<span style="color:red"> **ALL THE EXAMPLES BELOW ARE TAILORED TO THE APOLLO CLUSTER SUBMISSION SYSTEM, FOR WHICH YOU HAVE TO SPECIFY THE NAME OF THE PARALLEL ENVIRONMENT AVAILABLE FOR A SELECTED QUEUE** </span>
+**ALL THE EXAMPLES BELOW ARE TAILORED TO THE APOLLO CLUSTER SUBMISSION SYSTEM, FOR WHICH YOU HAVE TO SPECIFY THE NAME OF THE PARALLEL ENVIRONMENT AVAILABLE FOR A SELECTED QUEUE**
 
 On the **Apollo cluster**, due to latency problems witht the NetApp storages, it is advisable to add the option **--latency-wait 100** to the snakemake command, to avoid incurring in random execution errors.
 
