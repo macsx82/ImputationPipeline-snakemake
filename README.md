@@ -190,7 +190,13 @@ There are different ways to run the pipeline: **Local mode**, **Cluster mode** o
 
 **ALL THE EXAMPLES BELOW ARE TAILORED TO THE APOLLO CLUSTER SUBMISSION SYSTEM, FOR WHICH YOU HAVE TO SPECIFY THE NAME OF THE PARALLEL ENVIRONMENT AVAILABLE FOR A SELECTED QUEUE**
 
-On the **Apollo cluster**, due to latency problems witht the NetApp storages, it is advisable to add the option **--latency-wait 100** to the snakemake command, to avoid incurring in random execution errors.
+~~On the **Apollo cluster**, due to latency problems witht the NetApp storages, it is advisable to add the option **--latency-wait 100** to the snakemake command, to avoid incurring in random execution errors.~~
+
+**UPDATE 7/4/2022**
+
+According to Burlo IT, the latency problems with netapp storage should be fixed, so the **--latency-wait 100** option is not needed anymore. Nevertheless, to remain conservative in avoiding errors, it is advisable to set the option to 10 seconds: **--latency-wait 10** . All submission examples have been updated.
+
+
 
 ### Local mode
 
@@ -209,7 +215,7 @@ snakefile=/<USER_DEFINED_PATH>/ImputationPipeline-snakemake/Snakefile
 configfile=/<USER_DEFINED_PATH>/Imputation_run/ImputationPipeline_pipeline.yaml
 cores=24
 
-snakemake -p -r -s ${snakefile} --configfile ${configfile} --keep-going --cores ${cores} --latency-wait 100
+snakemake -p -r -s ${snakefile} --configfile ${configfile} --keep-going --cores ${cores} --latency-wait 10
 
 ```
 
@@ -239,7 +245,7 @@ cores=24
 queue=fast
 parall_env=smp
 
-snakemake -p -r -s ${snakefile} --configfile ${configfile} --keep-going --cluster "qsub -N {rule}_{config[cohort_name]} -V -cwd -pe ${parall_env} {threads} -o {log.stdout} -e {log.stderr} -l h_vmem={resources.mem_mb} -q ${queue}" --latency-wait 100 -j ${cores} 1> ${log_name} 2> ${stderr_name}
+snakemake -p -r -s ${snakefile} --configfile ${configfile} --keep-going --cluster "qsub -N {rule}_{config[cohort_name]} -V -cwd -pe ${parall_env} {threads} -o {log.stdout} -e {log.stderr} -l h_vmem={resources.mem_mb} -q ${queue}" --latency-wait 10 -j ${cores} 1> ${log_name} 2> ${stderr_name}
 
 ```
 
@@ -271,7 +277,7 @@ queue=fast
 mem=250G
 parall_env=smp
 
-echo "cd ${base_cwd};conda source snakemake; snakemake -p -r -s ${snakefile} --configfile ${configfile} --cores ${cores} --keep-going --latency-wait 100" | qsub -N {rule}_{config[cohort_name]} -V -cwd -pe ${parall_env} ${cores} -o {log_name} -e {stderr_name} -l h_vmem=${mem} -q ${queue}
+echo "cd ${base_cwd};conda source snakemake; snakemake -p -r -s ${snakefile} --configfile ${configfile} --cores ${cores} --keep-going --latency-wait 10" | qsub -N {rule}_{config[cohort_name]} -V -cwd -pe ${parall_env} ${cores} -o {log_name} -e {stderr_name} -l h_vmem=${mem} -q ${queue}
 ```
 
 In this example we selected an entire cluster node on the "fast" queue of the Apollo cluster, defining the number of CPU (32), the parallel environment (smp) and the total amount of RAM required to run the pipeline (250G). We defined also the name for the two additional log files, to keep track of the pipeline execution.
