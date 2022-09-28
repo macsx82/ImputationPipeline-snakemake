@@ -204,7 +204,7 @@ According to Burlo IT, the latency problems with netapp storage should be fixed,
 In Local mode, the pipeline is executed in an interactive shell session (locally or on a cluster) and all the rules are treated as processes that can be run sequentially or in parallel, depending on the resources provided. One example of a Local execution is:
 
 ```bash
-conda activate snakemake
+source activate snakemake
 
 base_cwd=/<USER_DEFINED_PATH>/Imputation_run
 log_folder=${base_cwd}/Log
@@ -229,7 +229,7 @@ In cluster mode, the pipeline runs on a interactive shell (**screen or tmux**) a
 One example of a Cluster execution, on the **APOLLO cluster**, is:
 
 ```bash
-conda source snakemake
+source activate snakemake
 
 base_cwd=/<USER_DEFINED_PATH>/Imputation_run
 log_folder=${base_cwd}/Log
@@ -259,7 +259,7 @@ In Single node mode, the pipeline runs as a job on the cluster and all rules are
 One example of a single node mode execution, on the **APOLLO cluster**, is:
 
 ```bash
-conda source snakemake
+source activate snakemake
 
 base_cwd=/<USER_DEFINED_PATH>/Imputation_run
 log_folder=${base_cwd}/Log

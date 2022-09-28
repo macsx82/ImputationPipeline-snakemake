@@ -26,9 +26,13 @@ rule indelsRemove:
     log:
         stdout=log_folder+"/indelsRemove.o",
         stderr=log_folder+"/indelsRemove.e"
-    run:
-        cmd="%s --file %s --snps-only 'just-acgt' --recode --out %s > %s 2> %s " % (params.plink,params.i_prefix,params.output_prefix,log.stdout, log.stderr)
-        shell(cmd)
+    shell:
+        """
+        {params.plink} --file {params.i_prefix} --snps-only 'just-acgt' --recode --out {params.output_prefix} > {log.stdout} 2> {log.stderr}
+        """
+    # run:
+        # cmd="%s --file %s --snps-only 'just-acgt' --recode --out %s > %s 2> %s " % (params.plink,params.i_prefix,params.output_prefix,log.stdout, log.stderr)
+        # shell(cmd)
 
 # Update allele positions and chromosomes using 1000G data. We need to apply this one BEFORE splitting the data by chr, since we will have chr and positions moving around
 rule mapUpdateExt:
